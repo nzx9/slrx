@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"
+      integrity="sha512-dqw6X88iGgZlTsONxZK9ePmJEFrmHwpuMrsUChjAw1mRUhUITE5QU9pkcSox+ynfLhL15Sv2al5A0LVyDCmtUw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+      integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <title>Login</title>
+
+    <style type="text/css">
+      @media only screen and (max-width: 767px) {
+        .box {
+          position: relative;
+          height: 0px;
+          display: none !important;
+        }
+      }
+
+      body {
+        background-color: #312e2e;
+      }
+      body > .grid {
+        height: 100%;
+      }
+      .image {
+        margin-top: -100px;
+      }
+      .column {
+        max-width: 450px;
+      }
+
+      .box {
+        position: relative;
+        height: 70px;
+      }
+
+      .a {
+        text-decoration: none;
+        color: #16ab39;
+      }
+      .a:hover {
+        color: darkgreen;
+      }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $(".ui.form").form({
+          fields: {
+            username: {
+              identifier: "username",
+              rules: [
+                {
+                  type: "empty",
+                  prompt: "Please enter a valid username",
+                },
+                {
+                  type: "length[4]",
+                  prompt: "Your username must be at least 4 characters",
+                },
+              ],
+            },
+            password: {
+              identifier: "password",
+              rules: [
+                {
+                  type: "empty",
+                  prompt: "Please enter your password",
+                },
+                {
+                  type: "length[6]",
+                  prompt: "Your password must be at least 6 characters",
+                },
+              ],
+            },
+          },
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="ui center aligned container">
+      <div class="ui middle aligned center aligned grid">
+        <div class="column">
+          <p class="box computer only" />
+          <h2 class="ui green image header">
+            <!-- <img
+              src="Login%20Example%20-%20Semantic_files/logo.png"
+              class="image"
+            /> -->
+            <div class="content">Login to Your Account</div>
+          </h2>
+          <form class="ui large form" method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="ui stacked segment">
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="user icon"></i>
+                  <input
+                    id="id_username"
+                    type="text"
+                    name="username"
+                    autofocus=""
+                    autocapitalize="none"
+                    placeholder="username"
+                    autocomplete="username"
+                    maxlength="150"
+                  />
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="lock icon"></i>
+                  <input
+                    color="green"
+                    id="id_password"
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                    placeholder="Password"
+                  />
+                </div>
+              </div>
+              <input
+                class="ui fluid large green submit button"
+                type="submit"
+                value="Login"
+              />
+            </div>
+
+            <div class="ui error message"></div>
+            {% if form.errors %}
+            <div class="ui red message">
+              Username and password combination is not matched.
+            </div>
+            {% endif%}
+          </form>
+
+          <div class="ui message">
+            New to us?
+            <a href="/accounts/register/" class="a">Register</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
