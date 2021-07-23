@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # own
-    'clusters',
     'accounts',
+    'clusters',
+    'streams'
 ]
 
 MIDDLEWARE = [
