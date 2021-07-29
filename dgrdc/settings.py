@@ -26,12 +26,12 @@ if os.path.isfile(dotenv_file):
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=9p5ck7j$m++7bmg_i(f0qnjy*##*hz%8*6sjb-*t%ykh^t4rk'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = ['dgrdc.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'dgrdc.herokuapp.com']
 
 
 # Application definition
