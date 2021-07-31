@@ -10,18 +10,18 @@ def home(request):
     return render(request, "index.html")
 
 
-def uploadStreams(request):
-    if request.method == "POST":
-        form = StreamUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponse("Uploaded")
-    else:
-        form = StreamUploadForm()
-        contex = {
-            'form': form
-        }
-    return render(request, "index.html", contex)
+# def uploadStreams(request):
+#     if request.method == "POST":
+#         form = StreamUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponse("Uploaded")
+#     else:
+#         form = StreamUploadForm()
+#         contex = {
+#             'form': form
+#         }
+#     return render(request, "index.html", contex)
 
 
 def sub(request):

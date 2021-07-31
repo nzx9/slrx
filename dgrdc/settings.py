@@ -16,6 +16,7 @@ import dotenv
 import dj_database_url
 import firebase_admin
 from firebase_admin import credentials
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +32,7 @@ CREDENTIALS = None
 if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") == None:
     CREDENTIALS = "./secretes/drg-dc-firebase-adminsdk-yylok-02bcedb527.json"
 else:
-    CREDENTIALS = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    CREDENTIALS = json.loads(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 
 cred = credentials.Certificate(CREDENTIALS)
 
