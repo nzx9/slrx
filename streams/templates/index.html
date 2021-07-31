@@ -1,7 +1,272 @@
-{% extends "base.html" %}
-{% block title %}Capture{% endblock %}
-{% block content %}
-  Steams <br />
-  <img src="{% url 'video_feed' %}" />
-</body>
+{% extends "base.html" %} {%block head%} {% endblock %} {% block title %}
+Capture{% endblock %} {% block content %}
+<div class="ui pointing green inverted menu">
+  <a class="item"> Home </a>
+  <a class="item active"> Streams </a>
+  <a class="item"> Clusters </a>
+  <div class="right menu">
+    <div class="item">
+      <div class="ui icon input">
+        <input type="text" placeholder="Search..." />
+        <i class="search link icon"></i>
+      </div>
+    </div>
+    <a class="ui item" href="{% url 'logout' %}"
+      ><i class="logout icon"></i> Logout
+    </a>
+  </div>
+</div>
+
+<!-- {% if user.is_authenticated %}
+<p>Logged</p>
+{% else %}
+<p>Not logged</p>
+{% endif %} -->
+<div class="ui three column doubling stackable center divided grid">
+  <div class="stretched row">
+    <div class="three wide column">
+      <div class="ui segment">
+        <div
+          id="task-progress"
+          class="ui indicating progress"
+          data-value="1"
+          data-total="200"
+        >
+          <div class="bar">
+            <div class="progress"></div>
+          </div>
+          <div class="label">Waiting for you to press button</div>
+        </div>
+        <div class="ui horizontal divider">Progress</div>
+        <div class="ui header center aligned huge">Work</div>
+        <div class="ui horizontal divider">Word to Show</div>
+        <button id="toggle-rec-btn" class="ui red button fluid">
+          <i class="ui record icon"></i>Record
+        </button>
+        <div class="ui horizontal divider">Rec. Actions</div>
+        <div
+          class="ui segment"
+          style="height: 300px; max-height: 300px; overflow-y: auto"
+        >
+          <div class="ui header center aligned fixed">Log</div>
+          <div id="log"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ten wide column">
+      <video
+        id="preview"
+        width="100%"
+        height="auto"
+        autoplay
+        muted
+        style="background-color: black"
+      ></video>
+    </div>
+    <div class="three wide column">
+      <div class="ui segment">
+        <video
+          id="last-recorded"
+          width="100%"
+          height="140px"
+          controls
+          style="background-color: black"
+        ></video>
+        <div class="ui horizontal divider">Last Recording</div>
+        <div class="ui circular segment">
+          <div class="ui statistic">
+            <div class="value">
+              <i class="clock icon"></i>
+              <span class="ui header">5</span>
+            </div>
+            <div class="label">Seconds</div>
+          </div>
+        </div>
+        <div class="ui horizontal divider">Countdown</div>
+        <div>
+          <div class="ui buttons fluid">
+            <button id="back-btn" class="ui red button">
+              <i class="ui left arrow icon"></i>Back
+            </button>
+            <div class="or"></div>
+            <button id="next-btn" class="ui positive button">
+              Next <i class="ui right arrow icon"></i>
+            </button>
+          </div>
+        </div>
+        <div class="ui horizontal divider">Actions</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="left">
+  <button id="startButton" class="ui green button">Start</button>
+  <h2>Preview</h2>
+  <video id="preview" width="160" height="120" autoplay muted></video>
+</div>
+<div class="right">
+  <button id="stopButton" class="ui green button">Stop</button>
+  <h2>Recording</h2>
+  <video id="recording" width="160" height="120" controls></video>
+  <a id="downloadButton" class="button"> Download </a>
+</div>
+<div id="log"></div>
+<button id="btn" class="ui red button" onclick="">Sub</button> -->
+
+<script>
+  let preview = document.getElementById("preview");
+  let lastRecorded = document.getElementById("last-recorded");
+  let toggleRecButton = document.getElementById("toggle-rec-btn");
+  let logElement = document.getElementById("log");
+
+  let nextButton = document.getElementById("next-btn");
+  let backButton = document.getElementById("back-btn");
+
+  let recordingTimeMS = 5000;
+  let recordedBlob = null;
+
+  function updateProgress(action = "inc") {
+    let $progress = $("#task-progress"),
+      $button = $(this),
+      updateEvent;
+    if (action === "inc") {
+      $progress.progress("increment");
+    } else if (action === "dec") {
+      $progress.progress("decrement");
+    } else {
+      log("progress update action not matched");
+    }
+  }
+
+  $("#fill-btn").on("click", function () {
+    var $progress = $("#task-progress"),
+      $button = $(this),
+      updateEvent;
+    // restart to zero
+    // clearInterval(window.fakeProgress);
+    // $progress.progress("reset");
+    // updates every 10ms until complete
+    $progress.progress("increment");
+    window.fakeProgress = setInterval(function () {
+      $progress.progress("increment");
+      $button.text($progress.progress("get value"));
+      // stop incrementing when complete
+      if ($progress.progress("is complete")) {
+        clearInterval(window.fakeProgress);
+      }
+    }, 10);
+  });
+
+  $("#task-progress").progress({
+    duration: 200,
+    total: 50,
+    text: {
+      active: "{value} of {total} done",
+    },
+  });
+
+  function log(msg) {
+    let txt = "<p> >> " + msg + "</p>";
+    txt += logElement.innerHTML;
+    logElement.innerHTML = txt;
+  }
+
+  function wait(delayInMS) {
+    return new Promise((resolve) => setTimeout(resolve, delayInMS));
+  }
+
+  function startRecording(stream, lengthInMS) {
+    let recorder = new MediaRecorder(stream);
+    let data = [];
+
+    recorder.ondataavailable = (event) => data.push(event.data);
+    recorder.start();
+    log(recorder.state + " for " + lengthInMS / 1000 + " seconds...");
+
+    let stopped = new Promise((resolve, reject) => {
+      recorder.onstop = resolve;
+      recorder.onerror = (event) => reject(event.name);
+    });
+
+    let recorded = wait(lengthInMS).then(() => {
+      recorder.state == "recording" && recorder.stop();
+    });
+
+    return Promise.all([stopped, recorded]).then(() => data);
+  }
+
+  function stop(stream) {
+    stream.getTracks().forEach((track) => track.stop());
+  }
+
+  toggleRecButton.addEventListener(
+    "click",
+    function () {
+      console.log(toggleRecButton.innerText);
+      if (toggleRecButton.innerText == "Record") {
+        toggleRecButton.innerHTML = "<i class='ui stop icon'></i>Stop";
+        navigator.mediaDevices
+          .getUserMedia({
+            video: true,
+            audio: false,
+          })
+          .then((stream) => {
+            preview.srcObject = stream;
+            preview.captureStream =
+              preview.captureStream || preview.mozCaptureStream;
+            return new Promise((resolve) => (preview.onplaying = resolve));
+          })
+          .then(() => startRecording(preview.captureStream(), recordingTimeMS))
+          .then((recordedChunks) => {
+            recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+            log(
+              "successfully recorded " +
+                recordedBlob.size +
+                " bytes of " +
+                recordedBlob.type +
+                " media."
+            );
+          })
+          .catch(log);
+      } else {
+        toggleRecButton.innerHTML = "<i class='ui record icon'></i>Record";
+        stop(preview.srcObject);
+      }
+    },
+    false
+  );
+
+  nextButton.addEventListener(
+    "click",
+    function () {
+      updateProgress("inc");
+    },
+    false
+  );
+
+  backButton.addEventListener(
+    "click",
+    function () {
+      updateProgress("dec");
+    },
+    false
+  );
+  //   function sendData(data) {
+  //     const csrftoken = Cookies.get("csrftoken");
+  //     let response = fetch("/streams/sub/", {
+  //       method: "post",
+  //       body: data,
+  //       headers: { "X-CSRFToken": csrftoken },
+  //     });
+  //   }
+
+  //   btn.addEventListener("click", function () {
+  //     // let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+  //     sendData(recordedBlob);
+  //     console.log("sent");
+  //   });
+  //
+</script>
+
 {% endblock %}
