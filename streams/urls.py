@@ -3,5 +3,6 @@ from streams import views
 
 urlpatterns = [
     path('', views.home),
-    path('video/', views.videoFeed, name="video_feed"),
+    path('upload/', views.uploadStreams, name="stream_uploads"),
+    path('sub/', views.sub, name="sub")
 ]
