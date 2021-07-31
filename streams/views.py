@@ -1,6 +1,5 @@
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
-from streams.forms import StreamUploadForm
 from firebase_admin import storage
 
 # Create your views here.
