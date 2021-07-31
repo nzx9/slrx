@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 import dotenv
 import dj_database_url
+import firebase_admin
+from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,6 +23,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
+
+
+# Firebase
+
+CREDENTIALS = None
+if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") == None:
+    CREDENTIALS = "./secretes/drg-dc-firebase-adminsdk-yylok-02bcedb527.json"
+else:
+    CREDENTIALS = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+
+cred = credentials.Certificate(CREDENTIALS)
+
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'drg-dc.appspot.com'
+})
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -31,12 +49,15 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = ['127.0.0.1', 'dgrdc.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', 'dgrdc.herokuapp.com']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # using pip
+    'channels',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -127,6 +148,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -134,3 +161,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 LOGIN_REDIRECT_URL = "/"
+
+LOGOUT_REDIRECT_URL = "/"
+
+ASGI_APPLICATION = "dgrdc.asgi.application"
