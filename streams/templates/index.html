@@ -1,5 +1,6 @@
-{% extends "base.html" %} {%block head%} {% endblock %} {% block title %}
-Capture{% endblock %} {% block content %}
+{% extends "base.html" %}{% load static %} {%block head%}
+<script src="{% static 'js/main.js' %}"></script>
+{% endblock %} {% block title %} Capture{% endblock %} {% block content %}
 <div class="ui pointing green inverted menu">
   <a class="item"> Home </a>
   <a class="item active"> Streams </a>
@@ -77,7 +78,7 @@ Capture{% endblock %} {% block content %}
           <div class="ui statistic">
             <div class="value">
               <i class="clock icon"></i>
-              <span class="ui header">5</span>
+              <span id="timer" class="ui header">5</span>
             </div>
             <div class="label">Seconds</div>
           </div>
@@ -167,16 +168,28 @@ Capture{% endblock %} {% block content %}
   });
 
   function log(msg) {
-    let txt = "<p> >> " + msg + "</p>";
+    let txt = `<p>${getTime()} >> ` + msg + "</p>";
     txt += logElement.innerHTML;
     logElement.innerHTML = txt;
   }
 
-  function wait(delayInMS) {
-    return new Promise((resolve) => setTimeout(resolve, delayInMS));
+  function countdown(lengthInMS, delayPerIntervalInMS, countdownId) {
+    return new Promise(
+      (resolve) =>
+        (window.countdownInterval = setInterval(function () {
+          if (lengthInMS <= delayPerIntervalInMS) {
+            clearInterval(window.countdownInterval);
+            resolve();
+            $(`#${countdownId}`).html(0);
+          } else {
+            lengthInMS -= delayPerIntervalInMS;
+            $(`#${countdownId}`).html(lengthInMS / 1000);
+          }
+        }, delayPerIntervalInMS))
+    );
   }
 
-  function startRecording(stream, lengthInMS) {
+  function startRecording(stream, lengthInMS, delayPerIntervalInMS = 1000) {
     let recorder = new MediaRecorder(stream);
     let data = [];
 
@@ -189,22 +202,28 @@ Capture{% endblock %} {% block content %}
       recorder.onerror = (event) => reject(event.name);
     });
 
-    let recorded = wait(lengthInMS).then(() => {
-      recorder.state == "recording" && recorder.stop();
-    });
+    let recorded = countdown(lengthInMS, delayPerIntervalInMS, "timer").then(
+      () => {
+        recorder.state == "recording" && recorder.stop();
+        toggleRecButton.innerHTML = "<i class='ui record icon'></i>Record";
+        console.log("x: ", toggleRecButton.innerText);
+      }
+    );
 
     return Promise.all([stopped, recorded]).then(() => data);
   }
 
   function stop(stream) {
+    clearInterval(window.countdownInterval);
     stream.getTracks().forEach((track) => track.stop());
   }
 
   toggleRecButton.addEventListener(
     "click",
     function () {
-      console.log(toggleRecButton.innerText);
       if (toggleRecButton.innerText == "Record") {
+        if (parseInt($("#timer").html()) !== recordingTimeMS / 1000)
+          $("#timer").html(recordingTimeMS / 1000);
         toggleRecButton.innerHTML = "<i class='ui stop icon'></i>Stop";
         navigator.mediaDevices
           .getUserMedia({
@@ -220,6 +239,7 @@ Capture{% endblock %} {% block content %}
           .then(() => startRecording(preview.captureStream(), recordingTimeMS))
           .then((recordedChunks) => {
             recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+            lastRecorded.src = URL.createObjectURL(recordedBlob);
             log(
               "successfully recorded " +
                 recordedBlob.size +
