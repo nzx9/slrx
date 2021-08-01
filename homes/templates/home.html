@@ -1,13 +1,1 @@
-{% extends 'base.html' %} {% block content %}
-<div class="ui pointing green inverted menu">
-  <a class="item active" href="{% url 'home_view'%}"> Home </a>
-  <a class="item" href="{% url 'streams_view'%}"> Streams </a>
-  <a class="item"> Clusters </a>
-  <a class="item" href="{% url 'words_view'%}"> Words </a>
-  <div class="right menu">
-    <a class="ui item" href="{% url 'logout' %}"
-      ><i class="logout icon"></i> Logout
-    </a>
-  </div>
-</div>
-{% endblock %}
+{% extends 'layout.html' %} {% block content %} Home {% endblock %}

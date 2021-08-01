@@ -1,7 +1,8 @@
-{% extends "base.html" %}{% load static %} {%block head%}
+{% extends "layout.html" %} {% load static %} {%block scripts %}
 <script src="{% static 'js/main.js' %}"></script>
+
 {% endblock %} {% block title %} Capture{% endblock %} {% block content %}
-<div class="ui pointing green inverted menu">
+<!-- <div class="ui pointing green inverted menu">
   <a class="item" href="{% url 'home_view'%}"> Home </a>
   <a class="item active" href="{% url 'streams_view'%}"> Streams </a>
   <a class="item"> Clusters </a>
@@ -11,7 +12,7 @@
       ><i class="logout icon"></i> Logout
     </a>
   </div>
-</div>
+</div> -->
 
 <!-- {% if user.is_authenticated %}
 <p>Logged</p>
@@ -31,7 +32,7 @@
           <div class="bar">
             <div class="progress"></div>
           </div>
-          <div class="label">Waiting for you to press button</div>
+          <div class="label">...</div>
         </div>
         <div class="ui horizontal divider">Progress</div>
         <div class="ui header center aligned huge">Work</div>
@@ -41,7 +42,7 @@
         </button>
         <div class="ui horizontal divider">Rec. Actions</div>
         <div
-          class="ui segment"
+          class="ui segment left aligned"
           style="height: 300px; max-height: 300px; overflow-y: auto"
         >
           <div class="ui header center aligned fixed">Log</div>
