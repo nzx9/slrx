@@ -96,20 +96,6 @@
   </div>
 </div>
 
-<!-- <div class="left">
-  <button id="startButton" class="ui green button">Start</button>
-  <h2>Preview</h2>
-  <video id="preview" width="160" height="120" autoplay muted></video>
-</div>
-<div class="right">
-  <button id="stopButton" class="ui green button">Stop</button>
-  <h2>Recording</h2>
-  <video id="recording" width="160" height="120" controls></video>
-  <a id="downloadButton" class="button"> Download </a>
-</div>
-<div id="log"></div>
-<button id="btn" class="ui red button" onclick="">Sub</button> -->
-
 <script>
   let preview = document.getElementById("preview");
   let lastRecorded = document.getElementById("last-recorded");
@@ -135,25 +121,6 @@
     }
   }
 
-  $("#fill-btn").on("click", function () {
-    var $progress = $("#task-progress"),
-      $button = $(this),
-      updateEvent;
-    // restart to zero
-    // clearInterval(window.fakeProgress);
-    // $progress.progress("reset");
-    // updates every 10ms until complete
-    $progress.progress("increment");
-    window.fakeProgress = setInterval(function () {
-      $progress.progress("increment");
-      $button.text($progress.progress("get value"));
-      // stop incrementing when complete
-      if ($progress.progress("is complete")) {
-        clearInterval(window.fakeProgress);
-      }
-    }, 10);
-  });
-
   $("#task-progress").progress({
     duration: 200,
     total: 50,
@@ -169,19 +136,19 @@
   }
 
   function countdown(lengthInMS, delayPerIntervalInMS, countdownId) {
-    return new Promise(
-      (resolve) =>
-        (window.countdownInterval = setInterval(function () {
-          if (lengthInMS <= delayPerIntervalInMS) {
-            clearInterval(window.countdownInterval);
-            resolve();
-            $(`#${countdownId}`).html(0);
-          } else {
-            lengthInMS -= delayPerIntervalInMS;
-            $(`#${countdownId}`).html(lengthInMS / 1000);
-          }
-        }, delayPerIntervalInMS))
-    );
+    return new Promise((resolve) => {
+      window.stopPressed = false;
+      window.countdownInterval = setInterval(function () {
+        if (lengthInMS <= delayPerIntervalInMS || window.stopPressed) {
+          clearInterval(window.countdownInterval);
+          $(`#${countdownId}`).html(0);
+          resolve();
+        } else {
+          lengthInMS -= delayPerIntervalInMS;
+          $(`#${countdownId}`).html(lengthInMS / 1000);
+        }
+      }, delayPerIntervalInMS);
+    });
   }
 
   function startRecording(stream, lengthInMS, delayPerIntervalInMS = 1000) {
@@ -208,7 +175,7 @@
   }
 
   function stop(stream) {
-    clearInterval(window.countdownInterval);
+    window.stopPressed = true;
     stream.getTracks().forEach((track) => track.stop());
   }
 
@@ -244,8 +211,8 @@
           })
           .catch(log);
       } else {
-        toggleRecButton.innerHTML = "<i class='ui record icon'></i>Record";
         stop(preview.srcObject);
+        toggleRecButton.innerHTML = "<i class='ui record icon'></i>Record";
       }
     },
     false
