@@ -2,16 +2,11 @@
 <script src="{% static 'js/main.js' %}"></script>
 {% endblock %} {% block title %} Capture{% endblock %} {% block content %}
 <div class="ui pointing green inverted menu">
-  <a class="item"> Home </a>
-  <a class="item active"> Streams </a>
+  <a class="item" href="{% url 'home_view'%}"> Home </a>
+  <a class="item active" href="{% url 'streams_view'%}"> Streams </a>
   <a class="item"> Clusters </a>
+  <a class="item" href="{% url 'words_view'%}"> Words </a>
   <div class="right menu">
-    <div class="item">
-      <div class="ui icon input">
-        <input type="text" placeholder="Search..." />
-        <i class="search link icon"></i>
-      </div>
-    </div>
     <a class="ui item" href="{% url 'logout' %}"
       ><i class="logout icon"></i> Logout
     </a>
@@ -206,7 +201,6 @@
       () => {
         recorder.state == "recording" && recorder.stop();
         toggleRecButton.innerHTML = "<i class='ui record icon'></i>Record";
-        console.log("x: ", toggleRecButton.innerText);
       }
     );
 
