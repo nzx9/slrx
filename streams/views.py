@@ -1,45 +1,39 @@
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
 from firebase_admin import storage
-
+from streams.models import Stream
+import json
+from django.contrib import messages
 # Create your views here.
 
 
 @login_required(login_url='/accounts/login/')
-def home(request):
-    return render(request, "index.html")
+def streams_view(request):
+    return render(request, "streams.html")
 
 
-# def uploadStreams(request):
-#     if request.method == "POST":
-#         form = StreamUploadForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponse("Uploaded")
-#     else:
-#         form = StreamUploadForm()
-#         contex = {
-#             'form': form
-#         }
-#     return render(request, "index.html", contex)
-
-
+@login_required(login_url='/accounts/login/')
 def sub(request):
     bucket = storage.bucket()
     if request.method == "POST":
-        print(request.body)
-        f = open('./media/file.webm', 'wb')
-        f.write(request.body)
+        body_unicode = request.body.decode('utf-8')
+        body_data = json.loads(body_unicode)
+
+        serverFileName = './media/' + \
+            body_data['word'] + '/' + request.user.id + '.webm'
+        fireBaseFileName = './dgr/' + + \
+            body_data['word'] + '/' + request.user.id + '.webm'
+        f = open(serverFileName, 'wb')
+        f.write(body_data['blob'])
         f.close()
-        destination_blob_name = "new/first_upload.webm"
-        source_file_name = "./media/file.webm"
-        blob = bucket.blob(destination_blob_name)
-        blob.upload_from_filename(source_file_name)
-        print(
-            "File {} uploaded to {}.".format(
-                source_file_name, destination_blob_name
-            )
-        )
-        return HttpResponse('audio received')
+
+        blob = bucket.blob(serverFileName)
+        success = blob.upload_from_filename(fireBaseFileName)
+        print(success)  # remove
+        stream = Stream(userId=request.user.id, wordId=body_data['wordId'], pos_server=serverFileName,
+                        pos_firebase=fireBaseFileName)
+        stream.save()
+        messages.success(request, "Please login to access to the site")
+        return HttpResponse('File updated successfully')
     else:
-        print("not post")
+        return HttpResponse("Not a post request")
