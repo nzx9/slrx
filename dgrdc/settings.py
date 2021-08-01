@@ -69,7 +69,9 @@ INSTALLED_APPS = [
     # own
     'accounts',
     'clusters',
-    'streams'
+    'streams',
+    'words',
+    'homes'
 ]
 
 MIDDLEWARE = [
