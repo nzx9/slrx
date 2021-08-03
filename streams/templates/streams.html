@@ -1,52 +1,41 @@
-{% extends "layout.html" %} {% load static %} {%block scripts %}
+{% extends "layout.html" %}<!--- -->
+{% load static %}<!--- -->
+{%block scripts %}
 <script src="{% static 'js/main.js' %}"></script>
-
-{% endblock %} {% block title %} Capture{% endblock %} {% block content %}
-<!-- <div class="ui pointing green inverted menu">
-  <a class="item" href="{% url 'home_view'%}"> Home </a>
-  <a class="item active" href="{% url 'streams_view'%}"> Streams </a>
-  <a class="item"> Clusters </a>
-  <a class="item" href="{% url 'words_view'%}"> Words </a>
-  <div class="right menu">
-    <a class="ui item" href="{% url 'logout' %}"
-      ><i class="logout icon"></i> Logout
-    </a>
-  </div>
-</div> -->
-
-<!-- {% if user.is_authenticated %}
-<p>Logged</p>
-{% else %}
-<p>Not logged</p>
-{% endif %} -->
-<div class="ui three column doubling stackable center divided grid">
+{% endblock %}<!--- -->
+{% block title %} Capture{% endblock %}
+<!--- -->
+{% block content %}
+<div class="ui inverted three column doubling stackable center divided grid">
   <div class="stretched row">
     <div class="three wide column">
-      <div class="ui segment">
-        <div
-          id="task-progress"
-          class="ui indicating progress"
-          data-value="1"
-          data-total="200"
-        >
-          <div class="bar">
-            <div class="progress"></div>
-          </div>
-          <div class="label">...</div>
+      <div class="ui inverted segment">
+        <div class="ui segment">
+          <div class="ui header center aligned huge">Work</div>
         </div>
-        <div class="ui horizontal divider">Progress</div>
-        <div class="ui header center aligned huge">Work</div>
-        <div class="ui horizontal divider">Word to Show</div>
+        <div class="ui inverted horizontal divider">Word to Show</div>
         <button id="toggle-rec-btn" class="ui red button fluid">
           <i class="ui record icon"></i>Record
         </button>
-        <div class="ui horizontal divider">Rec. Actions</div>
+        <div class="ui inverted divider"></div>
         <div
           class="ui segment left aligned"
           style="height: 300px; max-height: 300px; overflow-y: auto"
         >
           <div class="ui header center aligned fixed">Log</div>
           <div id="log"></div>
+        </div>
+        <div class="ui inverted divider"></div>
+        <div>
+          <div class="ui buttons fluid">
+            <button id="back-btn" class="ui red button">
+              <i class="ui left arrow icon"></i>Back
+            </button>
+            <div class="or"></div>
+            <button id="next-btn" class="ui positive button">
+              Next <i class="ui right arrow icon"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -61,7 +50,21 @@
       ></video>
     </div>
     <div class="three wide column">
-      <div class="ui segment">
+      <div class="ui inverted segment">
+        <div class="ui segment">
+          <div
+            id="task-progress"
+            class="ui indicating progress"
+            data-value="1"
+            data-total="200"
+          >
+            <div class="bar">
+              <div class="progress"></div>
+            </div>
+            <div class="label">...</div>
+          </div>
+        </div>
+        <div class="ui inverted horizontal divider">Progress</div>
         <video
           id="last-recorded"
           width="100%"
@@ -69,8 +72,8 @@
           controls
           style="background-color: black"
         ></video>
-        <div class="ui horizontal divider">Last Recording</div>
-        <div class="ui circular segment">
+        <div class="ui inverted horizontal divider">Last Recording</div>
+        <div class="ui center aligned segment">
           <div class="ui statistic">
             <div class="value">
               <i class="clock icon"></i>
@@ -79,19 +82,7 @@
             <div class="label">Seconds</div>
           </div>
         </div>
-        <div class="ui horizontal divider">Countdown</div>
-        <div>
-          <div class="ui buttons fluid">
-            <button id="back-btn" class="ui red button">
-              <i class="ui left arrow icon"></i>Back
-            </button>
-            <div class="or"></div>
-            <button id="next-btn" class="ui positive button">
-              Next <i class="ui right arrow icon"></i>
-            </button>
-          </div>
-        </div>
-        <div class="ui horizontal divider">Actions</div>
+        <div class="ui inverted horizontal divider">Countdown</div>
       </div>
     </div>
   </div>

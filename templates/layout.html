@@ -5,7 +5,7 @@
   }
 
   .masthead.segment {
-    min-height: 500px;
+    min-height: 656px;
     padding: 0em 0;
   }
   .masthead .logo.item img {
@@ -70,11 +70,12 @@
 
 <div>
   <div class="pusher">
-    <div class="ui vertical masthead center aligned segment">
+    <div class="ui inverted vertical masthead center aligned segment fluid">
       <div class="ui fluid container">
-        <div class="ui green inverted large secondary pointing menu">
+        <div class="ui inverted large secondary pointing menu">
           <a class="toc item">
             <i class="sidebar icon"></i>
+            <b>DGR.DC</b>
           </a>
           {% if request.path == "/" %}
           <a class="active item" href="{% url 'home_view'%}">Home</a>
@@ -85,9 +86,9 @@
           {% else %}
           <a class="item" href="{% url 'streams_view'%}">Streams</a>
           {% endif%} {% if request.path == "/clusters/" %}
-          <a class="active item">>Clusters</a>
+          <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
           {% else %}
-          <a class="item">Clusters</a>
+          <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
           {% endif%} {% if request.path == "/words/" %}
           <a class="active item" href="{% url 'words_view'%}">Words</a>
           {% else %}
@@ -120,9 +121,9 @@
     {% else %}
     <a class="item" href="{% url 'streams_view'%}">Streams</a>
     {% endif%} {% if request.path == "/clusters/" %}
-    <a class="active item">>Clusters</a>
+    <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
     {% else %}
-    <a class="item">Clusters</a>
+    <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
     {% endif%} {% if request.path == "/words/" %}
     <a class="active item" href="{% url 'words_view'%}">Words</a>
     {% else %}
@@ -136,5 +137,5 @@
     <a class="item">Signup</a>
     {% endif %}
   </div>
+  {% endblock %}
 </div>
-{% endblock %}
