@@ -1,7 +1,5 @@
 # from typing import cast
-from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import redirect, render
-from django.http import HttpResponse
+from django.shortcuts import render
 
 from .forms import CreateUserForm
 from django.contrib import messages
