@@ -1,6 +1,7 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from words.models import Word
+from django.contrib import messages
 # Create your views here.
 
 
@@ -17,14 +18,23 @@ def words_view(request):
 
 
 @login_required(login_url='/accounts/login/')
-def submit_new_word(request):
+def add_new_words(request):
     if request.method == "POST":
         newWord = Word()
         newWord.in_sinhala = request.POST['sinhala-word']
         newWord.in_english = request.POST['english-word']
         newWord.in_singlish = request.POST['singlish-word']
         newWord.created_by = request.user.id
-        newWord.save()
-        return HttpResponse('File updated successfully')
-    else:
-        return HttpResponse("Not a post request")
+        try:
+            newWord.save()
+            messages.success(request, "New Word Created")
+        except Exception as e:
+            messages.error(request, f"Something went wrong: {str(e)}")
+    return render(request, "add_words.html")
+
+
+@login_required(login_url='/accounts/login/')
+def delete_word(request, pk):
+    word = Word.objects.get(id=pk)
+    word.delete()
+    return redirect('words_view')

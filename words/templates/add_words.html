@@ -1,0 +1,137 @@
+{% extends 'layout.html' %}
+<!--- -->
+{% block title %} Words | New {% endblock %}
+<!--- -->
+{% block scripts %}
+<style>
+  .column {
+    max-width: 500px;
+  }
+</style>
+<script>
+  $(document).ready(function () {
+    $(".ui.form").form({
+      fields: {
+        "sinhala-word": {
+          identifier: "sinhala-word",
+          rules: [
+            {
+              type: "empty",
+              prompt: "Please Fill the Sinhala Word",
+            },
+          ],
+        },
+        "english-word": {
+          identifier: "english-word",
+          rules: [
+            {
+              type: "empty",
+              prompt: "Please Fill the English Word",
+            },
+          ],
+        },
+        "singlish-word": {
+          identifier: "singlish-word",
+          rules: [
+            {
+              type: "empty",
+              prompt: "Please Fill the Singlish Word",
+            },
+          ],
+        },
+      },
+    });
+  });
+</script>
+{% endblock %}
+<!--- -->
+{% block content %}
+<div class="ui center aligned container">
+  <div class="ui middle aligned center aligned stackable grid">
+    <div class="column">
+      <form class="ui large form" method="POST" action="">
+        {% csrf_token %}
+        <div class="ui inverted raised segment">
+          <h1 class="ui header">Add New Words</h1>
+          <div class="field">
+            <div class="ui left action input">
+              <button class="ui inverted labeled icon button disabled">
+                <i class="language icon"></i>
+                Word In Sinhala
+              </button>
+              <input
+                id="sinhala-word"
+                type="text"
+                name="sinhala-word"
+                placeholder="වචනය"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left action input">
+              <button class="ui inverted labeled icon button disabled">
+                <i class="language icon"></i>
+                Word In English
+              </button>
+              <input
+                id="english-word"
+                type="text"
+                name="english-word"
+                placeholder="Word"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left action input">
+              <button class="ui inverted labeled icon button disabled">
+                <i class="language icon"></i>
+                Word In Singlish
+              </button>
+              <input
+                type="text"
+                id="singlish-word"
+                name="singlish-word"
+                placeholder="Wachanaya"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui error message"></div>
+            {% if form.errors %}
+            <div class="ui red message">
+              <ul class="list">
+                {% for key, value in form.errors.items %}
+
+                <li><b>{{ key }}</b></li>
+                {{value}} {% endfor %}
+              </ul>
+            </div>
+            {% endif %} {% if messages %}
+            
+                {% for message in messages %}
+                <!-- -->
+                {% if message.tags == 'error' %}
+                <div class="ui red message">
+                    <b>{{ message }}</b>
+                </div>
+                {% endif %}
+                {% if message.tags == 'success' %}
+                <div class="ui green message">
+                    <b>{{ message }}</b>
+                </div>
+                {% endif %}
+                <!-- -->
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+          <div class="field">
+            <button class="ui inverted button" type="submit">ADD TO DB</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

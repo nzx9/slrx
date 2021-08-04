@@ -2,146 +2,85 @@
 <!--- -->
 {% block title %} Words{% endblock %}
 <!--- -->
-{% block scripts%}
-<script>
-  $(document).ready(function () {
-    $(".ui.form").form({
-      fields: {
-        username: {
-          identifier: "username",
-          rules: [
-            {
-              type: "empty",
-              prompt: "Please enter a valid username",
-            },
-            {
-              type: "length[4]",
-              prompt: "Your username must be at least 4 characters",
-            },
-          ],
-        },
-        password: {
-          identifier: "password",
-          rules: [
-            {
-              type: "empty",
-              prompt: "Please enter your password",
-            },
-            {
-              type: "length[6]",
-              prompt: "Your password must be at least 6 characters",
-            },
-          ],
-        },
-      },
-    });
-  });
-</script>
-{%endblock%}
+{% block scripts%} {%endblock%}
 <!--- -->
 {% block content %}
-<div class="ui stackable two column grid">
+<div class="ui stackable one column grid">
   <div class="column">
     {% csrf_token %}
-    <div class="ui inverted stacked segment">
+    <div class="ui inverted raised segment">
       <h1 class="ui header">Word List</h1>
 
       {% if empty == True %}
-      <p>No Words To Show</p>
+      <h1 class="ui header">No Words To Show</h1>
       {% else %}
-      <table class="ui inverted center compact celled structured table">
-        <thead class="center aligned">
-          <tr>
-            <th rowspan="2">#</th>
+      <div class="ui container">
+        <table class="ui inverted center celled structured table">
+          <thead class="center aligned">
+            <tr>
+              <th rowspan="2">#</th>
 
-            <th colspan="4">Word</th>
-            <th rowspan="2">Records</th>
-            <th rowspan="2">Created By</th>
-            <th rowspan="2">Created</th>
-          </tr>
-          <tr>
-            <th>Id</th>
-            <th>In Sinhala</th>
-            <th>In English</th>
-            <th>In Singlish</th>
-          </tr>
-        </thead>
-        <tbody class="center aligned">
-          <!--- -->
-          {% for word in words %}
-          <tr>
-            <td class="collapsing">
-              <!-- <div class="ui fitted slider checkbox">
+              <th colspan="4">Word</th>
+              <th rowspan="2">Records</th>
+              <th rowspan="2">Created By</th>
+              <th rowspan="2">Created</th>
+              <th rowspan="2">Delete</th>
+            </tr>
+            <tr>
+              <th>Id</th>
+              <th>In Sinhala</th>
+              <th>In English</th>
+              <th>In Singlish</th>
+            </tr>
+          </thead>
+          <tbody class="center aligned">
+            <!--- -->
+            {% for word in words %}
+            <tr>
+              <td class="collapsing">
+                <!-- <div class="ui fitted slider checkbox">
                 <input type="checkbox" /> <label></label>
               </div> -->
-              {{forloop.counter}}
-            </td>
-            <td class="collapsing">{{word.pk}}</td>
-            <td>{{word.in_sinhala}}</td>
-            <td>{{word.in_english}}</td>
-            <td>{{word.in_singlish}}</td>
-            <td>{{word.recorde_count}}</td>
-            <td>{{word.created_by}}</td>
-            {% localtime on %}
-            <td>{{ word.created_at| timesince }} ago</td>
-            {% endlocaltime %}
-          </tr>
-          {% endfor %}
-        </tbody>
-        <!--- -->
-        <tfoot class="full-width">
-          <tr>
-            <th></th>
-            <th colspan="7">
-              <div class="ui right floated small primary labeled icon button">
-                <i class="database icon"></i> Add New
-              </div>
-              <div class="ui small button">Update</div>
-              <div class="ui small disabled button">Update All</div>
-            </th>
-          </tr>
-        </tfoot>
-      </table>
+                {{forloop.counter}}
+              </td>
+              <td class="collapsing">{{word.pk}}</td>
+              <td>{{word.in_sinhala}}</td>
+              <td>{{word.in_english}}</td>
+              <td>{{word.in_singlish}}</td>
+              <td>{{word.recorde_count}}</td>
+              <td>{{word.created_by}}</td>
+              {% localtime on %}
+              <td>{{ word.created_at| timesince }} ago</td>
+              {% endlocaltime %}
+              <td>
+                <a href="{% url 'delete_word' word.pk %}"
+                  ><i class="trash red icon"></i
+                ></a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <!--- -->
+          <tfoot class="full-width">
+            <tr>
+              <th></th>
+              <th colspan="8">
+                <a href="{% url 'add_new_words' %}">
+                  <button
+                    class="ui right floated small inverted labeled icon button"
+                  >
+                    <i class="database icon"></i> Add New Words
+                  </button>
+                </a>
+                <div class="ui small button">Update</div>
+                <div class="ui small disabled button">Update All</div>
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
       {% endif %}
     </div>
-  </div>
-  <div class="column">
-    <form class="ui large form" method="POST" action="{% url 'word_submit' %}">
-      {% csrf_token %}
-      <div class="ui inverted stacked segment">
-        <h1 class="ui header">Add New Words</h1>
-        <div class="field">
-          <div class="ui left action input">
-            <button class="ui inverted labeled icon button disabled">
-              <i class="language icon"></i>
-              Word In Sinhala
-            </button>
-            <input type="text" name="sinhala-word" placeholder="වචනය" />
-          </div>
-        </div>
-        <div class="field">
-          <div class="ui left action input">
-            <button class="ui inverted labeled icon button disabled">
-              <i class="language icon"></i>
-              Word In English
-            </button>
-            <input type="text" name="english-word" placeholder="Word" />
-          </div>
-        </div>
-        <div class="field">
-          <div class="ui left action input">
-            <button class="ui inverted labeled icon button disabled">
-              <i class="language icon"></i>
-              Word In Singlish
-            </button>
-            <input type="text" name="singlish-word" placeholder="Wachanaya" />
-          </div>
-        </div>
-        <div class="field">
-          <button class="ui grey button" type="submit">ADD TO DB</button>
-        </div>
-      </div>
-    </form>
   </div>
 </div>
 {% endblock %}
