@@ -75,12 +75,18 @@
         <div class="ui inverted large secondary pointing menu">
           <a class="toc item">
             <i class="sidebar icon"></i>
-            <b>DGR.DC</b>
+            <span
+              >DGR.DC <i class="american sign language interpreting icon"></i
+            ></span>
           </a>
           {% if request.path == "/" %}
-          <a class="active item" href="{% url 'home_view'%}">Home</a>
+          <a class="active item" href="{% url 'home_view'%}"
+            ><i class="american sign language interpreting icon"></i>Home</a
+          >
           {% else %}
-          <a class="item" href="{% url 'home_view'%}">Home</a>
+          <a class="item" href="{% url 'home_view'%}"
+            ><i class="american sign language interpreting icon"></i>Home</a
+          >
           {% endif%} {% if request.path == "/streams/" %}
           <a class="active item" href="{% url 'streams_view'%}">Streams</a>
           {% else %}
