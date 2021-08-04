@@ -67,7 +67,6 @@
   });
 </script>
 {% block scripts%} {% endblock %} {% endblock %}
-
 <div>
   <div class="pusher">
     <div class="ui inverted vertical masthead center aligned segment fluid">
@@ -87,15 +86,15 @@
           <a class="item" href="{% url 'home_view'%}"
             ><i class="american sign language interpreting icon"></i>Home</a
           >
-          {% endif%} {% if request.path == "/streams/" %}
+          {% endif%} {% if "/streams/" in request.path %}
           <a class="active item" href="{% url 'streams_view'%}">Streams</a>
           {% else %}
           <a class="item" href="{% url 'streams_view'%}">Streams</a>
-          {% endif%} {% if request.path == "/clusters/" %}
+          {% endif%} {% if "/clusters/" in request.path %}
           <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
           {% else %}
           <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
-          {% endif%} {% if request.path == "/words/" %}
+          {% endif%} {% if "/words/" in request.path %}
           <a class="active item" href="{% url 'words_view'%}">Words</a>
           {% else %}
           <a class="item" href="{% url 'words_view'%}">Words</a>
@@ -122,15 +121,15 @@
     <a class="active item" href="{% url 'home_view'%}">Home</a>
     {% else %}
     <a class="item" href="{% url 'home_view'%}">Home</a>
-    {% endif%} {% if request.path == "/streams/" %}
+    {% endif%} {% if "/streams/" in request.path %}
     <a class="active item" href="{% url 'streams_view'%}">Streams</a>
     {% else %}
     <a class="item" href="{% url 'streams_view'%}">Streams</a>
-    {% endif%} {% if request.path == "/clusters/" %}
+    {% endif%} {% if "/clusters/" in request.path %}
     <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
     {% else %}
     <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
-    {% endif%} {% if request.path == "/words/" %}
+    {% endif%} {% if "/words/" in request.path %}
     <a class="active item" href="{% url 'words_view'%}">Words</a>
     {% else %}
     <a class="item" href="{% url 'words_view'%}">Words</a>
