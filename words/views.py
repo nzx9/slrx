@@ -1,6 +1,8 @@
+from django.db.models.query_utils import PathInfo
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from words.models import Word
+from django.contrib.auth.models import User
 from django.contrib import messages
 # Create your views here.
 
@@ -8,6 +10,11 @@ from django.contrib import messages
 @login_required(login_url='/accounts/login/')
 def words_view(request):
     words = Word.objects.all()
+    # user = User.objects.get(pk=words.create)
+    wl = list(words)
+    for w in wl:
+        username = User.objects.get(pk=w.created_by)
+        w.created_by = username
 
     if not words:
         empty = True
