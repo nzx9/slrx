@@ -1,0 +1,135 @@
+{% extends "layout.html" %}<!--- -->
+{% load tz %} {% block title %} Streams {% endblock %}
+<!--- -->
+{% block content %}
+<div class="ui stackable one column grid">
+  <div class="column">
+    {% csrf_token %}
+    <div class="ui inverted raised segment">
+      {% if empty == True %}
+      <h1 class="ui header">No Words To Show</h1>
+      {% else %}
+      <div class="ui container">
+        <table class="ui inverted center celled structured table">
+          <thead class="center aligned">
+            <tr>
+              <th rowspan="2">#</th>
+
+              <th colspan="4">Word</th>
+              <th colspan="5">Stream</th>
+              <th rowspan="2">Actions</th>
+            </tr>
+            <tr>
+              <th>Id</th>
+              <th>In Sinhala</th>
+              <th>In English</th>
+              <th>In Singlish</th>
+              <th>Id</th>
+              <th>Preview</th>
+              <th>Done</th>
+              <th>Verified</th>
+              <th>@</th>
+            </tr>
+          </thead>
+          <tbody class="center aligned">
+            <!--- -->
+            {% for d in data %}
+            <tr>
+              <td class="collapsing">
+                <!-- <div class="ui fitted slider checkbox">
+                <input type="checkbox" /> <label></label>
+              </div> -->
+                {{forloop.counter}}
+              </td>
+              <td class="collapsing">{{d.w_info.pk}}</td>
+              <td>{{d.w_info.in_sinhala}}</td>
+              <td>{{d.w_info.in_english}}</td>
+              <td>{{d.w_info.in_singlish}}</td>
+              <td class="collapsing">
+                {% if d.comp == True %}
+                <!-- -->
+                {{ d.s_info.pk }}
+                <!-- -->
+                {% else %} #
+                <!-- -->
+                {% endif %}
+              </td>
+              <td style="padding: 0">
+                {% if d.comp == True %}
+                <video
+                  width="180px"
+                  height="100px"
+                  src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                  controls
+                ></video>
+                {% else %} No Previews {% endif %}
+              </td>
+              <td class="collapsing">
+                {% if d.comp == True %}
+                <i class="check circle large green icon"></i>
+                {% else %}
+                <i class="times circle large red icon"></i>
+                {% endif %}
+              </td>
+              <td class="collapsing">
+                {% if d.comp == True %}
+                <i class="check circle large green icon"></i>
+                {% else %}
+                <i class="times circle large red icon"></i>
+                {% endif %}
+              </td>
+              {% localtime on %}
+              <td>
+                {% if d.comp == True %}
+                <!-- -->
+                {{ d.s_info.created_at| timesince }} ago
+                <!-- -->
+                {% else %} -
+                <!-- -->
+                {% endif %}
+              </td>
+              {% endlocaltime %}
+              <td>
+                {% if d.comp == True %}
+                <a
+                  class="ui green tiny button"
+                  href="{% url 'streams_rec_view' d.w_info.pk %}"
+                  ><i class="record icon"></i>Re-Record</a
+                >
+                {% else %}
+                <a
+                  class="ui green tiny button"
+                  href="{% url 'streams_rec_view' d.w_info.pk %}"
+                  ><i class="record icon"></i>Record</a
+                >
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <!--- -->
+          <tfoot class="full-width">
+            <tr>
+              <th></th>
+              <th colspan="10">
+                <div
+                  id="task-progress"
+                  class="ui indicating progress"
+                  data-value="1"
+                  data-total="200"
+                >
+                  <div class="bar">
+                    <div class="progress"></div>
+                  </div>
+                  <div class="label">...</div>
+                </div>
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

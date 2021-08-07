@@ -3,7 +3,7 @@
 {%block scripts %}
 <script src="{% static 'js/main.js' %}"></script>
 {% endblock %}<!--- -->
-{% block title %} Capture{% endblock %}
+{% block title %} Capture {{ pk }}{% endblock %}
 <!--- -->
 {% block content %}
 <div class="ui inverted three column doubling stackable center divided grid">
@@ -11,7 +11,9 @@
     <div class="three wide column">
       <div class="ui inverted segment">
         <div class="ui segment">
-          <div class="ui header center aligned huge">Work</div>
+          <div class="ui header center aligned huge">
+            {{ curr_word.in_sinhala }}
+          </div>
         </div>
         <div class="ui inverted horizontal divider">Word to Show</div>
         <button id="toggle-rec-btn" class="ui red button fluid">
