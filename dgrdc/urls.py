@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 # accounts
 from accounts.views import registerPage
@@ -27,5 +29,9 @@ urlpatterns = [
     path('clusters/', include('clusters.urls')),
     path('streams/', include('streams.urls')),
     path('words/', include('words.urls')),
-    path('', include('homes.urls'))
+    path('', include('homes.urls')),
+    path(
+        "favicon.ico",
+        RedirectView.as_view(url=staticfiles_storage.url("favicon.ico")),
+    ),
 ]
