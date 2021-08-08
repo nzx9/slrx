@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+<!--  -->
+{% block title %} Not Found {% endblock %}
+<!--   -->
+{% block scripts %}
+<style>
+  @media only screen and (max-width: 767px) {
+    .box {
+      position: relative;
+      height: 0px;
+      display: none !important;
+    }
+  }
+  body > .grid {
+    height: 100%;
+  }
+
+  .box {
+    position: relative;
+    height: 150px;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="ui inverted center aligned container">
+  <p class="box computer only" />
+  <div class="ui inverted middle aligned center aligned grid">
+    <div class="column">
+      <i class="ui frown massive icon"></i>
+      <h1 class="ui center aligned inverted huge header">
+        404
+        <div class="ui center aligned inverted sub header">PAGE NOT FOUND</div>
+      </h1>
+    </div>
+  </div>
+</div>
+{% endblock %}

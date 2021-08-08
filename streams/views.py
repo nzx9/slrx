@@ -48,10 +48,10 @@ def streams_rec_view(request, pk):
     curr_word = None
     try:
         curr_word = Word.objects.get(pk=pk)
-        print(curr_word.in_sinhala)
     except ObjectDoesNotExist:
         print("Does not found")
-    return render(request, "streams.html", {"curr_word": curr_word, "pk": pk})
+        return render(request, "404.html")
+    return render(request, "streams_rec.html", {"curr_word": curr_word, "pk": pk})
 
 
 @login_required(login_url='/accounts/login/')
@@ -75,7 +75,8 @@ def sub(request):
         stream = Stream(userId=request.user.id, wordId=body_data['wordId'], pos_server=serverFileName,
                         pos_firebase=fireBaseFileName)
         stream.save()
-        messages.success(request, "Please login to access to the site")
+        # messages.success(request, "Please login to access to the site")
+
         return HttpResponse('File updated successfully')
     else:
         return HttpResponse("Not a post request")
