@@ -13,6 +13,9 @@
         <div class="ui segment">
           <div class="ui header center aligned huge">
             {{ curr_word.in_sinhala }}
+            <div class="ui inverted divider"></div>
+            <span class="ui sub header"> {{ curr_word.in_english }} </span
+            ><span class="ui sub header">{{ curr_word.in_singlish }}</span>
           </div>
         </div>
         <div class="ui inverted horizontal divider">Word to Show</div>
@@ -27,18 +30,7 @@
           <div class="ui header center aligned fixed">Log</div>
           <div id="log"></div>
         </div>
-        <div class="ui inverted divider"></div>
-        <div>
-          <div class="ui buttons fluid">
-            <button id="back-btn" class="ui red button">
-              <i class="ui left arrow icon"></i>Back
-            </button>
-            <div class="or"></div>
-            <button id="next-btn" class="ui positive button">
-              Next <i class="ui right arrow icon"></i>
-            </button>
-          </div>
-        </div>
+        <!-- <div class="ui inverted divider"></div> -->
       </div>
     </div>
     <div class="ten wide column">
@@ -85,6 +77,17 @@
           </div>
         </div>
         <div class="ui inverted horizontal divider">Countdown</div>
+        <div>
+          <div class="ui buttons fluid">
+            <button id="back-btn" class="ui red button">
+              <i class="ui left arrow icon"></i>Back
+            </button>
+            <div class="or"></div>
+            <button id="next-btn" class="ui positive button">
+              Next <i class="ui right arrow icon"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
