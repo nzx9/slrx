@@ -92,13 +92,13 @@
               <td>
                 {% if d.comp == True %}
                 <a
-                  class="ui green tiny button"
+                  class="ui inverted tiny button"
                   href="{% url 'streams_rec_view' d.w_info.pk %}"
-                  ><i class="record icon"></i>Re-Record</a
+                  ><i class="redo icon"></i>Re-record</a
                 >
                 {% else %}
                 <a
-                  class="ui green tiny button"
+                  class="ui inverted tiny button"
                   href="{% url 'streams_rec_view' d.w_info.pk %}"
                   ><i class="record icon"></i>Record</a
                 >
