@@ -3,7 +3,7 @@
 {%block scripts %}
 <script src="{% static 'js/main.js' %}"></script>
 {% endblock %}<!--- -->
-{% block title %} Capture {{ pk }}{% endblock %}
+{% block title %} Capture {{ e_word }}{% endblock %}
 <!--- -->
 {% block content %}
 <div class="ui inverted three column doubling stackable center divided grid">
@@ -14,7 +14,8 @@
           <div class="ui header center aligned huge">
             {{ curr_word.in_sinhala }}
             <div class="ui inverted divider"></div>
-            <span class="ui sub header"> {{ curr_word.in_english }} </span
+            <span id="word-in-english" class="ui sub header">
+              {{ curr_word.in_english }} </span
             ><span class="ui sub header">{{ curr_word.in_singlish }}</span>
           </div>
         </div>
@@ -78,15 +79,45 @@
         </div>
         <div class="ui inverted horizontal divider">Countdown</div>
         <div>
+          <div
+            id="submit-btn"
+            class="ui primary button fluid"
+            style="margin-bottom: 5px"
+          >
+            Submit
+          </div>
           <div class="ui buttons fluid">
-            <button id="back-btn" class="ui red button">
+            {% if prev_word == None %}
+            <a id="back-btn" class="ui red button disabled" href="#">
               <i class="ui left arrow icon"></i>Back
-            </button>
+            </a>
+            {% else %}
+            <a
+              id="back-btn"
+              class="ui red button"
+              href="{% url 'streams_rec_view' prev_word.in_english %}"
+            >
+              <i class="ui left arrow icon"></i>Back
+            </a>
+            {% endif %}
             <div class="or"></div>
-            <button id="next-btn" class="ui positive button">
+            {% if next_word == None %}
+            <button id="next-btn" class="ui positive disabled button">
               Next <i class="ui right arrow icon"></i>
             </button>
+            {% else %}
+            <button
+              id="next-btn"
+              class="ui positive button"
+              href="{% url 'streams_rec_view' next_word.in_english %}"
+            >
+              Next <i class="ui right arrow icon"></i>
+            </button>
+            {% endif %}
           </div>
+          <p id="next-word-hidden" style="display: none !important">
+            {{ next_word.in_english }}
+          </p>
         </div>
       </div>
     </div>
@@ -101,6 +132,8 @@
 
   let nextButton = document.getElementById("next-btn");
   let backButton = document.getElementById("back-btn");
+
+  let submitButton = document.getElementById("submit-btn");
 
   let recordingTimeMS = 5000;
   let recordedBlob = null;
@@ -215,6 +248,29 @@
     false
   );
 
+  function navigationAction(url) {
+    if (recordedBlob !== null) {
+      alert("");
+    } else {
+      location.href = url;
+    }
+  }
+
+  async function sendData(data) {
+    const csrftoken = Cookies.get("csrftoken");
+    let response = await fetch(
+      `/streams/submit/${window.location.pathname.split("/")[3]}/`,
+      {
+        method: "post",
+        body: data,
+        headers: {
+          "X-CSRFToken": csrftoken,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
   nextButton.addEventListener(
     "click",
     function () {
@@ -227,17 +283,22 @@
     "click",
     function () {
       updateProgress("dec");
+      if (recordedBlob !== null) {
+      }
     },
     false
   );
-  //   function sendData(data) {
-  //     const csrftoken = Cookies.get("csrftoken");
-  //     let response = fetch("/streams/sub/", {
-  //       method: "post",
-  //       body: data,
-  //       headers: { "X-CSRFToken": csrftoken },
-  //     });
-  //   }
+
+  submitButton.addEventListener("click", function () {
+    if (recordedBlob !== null) {
+      let nextWord = document
+        .getElementById("next-word-hidden")
+        .innerText.trim();
+      data = { nextWord: nextWord, blob: recordedBlob };
+      sendData(JSON.stringify(data));
+      recordedBlob = null;
+    }
+  });
 
   //   btn.addEventListener("click", function () {
   //     // let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });

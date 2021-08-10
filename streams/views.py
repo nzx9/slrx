@@ -1,4 +1,5 @@
-from django.shortcuts import render, HttpResponse
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import redirect, render, HttpResponse, reverse
 from django.contrib.auth.decorators import login_required
 from firebase_admin import storage
 from streams.models import Stream, User_Stream
@@ -44,39 +45,40 @@ def streams_view(request):
 
 
 @login_required(login_url='/accounts/login/')
-def streams_rec_view(request, pk):
-    curr_word = None
+def streams_rec_view(request, e_word):
     try:
-        curr_word = Word.objects.get(pk=pk)
+        all_words = Word.objects.all()
+        curr_word = all_words.get(in_english=e_word)
+        prev_word = all_words.filter(pk__lt=curr_word.pk).last()
+        next_word = all_words.filter(pk__gt=curr_word.pk).first()
     except ObjectDoesNotExist:
-        print("Does not found")
         return render(request, "404.html")
-    return render(request, "streams_rec.html", {"curr_word": curr_word, "pk": pk})
+    return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": e_word})
 
 
 @login_required(login_url='/accounts/login/')
-def sub(request):
-    bucket = storage.bucket()
+def submit(request, e_word):
+    # bucket = storage.bucket()
     if request.method == "POST":
         body_unicode = request.body.decode('utf-8')
         body_data = json.loads(body_unicode)
+        print(body_data['nextWord'])
+        # serverFileName = './media/' + \
+        #     body_data['word'] + '/' + request.user.id + '.webm'
+        # fireBaseFileName = './dgr/' + \
+        #     body_data['word'] + '/' + request.user.id + '.webm'
+        # f = open(serverFileName, 'wb')
+        # f.write(body_data['blob'])
+        # f.close()
 
-        serverFileName = './media/' + \
-            body_data['word'] + '/' + request.user.id + '.webm'
-        fireBaseFileName = './dgr/' + \
-            body_data['word'] + '/' + request.user.id + '.webm'
-        f = open(serverFileName, 'wb')
-        f.write(body_data['blob'])
-        f.close()
-
-        blob = bucket.blob(serverFileName)
-        success = blob.upload_from_filename(fireBaseFileName)
-        print(success)  # remove
-        stream = Stream(userId=request.user.id, wordId=body_data['wordId'], pos_server=serverFileName,
-                        pos_firebase=fireBaseFileName)
-        stream.save()
-        # messages.success(request, "Please login to access to the site")
-
-        return HttpResponse('File updated successfully')
+        # blob = bucket.blob(serverFileName)
+        # success = blob.upload_from_filename(fireBaseFileName)
+        # print(success)  # remove
+        # stream = Stream(userId=request.user.id, wordId=body_data['wordId'], pos_server=serverFileName,
+        #                 pos_firebase=fireBaseFileName)
+        # stream.save()
+        # print(body_data['nextWord'])
+        # reverse('streams_rec_view', args=[body_data['nextWord']])
+        return HttpResponse(body_data['nextWord'])
     else:
         return HttpResponse("Not a post request")

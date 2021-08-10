@@ -93,13 +93,13 @@
                 {% if d.comp == True %}
                 <a
                   class="ui inverted tiny button"
-                  href="{% url 'streams_rec_view' d.w_info.pk %}"
+                  href="{% url 'streams_rec_view' d.w_info.in_english %}"
                   ><i class="redo icon"></i>Re-record</a
                 >
                 {% else %}
                 <a
                   class="ui inverted tiny button"
-                  href="{% url 'streams_rec_view' d.w_info.pk %}"
+                  href="{% url 'streams_rec_view' d.w_info.in_english %}"
                   ><i class="record icon"></i>Record</a
                 >
                 {% endif %}

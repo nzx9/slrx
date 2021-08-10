@@ -7,7 +7,7 @@ import streams
 
 urlpatterns = [
     path('', views.streams_view, name="streams_view"),
-    path('rec/<str:pk>/', views.streams_rec_view, name="streams_rec_view"),
+    path('rec/<str:e_word>/', views.streams_rec_view, name="streams_rec_view"),
     # path('upload/', views.uploadStreams, name="stream_uploads"),
-    path('sub/', views.sub, name="sub")
+    path('submit/<str:e_word>/', views.submit, name="submit")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
