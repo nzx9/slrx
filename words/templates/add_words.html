@@ -39,6 +39,15 @@
             },
           ],
         },
+        "bulk-file": {
+          identifier: "bulk-file",
+          rules: [
+            {
+              type: "empty",
+              prompt: "Please Select a File to Upload",
+            },
+          ],
+        },
       },
     });
   });
@@ -48,89 +57,107 @@
 {% block content %}
 <div class="ui center aligned container">
   <div class="ui middle aligned center aligned stackable grid">
-    <div class="column">
-      <form class="ui large form" method="POST" action="">
-        {% csrf_token %}
-        <div class="ui inverted raised segment">
-          <h1 class="ui header">Add New Words</h1>
-          <div class="field">
-            <div class="ui left action input">
-              <button class="ui inverted labeled icon button disabled">
-                <i class="language icon"></i>
-                Word In Sinhala
-              </button>
-              <input
-                id="sinhala-word"
-                type="text"
-                name="sinhala-word"
-                placeholder="වචනය"
-              />
+    <div class="row">
+      <div class="column">
+        <form class="ui large form" method="POST" action="">
+          {% csrf_token %}
+          <div class="ui inverted raised segment">
+            <h1 class="ui header">Add New Word</h1>
+            <div class="field">
+              <div class="ui left action input">
+                <button class="ui inverted labeled icon button disabled">
+                  <i class="language icon"></i>
+                  Word In Sinhala
+                </button>
+                <input
+                  id="sinhala-word"
+                  type="text"
+                  name="sinhala-word"
+                  placeholder="වචනය"
+                />
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <div class="ui left action input">
-              <button class="ui inverted labeled icon button disabled">
-                <i class="language icon"></i>
-                Word In English
-              </button>
-              <input
-                id="english-word"
-                type="text"
-                name="english-word"
-                placeholder="Word"
-              />
+            <div class="field">
+              <div class="ui left action input">
+                <button class="ui inverted labeled icon button disabled">
+                  <i class="language icon"></i>
+                  Word In English
+                </button>
+                <input
+                  id="english-word"
+                  type="text"
+                  name="english-word"
+                  placeholder="Word"
+                />
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <div class="ui left action input">
-              <button class="ui inverted labeled icon button disabled">
-                <i class="language icon"></i>
-                Word In Singlish
-              </button>
-              <input
-                type="text"
-                id="singlish-word"
-                name="singlish-word"
-                placeholder="Wachanaya"
-              />
+            <div class="field">
+              <div class="ui left action input">
+                <button class="ui inverted labeled icon button disabled">
+                  <i class="language icon"></i>
+                  Word In Singlish
+                </button>
+                <input
+                  type="text"
+                  id="singlish-word"
+                  name="singlish-word"
+                  placeholder="Wachanaya"
+                />
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <div class="ui error message"></div>
-            {% if form.errors %}
-            <div class="ui red message">
-              <ul class="list">
-                {% for key, value in form.errors.items %}
+            <div class="field">
+              <div class="ui error message"></div>
+              {% if form.errors %}
+              <div class="ui red message">
+                <ul class="list">
+                  {% for key, value in form.errors.items %}
 
-                <li><b>{{ key }}</b></li>
-                {{value}} {% endfor %}
-              </ul>
+                  <li><b>{{ key }}</b></li>
+                  {{value}} {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+              <!-- -->
+              {% if messages %} {% for message in messages %}
+              <!-- -->
+              {% if message.tags == 'error' %}
+              <div class="ui red message">
+                <b>{{ message }}</b>
+              </div>
+              {% endif %} {% if message.tags == 'success' %}
+              <div class="ui green message">
+                <b>{{ message }}</b>
+              </div>
+              {% endif %}
+              <!-- -->
+              {% endfor %} {% endif %}
             </div>
-            {% endif %} {% if messages %}
-            
-                {% for message in messages %}
-                <!-- -->
-                {% if message.tags == 'error' %}
-                <div class="ui red message">
-                    <b>{{ message }}</b>
-                </div>
-                {% endif %}
-                {% if message.tags == 'success' %}
-                <div class="ui green message">
-                    <b>{{ message }}</b>
-                </div>
-                {% endif %}
-                <!-- -->
-                {% endfor %}
-              </ul>
-            </div>
-            {% endif %}
           </div>
           <div class="field">
             <button class="ui inverted button" type="submit">ADD TO DB</button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
+    </div>
+    <div class="ui horizontal inverted divider">or</div>
+    <div class="row">
+      <div class="ui inverted placeholder segment">
+        <h1>Bulk Upload</h1>
+        <form
+          class="ui large form"
+          method="POST"
+          enctype="multipart/form-data"
+          action="{% url 'bulk_upload_words' %}"
+        >
+          {% csrf_token %}
+          <div class="field" style="min-width: 450px">
+            <input name="bulk-file" type="file" />
+          </div>
+
+          <div class="ui error message"></div>
+          <button class="ui inverted button fluid">Upload</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>

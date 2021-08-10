@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+<!-- -->
+{% block title %} Bulk Upload {% endblock %}
+<!-- -->
+{% block content%}
+<div class="ui container" style="padding-bottom: 20px">
+  <h1 class="ui inverted header">Bulk Upload</h1>
+  <p class="ui inverted sub header">{{file_name}}</p>
+  {% if error %}
+  <div class="ui negative message">
+    <i class="close icon"></i>
+    <div class="header">Error Occurs while pharsing {{file_name}}!</div>
+    <p>{{error_msg}}</p>
+  </div>
+  {% endif %}
+  <!-- -->
+  <table class="ui celled center aligned inverted table">
+    <thead>
+      <tr>
+        <th class="collapsing">{{ titles.0 | upper }}</th>
+        <th class="collapsing">{{ titles.1 | upper }}</th>
+        <th class="collapsing">{{ titles.2 | upper }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for x0, x1, x2 in word_list %}
+      <tr>
+        {% if x0 != None %}
+        <td class="positive" data-label="{{titles.0}}">{{x0}}</td>
+        {% else %}
+        <td class="negative" data-label="{{titles.0}}">{{x0}}</td>
+        {% endif %}
+        <!---->
+        {% if x1 != None %}
+        <td class="positive" data-label="{{titles.1}}">{{x1}}</td>
+        {% else %}
+        <td class="negative" data-label="{{titles.1}}">{{x1}}</td>
+        {% endif %}
+        <!---->
+        {% if x2 != None %}
+        <td class="positive" data-label="{{titles.2}}">{{x2}}</td>
+        {% else %}
+        <td class="negative" data-label="{{titles.2}}">{{x2}}</td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
