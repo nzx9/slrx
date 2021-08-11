@@ -10,9 +10,16 @@
     {% csrf_token %}
     <div class="ui inverted raised segment">
       <h1 class="ui header">Word List</h1>
+      <div class="ui inverted divider"></div>
 
       {% if empty == True %}
       <h1 class="ui header">No Words To Show</h1>
+      <a
+        href="{% url 'add_new_words' %}"
+        class="ui small inverted labeled icon button"
+      >
+        <i class="database icon"></i> Add New Words
+      </a>
       {% else %}
       <div class="ui container">
         <table class="ui inverted center celled structured table">

@@ -4,8 +4,27 @@
 <!--- -->
 {% block scripts %}
 <style>
+  @media only screen and (max-width: 767px) {
+    .file_f {
+      min-width: none !important;
+      width: auto;
+    }
+    .input_f {
+      width: auto;
+    }
+    .mobile_hidden {
+      display: none !important;
+    }
+  }
   .column {
     max-width: 500px;
+    width: auto;
+  }
+  .file_f {
+    min-width: 400px;
+  }
+  .computer_hidden {
+    display: none !important;
   }
 </style>
 <script>
@@ -65,7 +84,9 @@
             <h1 class="ui header">Add New Word</h1>
             <div class="field">
               <div class="ui left action input">
-                <button class="ui inverted labeled icon button disabled">
+                <button
+                  class="ui inverted labeled icon button disabled mobile_hidden"
+                >
                   <i class="language icon"></i>
                   Word In Sinhala
                 </button>
@@ -79,7 +100,9 @@
             </div>
             <div class="field">
               <div class="ui left action input">
-                <button class="ui inverted labeled icon button disabled">
+                <button
+                  class="ui inverted labeled icon button disabled mobile_hidden"
+                >
                   <i class="language icon"></i>
                   Word In English
                 </button>
@@ -93,7 +116,9 @@
             </div>
             <div class="field">
               <div class="ui left action input">
-                <button class="ui inverted labeled icon button disabled">
+                <button
+                  class="ui inverted labeled icon button disabled mobile_hidden"
+                >
                   <i class="language icon"></i>
                   Word In Singlish
                 </button>
@@ -150,7 +175,7 @@
           action="{% url 'bulk_upload_words' %}"
         >
           {% csrf_token %}
-          <div class="field" style="min-width: 450px">
+          <div class="file_f field">
             <input name="bulk-file" type="file" />
           </div>
 
