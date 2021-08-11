@@ -1,3 +1,4 @@
+import streams
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render, HttpResponse, reverse
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,7 @@ from words.models import Word
 import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+import os
 # Create your views here.
 
 
@@ -18,10 +20,10 @@ def streams_view(request):
     data = []
     c1 = Q(userId=request.user.id)
     for w in wl:
-        c2 = Q(wordId=w.pk)
-        us = User_Stream.objects.filter(c1 & c2)
+        c2 = Q(wordId=w)
+        us = User_Stream.objects.filter(c1 and c2)
         if(us.count() >= 1):
-            stream_info = Stream.get(pk=us.steamId)
+            stream_info = Stream.objects.get(pk=us[0].streamId.pk)
             data.append({
                 "w_info": w,
                 "s_info": stream_info,
@@ -44,7 +46,7 @@ def streams_view(request):
     return render(request, "streams_home.html", {"data": data})
 
 
-@login_required(login_url='/accounts/login/')
+@ login_required(login_url='/accounts/login/')
 def streams_rec_view(request, e_word):
     try:
         all_words = Word.objects.all()
@@ -54,36 +56,59 @@ def streams_rec_view(request, e_word):
         us = User_Stream.objects.filter(Q(userId=request.user.id))
         done_count = us.count()
         all_count = all_words.count()
-        print(done_count)
-        print(all_count)
+
     except ObjectDoesNotExist:
         return render(request, "404.html")
     return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": e_word, "done_count": done_count, "all_count": all_count})
 
 
-@login_required(login_url='/accounts/login/')
+@ login_required(login_url='/accounts/login/')
 def submit(request, e_word):
-    # bucket = storage.bucket()
+    bucket = storage.bucket()
     if request.method == "POST":
-        body_unicode = request.body.decode('utf-8')
-        body_data = json.loads(body_unicode)
-        print(body_data['nextWord'])
-        # serverFileName = './media/' + \
-        #     body_data['word'] + '/' + request.user.id + '.webm'
-        # fireBaseFileName = './dgr/' + \
-        #     body_data['word'] + '/' + request.user.id + '.webm'
-        # f = open(serverFileName, 'wb')
-        # f.write(body_data['blob'])
-        # f.close()
+        try:
+            body_data = request.body
 
-        # blob = bucket.blob(serverFileName)
-        # success = blob.upload_from_filename(fireBaseFileName)
-        # print(success)  # remove
-        # stream = Stream(userId=request.user.id, wordId=body_data['wordId'], pos_server=serverFileName,
-        #                 pos_firebase=fireBaseFileName)
-        # stream.save()
-        # print(body_data['nextWord'])
-        # reverse('streams_rec_view', args=[body_data['nextWord']])
-        return HttpResponse(body_data['nextWord'])
+            word = Word.objects.get(in_english=e_word)
+
+            serverPath = "./media/dgr"
+            serverFileName = os.path.join(
+                serverPath, "{0}_{1}.mp4".format(word.in_sinhala, request.user.id))
+
+            fireBaseFileName = "dgr/{0}_{1}.mp4".format(
+                word.in_sinhala, request.user.id)
+
+            # save file
+            f = open(serverFileName, 'wb')
+            f.write(body_data)
+            f.close()
+
+            # upload to firebase
+            blob = bucket.blob(fireBaseFileName)
+            blob.upload_from_filename(serverFileName)
+
+            stream_exist = Stream.objects.filter(
+                Q(userId=request.user.id) and Q(wordId=word.pk))
+
+            if(stream_exist.count() == 0):
+                stream = Stream(userId=request.user, wordId=word, pos_server=serverFileName,
+                                pos_firebase=fireBaseFileName)
+                stream.save()
+                us = User_Stream(userId=request.user,
+                                 wordId=word, streamId=stream)
+                us.save()
+                word.recorde_count += 1
+                word.save()
+                msg = "Success!, File uploaded and updated the DB"
+                return HttpResponse(json.dumps(
+                    {"title": "success", "msg": msg}), content_type='application/json')
+            msg = "Success!, File uploaded to Firebase"
+            return HttpResponse(json.dumps(
+                {"title": "success", "msg": msg}), content_type='application/json')
+        except:
+            msg = "Error!, Something went wrong. Can't upload the file"
+            return HttpResponse(json.dumps(
+                {"title": "error", "msg": msg}), content_type='application/json')
     else:
-        return HttpResponse("Not a post request")
+        msg = "Error!, Request is not a POST request"
+        return HttpResponse(json.dumps({"title": "error", "msg": msg}), content_type='application/json')

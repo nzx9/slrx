@@ -248,7 +248,7 @@
           })
           .then(() => startRecording(preview.captureStream(), recordingTimeMS))
           .then((recordedChunks) => {
-            recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+            recordedBlob = new Blob(recordedChunks, { type: "video/mp4" });
             lastRecorded.src = URL.createObjectURL(recordedBlob);
             log(
               "successfully recorded " +
@@ -295,13 +295,17 @@
       .then((response) =>
         response.json().then((res, error1) => {
           if (error1) {
-            console.log(error1);
+            console.error(error1);
+            log(error1);
           } else {
+            log(res.msg);
+            if (res.title === "success") recordedBlob = null;
           }
         })
       )
       .catch((error2) => {
-        console.log(error2);
+        console.error(error2);
+        log(error2);
       });
   }
 
@@ -310,8 +314,9 @@
       let nextWord = document
         .getElementById("next-word-hidden")
         .innerText.trim();
-      data = { nextWord: nextWord, blob: recordedBlob };
-      sendData(JSON.stringify(data));
+      data = { blob: recordedBlob };
+      console.log(data);
+      sendData(recordedBlob);
     }
   });
 </script>

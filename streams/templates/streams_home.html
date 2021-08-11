@@ -59,7 +59,7 @@
                 <video
                   width="180px"
                   height="100px"
-                  src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                  src="./media/dgr/api_1.mp4"
                   controls
                 ></video>
                 {% else %} No Previews {% endif %}
@@ -72,7 +72,7 @@
                 {% endif %}
               </td>
               <td class="collapsing">
-                {% if d.comp == True %}
+                {% if d.comp == True and d.s_info.verified == True %}
                 <i class="check circle large green icon"></i>
                 {% else %}
                 <i class="times circle large red icon"></i>
