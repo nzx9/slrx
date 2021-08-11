@@ -51,9 +51,14 @@ def streams_rec_view(request, e_word):
         curr_word = all_words.get(in_english=e_word)
         prev_word = all_words.filter(pk__lt=curr_word.pk).last()
         next_word = all_words.filter(pk__gt=curr_word.pk).first()
+        us = User_Stream.objects.filter(Q(userId=request.user.id))
+        done_count = us.count()
+        all_count = all_words.count()
+        print(done_count)
+        print(all_count)
     except ObjectDoesNotExist:
         return render(request, "404.html")
-    return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": e_word})
+    return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": e_word, "done_count": done_count, "all_count": all_count})
 
 
 @login_required(login_url='/accounts/login/')

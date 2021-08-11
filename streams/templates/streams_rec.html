@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="ui inverted horizontal divider">Word to Show</div>
-        <button id="toggle-rec-btn" class="ui red button fluid">
+        <button id="toggle-rec-btn" class="ui inverted red button fluid">
           <i class="ui record icon"></i>Record
         </button>
         <div class="ui inverted divider"></div>
@@ -50,13 +50,13 @@
           <div
             id="task-progress"
             class="ui indicating progress"
-            data-value="1"
-            data-total="200"
+            data-value="{{ done_count }}"
+            data-total="{{ total_count }}"
           >
             <div class="bar">
               <div class="progress"></div>
             </div>
-            <div class="label">...</div>
+            <div class="label">Not Yet Started</div>
           </div>
         </div>
         <div class="ui inverted horizontal divider">Progress</div>
@@ -81,35 +81,36 @@
         <div>
           <div
             id="submit-btn"
-            class="ui primary button fluid"
+            class="ui yellow inverted button fluid"
             style="margin-bottom: 5px"
           >
-            Submit
+            <i class="save icon"> </i>
+            Save Recording
           </div>
           <div class="ui buttons fluid">
             {% if prev_word == None %}
-            <a id="back-btn" class="ui red button disabled" href="#">
+            <a id="back-btn" class="ui inverted button disabled" href="#">
               <i class="ui left arrow icon"></i>Back
             </a>
             {% else %}
-            <a
+            <button
               id="back-btn"
-              class="ui red button"
-              href="{% url 'streams_rec_view' prev_word.in_english %}"
+              class="ui inverted red button"
+              onclick="navigationAction(`{% url 'streams_rec_view' prev_word.in_english %}`)"
             >
               <i class="ui left arrow icon"></i>Back
-            </a>
+            </button>
             {% endif %}
             <div class="or"></div>
             {% if next_word == None %}
-            <button id="next-btn" class="ui positive disabled button">
+            <button id="next-btn" class="ui inverted disabled button">
               Next <i class="ui right arrow icon"></i>
             </button>
             {% else %}
             <button
               id="next-btn"
-              class="ui positive button"
-              href="{% url 'streams_rec_view' next_word.in_english %}"
+              class="ui inverted green button"
+              onclick="navigationAction(`{% url 'streams_rec_view' next_word.in_english %}`)"
             >
               Next <i class="ui right arrow icon"></i>
             </button>
@@ -122,6 +123,27 @@
       </div>
     </div>
   </div>
+  <div class="ui mini modal" id="model-conf">
+    <i class="close icon"></i>
+    <div class="header">Attention!</div>
+    <div class="content">
+      <div class="description">
+        <div class="ui header">Discard recording?</div>
+        <p>
+          Not submited recordings are going to destroy and can't recover again .
+          click <b>cancel</b> to close this and click <b>submit</b> to submit
+          recording to server.
+        </p>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">Cancel</div>
+      <div class="ui red approve right labeled icon button">
+        Discard and Proceed
+        <i class="exclamation mark icon"></i>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -129,9 +151,6 @@
   let lastRecorded = document.getElementById("last-recorded");
   let toggleRecButton = document.getElementById("toggle-rec-btn");
   let logElement = document.getElementById("log");
-
-  let nextButton = document.getElementById("next-btn");
-  let backButton = document.getElementById("back-btn");
 
   let submitButton = document.getElementById("submit-btn");
 
@@ -153,7 +172,7 @@
 
   $("#task-progress").progress({
     duration: 200,
-    total: 50,
+    total: "{{ all_count }}",
     text: {
       active: "{value} of {total} done",
     },
@@ -250,44 +269,41 @@
 
   function navigationAction(url) {
     if (recordedBlob !== null) {
-      alert("");
+      $("#model-conf")
+        .modal({
+          onApprove: function () {
+            location.href = url;
+          },
+          onDeny: function () {},
+        })
+        .modal("show");
     } else {
       location.href = url;
     }
   }
 
-  async function sendData(data) {
+  function sendData(data) {
     const csrftoken = Cookies.get("csrftoken");
-    let response = await fetch(
-      `/streams/submit/${window.location.pathname.split("/")[3]}/`,
-      {
-        method: "post",
-        body: data,
-        headers: {
-          "X-CSRFToken": csrftoken,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    fetch(`/streams/submit/${window.location.pathname.split("/")[3]}/`, {
+      method: "post",
+      body: data,
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) =>
+        response.json().then((res, error1) => {
+          if (error1) {
+            console.log(error1);
+          } else {
+          }
+        })
+      )
+      .catch((error2) => {
+        console.log(error2);
+      });
   }
-
-  nextButton.addEventListener(
-    "click",
-    function () {
-      updateProgress("inc");
-    },
-    false
-  );
-
-  backButton.addEventListener(
-    "click",
-    function () {
-      updateProgress("dec");
-      if (recordedBlob !== null) {
-      }
-    },
-    false
-  );
 
   submitButton.addEventListener("click", function () {
     if (recordedBlob !== null) {
@@ -296,16 +312,8 @@
         .innerText.trim();
       data = { nextWord: nextWord, blob: recordedBlob };
       sendData(JSON.stringify(data));
-      recordedBlob = null;
     }
   });
-
-  //   btn.addEventListener("click", function () {
-  //     // let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
-  //     sendData(recordedBlob);
-  //     console.log("sent");
-  //   });
-  //
 </script>
 
 {% endblock %}
