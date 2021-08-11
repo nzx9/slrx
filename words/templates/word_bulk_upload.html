@@ -2,10 +2,113 @@
 <!-- -->
 {% block title %} Bulk Upload {% endblock %}
 <!-- -->
-{% block content%}
+{% block scripts %}
+<script>
+  let word_json = "{{ word_json }}";
+  let json_p = {};
+  if (word_json !== "None")
+    json_p = JSON.parse(word_json.replace(/&quot;/g, '"'));
+
+  function sendData(data) {
+    document.getElementById("send-btn").className =
+      "ui disabled right floated inverted button";
+    const csrftoken = Cookies.get("csrftoken");
+    fetch(`/words/bulk/upload/`, {
+      method: "post",
+      body: data,
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) =>
+        response.json().then((res, error1) => {
+          if (error1) {
+            document.getElementById("model-header1").innerHTML = "Error!";
+            document.getElementById("model-header2").innerHTML =
+              "Something went wrong...";
+            document.getElementById("model-msg").innerHTML = error1.toString();
+            $(".ui.modal").modal("show");
+          } else {
+            console.log(res);
+            document.getElementById("model-header1").innerHTML = res.act;
+            document.getElementById("model-header2").innerHTML = res.title;
+            document.getElementById("model-msg").innerHTML = res.msg;
+            $(".ui.modal").modal("show");
+          }
+          document.getElementById("send-btn").className =
+            "ui right floated inverted button";
+        })
+      )
+      .catch((error2) => {
+        if (error2) {
+          console.log(error2);
+          document.getElementById("model-header1").innerHTML = "Error!";
+          document.getElementById("model-header2").innerHTML =
+            "Something went wrong...";
+          document.getElementById("model-msg").innerHTML = error2.toString();
+          $(".ui.modal").modal("show");
+        }
+        document.getElementById("send-btn").className =
+          "ui right floated inverted button";
+      });
+  }
+
+  function updateWL(id) {
+    let elem = document.getElementById(id);
+    let sp = id.split("_");
+    let lang = sp[0];
+    let num = sp[1] - 1;
+    json_p[num][lang] = elem.value;
+
+    let elem_icon = document.getElementById(id + "_icon").className;
+    console.log(elem_icon);
+    if (
+      json_p[num][lang] !== null &&
+      json_p[num][lang] !== undefined &&
+      json_p[num][lang] !== "None"
+    ) {
+      if (
+        json_p[num][lang].length > 0 &&
+        elem_icon != "check circle green icon"
+      ) {
+        document.getElementById(id + "_icon").className =
+          "check circle green icon";
+      } else {
+        document.getElementById(id + "_icon").className =
+          "times circle red icon";
+      }
+    } else {
+      document.getElementById(id + "_icon").className =
+        "exclamation circle yellow icon";
+    }
+  }
+
+  function sendToServer() {
+    sendData(JSON.stringify(json_p));
+  }
+
+  function closeModel() {
+    $(".ui.basic.modal").modal("hidden");
+  }
+</script>
+<!-- -->
+{% endblock %} {% block content%}
 <div class="ui container" style="padding-bottom: 20px">
   <h1 class="ui inverted header">Bulk Upload</h1>
   <p class="ui inverted sub header">{{file_name}}</p>
+  <!-- <div> -->
+  <button
+    id="send-btn"
+    class="ui right floated inverted button"
+    onclick="sendToServer()"
+  >
+    Add to DB
+  </button>
+  <br />
+  <br />
+  <br />
+  <!-- </div> -->
   {% if error %}
   <div class="ui negative message">
     <i class="close icon"></i>
@@ -13,38 +116,125 @@
     <p>{{error_msg}}</p>
   </div>
   {% endif %}
+
   <!-- -->
-  <table class="ui celled center aligned inverted table">
-    <thead>
-      <tr>
-        <th class="collapsing">{{ titles.0 | upper }}</th>
-        <th class="collapsing">{{ titles.1 | upper }}</th>
-        <th class="collapsing">{{ titles.2 | upper }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for x0, x1, x2 in word_list %}
-      <tr>
-        {% if x0 != None %}
-        <td class="positive" data-label="{{titles.0}}">{{x0}}</td>
-        {% else %}
-        <td class="negative" data-label="{{titles.0}}">{{x0}}</td>
-        {% endif %}
-        <!---->
-        {% if x1 != None %}
-        <td class="positive" data-label="{{titles.1}}">{{x1}}</td>
-        {% else %}
-        <td class="negative" data-label="{{titles.1}}">{{x1}}</td>
-        {% endif %}
-        <!---->
-        {% if x2 != None %}
-        <td class="positive" data-label="{{titles.2}}">{{x2}}</td>
-        {% else %}
-        <td class="negative" data-label="{{titles.2}}">{{x2}}</td>
-        {% endif %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% if messages %} {% for message in messages %}
+  <!-- -->
+  {% if message.tags == 'error' %}
+  <div class="ui red message">
+    <b>{{ message }}</b>
+  </div>
+  {% endif %} {% if message.tags == 'success' %}
+  <div class="ui green message">
+    <b>{{ message }}</b>
+  </div>
+  {% endif %}
+  <!-- -->
+  {% endfor %} {% endif %}
+  <!-- -->
+  <form class="ui form">
+    <table class="ui celled center aligned inverted table">
+      <thead>
+        <tr>
+          <th class="collapsing">#</th>
+          <th class="collapsing">{{ titles.0 | upper }}</th>
+          <th class="collapsing">{{ titles.1 | upper }}</th>
+          <th class="collapsing">{{ titles.2 | upper }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for x0, x1, x2 in word_list %}
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td data-label="{{titles.0}}" id="{{titles.0}}_{{ forloop.counter }}">
+            <div class="ui corner labeled input">
+              <input
+                class="green"
+                id="{{titles.0}}_{{ forloop.counter }}_i"
+                value="{{x0}}"
+                onchange="updateWL('{{titles.0}}_{{ forloop.counter }}_i')"
+              />
+              <div class="ui right corner label">
+                {% if x0 != None %}
+                <i
+                  id="{{titles.0}}_{{ forloop.counter }}_i_icon"
+                  class="check circle green icon"
+                ></i>
+                {% else %}
+                <i
+                  id="{{titles.0}}_{{ forloop.counter }}_i_icon"
+                  class="exclamation circle yellow icon"
+                ></i
+                >{% endif %}
+              </div>
+            </div>
+          </td>
+          <!---->
+          <td data-label="{{titles.1}}" id="{{titles.1}}_{{ forloop.counter }}">
+            <div class="ui corner labeled input">
+              <input
+                id="{{titles.1}}_{{ forloop.counter }}_i"
+                value="{{x1}}"
+                onchange="updateWL('{{titles.1}}_{{ forloop.counter }}_i')"
+              />
+              <div class="ui right corner label">
+                {% if x1 != None %}
+                <i
+                  id="{{titles.1}}_{{ forloop.counter }}_i_icon"
+                  class="check circle green icon"
+                ></i>
+                {% else %}
+                <i
+                  id="{{titles.1}}_{{ forloop.counter }}_i_icon"
+                  class="exclamation circle yellow icon"
+                ></i
+                >{% endif %}
+              </div>
+            </div>
+          </td>
+          <!---->
+          <td data-label="{{titles.2}}" id="{{titles.2}}_{{ forloop.counter }}">
+            <div class="ui corner labeled input">
+              <input
+                id="{{titles.2}}_{{ forloop.counter }}_i"
+                value="{{x2}}"
+                onchange="updateWL('{{titles.2}}_{{ forloop.counter }}_i')"
+              />
+              <div class="ui right corner label">
+                {% if x2 != None %}
+                <i
+                  id="{{titles.2}}_{{ forloop.counter }}_i_icon"
+                  class="check circle green icon"
+                ></i>
+                {% else %}
+                <i
+                  id="{{titles.2}}_{{ forloop.counter }}_i_icon"
+                  class="exclamation circle yellow icon"
+                ></i
+                >{% endif %}
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+  <div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header" id="model-header1">model-header1</div>
+    <div class="content">
+      <div class="description">
+        <div class="ui header" id="model-header2">model-header2</div>
+        <p id="model-msg">model-msg</p>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="ui inverted green right labeled icon cancel button">
+        Ok
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
