@@ -121,38 +121,39 @@ def bulk_upload(request):
 
 @login_required(login_url='/accounts/login/')
 def add_bulk_words_to_db(request):
-    act = "Error!"
     title = "METHOD not recognized..."
-    msg = "Only the POST method requests are accepted"
+    msg = ""
     if(request.method == "POST"):
         try:
             body_unicode = request.body.decode('utf-8')
             body_data = json.loads(body_unicode)
             for e in body_data:
-                if body_data[e]["sinhala"] != None and body_data[e]["english"] != None:
+                if body_data[e]["sinhala"] != None and body_data[e]["sinhala"].strip() != "" and body_data[e]["english"] != None and body_data[e]["english"].strip() != "":
                     newWord = Word()
-                    newWord.in_sinhala = body_data[e]["sinhala"]
-                    newWord.in_english = body_data[e]["english"]
-                    newWord.in_singlish = body_data[e]["singlish"]
+                    newWord.in_sinhala = body_data[e]["sinhala"].strip(
+                    ).lower()
+                    newWord.in_english = body_data[e]["english"].strip(
+                    ).lower()
+                    newWord.in_singlish = body_data[e]["singlish"].strip(
+                    ).lower()
                     newWord.created_by = request.user.id
                     try:
                         newWord.save()
-                        act = "Success!"
                         title = "All done..."
-                        msg = "Words added to the database"
+                        msg += "<p><i class='check circle green icon'></i>'({0},{1})' added to the database </p>".format(body_data[e]["sinhala"].strip(
+                        ).lower(), body_data[e]["english"].strip(
+                        ).lower())
                     except Exception as e:
-                        act = "Error!"
-                        title = "Something went wrong..."
-                        msg = str(e)
-                        break
+                        title = "Completed with errors..."
+                        msg += "<p><i class='times circle red icon'></i> {}</p>".format(
+                            str(e))
                 else:
-                    act = "Error!"
-                    title = "Not Provided Required Fields..."
-                    msg = "sinhala or english field recived the 'None', sinhala and english fields can't be NULL"
-                    break
+                    title = "Completed with errors..."
+                    msg += "<p><i class='times circle red icon'></i> '({},{})' sinhala or english field recived the 'None', sinhala and english fields can't be NULL</p>".format(
+                        body_data[e]["sinhala"], body_data[e]["english"])
         except:
-            act = "Error!"
             title = "Not valid JSON..."
-            msg = "JSON can't parse recived data"
-
-    return HttpResponse(json.dumps({"act": act, "title": title, "msg": msg}), content_type='application/json')
+            msg += "<p><i class='times circle red icon'></i> JSON can't parse recived data</p>"
+    else:
+        msg += "<p><i class='times circle red icon'></i> Only POST requests are accepted</p>"
+    return HttpResponse(json.dumps({"title": title, "msg": msg}), content_type='application/json')

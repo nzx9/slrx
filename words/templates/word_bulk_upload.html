@@ -24,14 +24,11 @@
       .then((response) =>
         response.json().then((res, error1) => {
           if (error1) {
-            document.getElementById("model-header1").innerHTML = "Error!";
             document.getElementById("model-header2").innerHTML =
               "Something went wrong...";
             document.getElementById("model-msg").innerHTML = error1.toString();
             $(".ui.modal").modal("show");
           } else {
-            console.log(res);
-            document.getElementById("model-header1").innerHTML = res.act;
             document.getElementById("model-header2").innerHTML = res.title;
             document.getElementById("model-msg").innerHTML = res.msg;
             $(".ui.modal").modal("show");
@@ -42,8 +39,6 @@
       )
       .catch((error2) => {
         if (error2) {
-          console.log(error2);
-          document.getElementById("model-header1").innerHTML = "Error!";
           document.getElementById("model-header2").innerHTML =
             "Something went wrong...";
           document.getElementById("model-msg").innerHTML = error2.toString();
@@ -222,15 +217,15 @@
   </form>
   <div class="ui modal">
     <i class="close icon"></i>
-    <div class="header" id="model-header1">model-header1</div>
+    <div class="header" id="model-header1">Bulk Upload Log</div>
     <div class="content">
       <div class="description">
         <div class="ui header" id="model-header2">model-header2</div>
-        <p id="model-msg">model-msg</p>
+        <div id="model-msg">model-msg</div>
       </div>
     </div>
     <div class="actions">
-      <div class="ui inverted green right labeled icon cancel button">
+      <div class="ui black right labeled icon cancel button">
         Ok
         <i class="checkmark icon"></i>
       </div>
