@@ -15,7 +15,7 @@ import os
 
 @login_required(login_url='/accounts/login/')
 def streams_view(request):
-    words = Word.objects.all()
+    words = Word.objects.all().order_by('pk')
     wl = list(words)
     data = []
     c1 = Q(userId=request.user.id)
@@ -73,25 +73,31 @@ def submit(request, e_word):
 
             serverPath = "./media/dgr"
             serverFileName = os.path.join(
-                serverPath, "{0}_{1}.mp4".format(word.in_sinhala, request.user.id))
+                serverPath, "{0}_{1}.webm".format(word.in_sinhala, request.user.id))
 
-            fireBaseFileName = "dgr/{0}_{1}.mp4".format(
+            fireBaseFileName = "dgr/{0}/{0}_{1}.mp4".format(
                 word.in_sinhala, request.user.id)
 
+            mp4Path = os.path.join(serverPath, "{0}_{1}.mp4".format(
+                word.in_sinhala, request.user.id))
             # save file
             f = open(serverFileName, 'wb')
             f.write(body_data)
             f.close()
 
+            os.system(
+                "ffmpeg -i {0} {1} -y".format(serverFileName, mp4Path))
+
+            os.system("rm -f {0}".format(serverFileName))
             # upload to firebase
             blob = bucket.blob(fireBaseFileName)
-            blob.upload_from_filename(serverFileName)
+            blob.upload_from_filename(mp4Path)
 
             stream_exist = Stream.objects.filter(
                 Q(userId=request.user.id) and Q(wordId=word.pk))
 
             if(stream_exist.count() == 0):
-                stream = Stream(userId=request.user, wordId=word, pos_server=serverFileName,
+                stream = Stream(userId=request.user, wordId=word, pos_server=mp4Path,
                                 pos_firebase=fireBaseFileName)
                 stream.save()
                 us = User_Stream(userId=request.user,

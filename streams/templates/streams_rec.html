@@ -248,7 +248,7 @@
           })
           .then(() => startRecording(preview.captureStream(), recordingTimeMS))
           .then((recordedChunks) => {
-            recordedBlob = new Blob(recordedChunks, { type: "video/mp4" });
+            recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
             lastRecorded.src = URL.createObjectURL(recordedBlob);
             log(
               "successfully recorded " +
@@ -301,22 +301,23 @@
             log(res.msg);
             if (res.title === "success") recordedBlob = null;
           }
+          submitButton.className = "ui yellow inverted button fluid";
         })
       )
       .catch((error2) => {
         console.error(error2);
         log(error2);
+        submitButton.className = "ui yellow inverted button fluid";
       });
   }
 
   submitButton.addEventListener("click", function () {
     if (recordedBlob !== null) {
-      let nextWord = document
-        .getElementById("next-word-hidden")
-        .innerText.trim();
-      data = { blob: recordedBlob };
-      console.log(data);
+      submitButton.className = "ui loading yellow inverted button fluid";
+      log("Recorded File Uploading...");
       sendData(recordedBlob);
+    } else {
+      log("Nothing to Upload. Press 'Record' button to start recording.");
     }
   });
 </script>

@@ -1,5 +1,9 @@
 {% extends "layout.html" %}<!--- -->
-{% load tz %} {% block title %} Streams {% endblock %}
+{% load tz %}
+<!--- -->
+{% load encoders %}
+<!--- -->
+{% block title %} Streams {% endblock %}
 <!--- -->
 {% block content %}
 <div class="ui stackable one column grid">
@@ -54,12 +58,14 @@
                 <!-- -->
                 {% endif %}
               </td>
+              <!-- src="gs://drg-dc.appspot.com/{{d.s_info.pos_firebase}}" -->
+              <!-- "https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ d.s_info.pos_firebase| urlencode }}?alt=media&" -->
               <td style="padding: 0">
                 {% if d.comp == True %}
                 <video
                   width="180px"
                   height="100px"
-                  src="./media/dgr/api_1.mp4"
+                  src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ d.s_info.pos_firebase| uriencode }}?alt=media&"
                   controls
                 ></video>
                 {% else %} No Previews {% endif %}
