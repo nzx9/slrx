@@ -11,7 +11,7 @@ import json
 
 @login_required(login_url='/accounts/login/')
 def words_view(request):
-    words = Word.objects.all()
+    words = Word.objects.all().order_by('pk')
     wl = list(words)
     for w in wl:
         username = User.objects.get(pk=w.created_by)
