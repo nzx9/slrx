@@ -29,7 +29,7 @@
           style="height: 300px; max-height: 300px; overflow-y: auto"
         >
           <div class="ui header center aligned fixed">Log</div>
-          <div id="log"></div>
+          <div class="ui relaxed divided list" id="log"></div>
         </div>
         <!-- <div class="ui inverted divider"></div> -->
       </div>
@@ -166,7 +166,7 @@
     } else if (action === "dec") {
       $progress.progress("decrement");
     } else {
-      log("progress update action not matched");
+      log("progress update action not matched", "warning");
     }
   }
 
@@ -178,8 +178,26 @@
     },
   });
 
-  function log(msg) {
-    let txt = `<p>${getTime()} >> ` + msg + "</p>";
+  function log(msg, type = "") {
+    let txt = `<div class="item">
+            ${
+              type == "error"
+                ? '<i class="times circle middle aligned red icon"></i>'
+                : type == "success"
+                ? ' <i class="check circle middle aligned green icon"></i>'
+                : type == "info"
+                ? '<i class="info circle middle aligned blue icon"></i>'
+                : type == "warning"
+                ? '<i class="exclamation circle middle aligned yellow icon"></i>'
+                : '<i class="dot circle middle aligned black icon"></i>'
+            }
+            <div class="content">
+              <div class="description">${
+                msg.charAt(0).toUpperCase() + msg.slice(1)
+              }</div>
+              ${getTime()}
+            </div>
+          </div>`;
     txt += logElement.innerHTML;
     logElement.innerHTML = txt;
   }
@@ -206,7 +224,7 @@
 
     recorder.ondataavailable = (event) => data.push(event.data);
     recorder.start();
-    log(recorder.state + " for " + lengthInMS / 1000 + " seconds...");
+    log(recorder.state + " for " + lengthInMS / 1000 + " seconds...", "info");
 
     let stopped = new Promise((resolve, reject) => {
       recorder.onstop = resolve;
@@ -255,10 +273,11 @@
                 recordedBlob.size +
                 " bytes of " +
                 recordedBlob.type +
-                " media."
+                " media.",
+              "success"
             );
           })
-          .catch(log);
+          .catch((e) => log(e, "error"));
       } else {
         stop(preview.srcObject);
         toggleRecButton.innerHTML = "<i class='ui record icon'></i>Record";
@@ -296,9 +315,9 @@
         response.json().then((res, error1) => {
           if (error1) {
             console.error(error1);
-            log(error1);
+            log(error1, "error");
           } else {
-            log(res.msg);
+            log(res.msg, res.title);
             if (res.title === "success") recordedBlob = null;
           }
           submitButton.className = "ui yellow inverted button fluid";
@@ -306,7 +325,7 @@
       )
       .catch((error2) => {
         console.error(error2);
-        log(error2);
+        log(error2, "error");
         submitButton.className = "ui yellow inverted button fluid";
       });
   }
@@ -314,10 +333,13 @@
   submitButton.addEventListener("click", function () {
     if (recordedBlob !== null) {
       submitButton.className = "ui loading yellow inverted button fluid";
-      log("Recorded File Uploading...");
+      log("Recorded File Uploading...", "info");
       sendData(recordedBlob);
     } else {
-      log("Nothing to Upload. Press 'Record' button to start recording.");
+      log(
+        "nothing to upload. Press 'Record' button to start recording.",
+        "warning"
+      );
     }
   });
 </script>
