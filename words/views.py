@@ -6,6 +6,7 @@ from words.models import Word
 from django.contrib.auth.models import User
 from django.contrib import messages
 import json
+from django.contrib.auth.decorators import permission_required
 # Create your views here.
 
 
@@ -25,6 +26,7 @@ def words_view(request):
 
 
 @login_required(login_url='/accounts/login/')
+@permission_required('word.can_view', raise_exception=True)
 def add_new_words(request):
     if request.method == "POST":
         if request.POST['sinhala-word'] != None and request.POST['english-word'] != None:
@@ -44,6 +46,7 @@ def add_new_words(request):
 
 
 @login_required(login_url='/accounts/login/')
+@permission_required('word.can_edit', raise_exception=True)
 def delete_word(request, pk):
     word = Word.objects.get(id=pk)
     word.delete()
@@ -51,6 +54,7 @@ def delete_word(request, pk):
 
 
 @login_required(login_url='/accounts/login/')
+@permission_required('word.can_view', raise_exception=True)
 def bulk_upload(request):
     file_name = None
     titles = None
@@ -120,6 +124,7 @@ def bulk_upload(request):
 
 
 @login_required(login_url='/accounts/login/')
+@permission_required('word.can_edit', raise_exception=True)
 def add_bulk_words_to_db(request):
     title = "METHOD not recognized..."
     msg = ""
