@@ -18,10 +18,11 @@ def streams_view(request):
     words = Word.objects.all().order_by('pk')
     wl = list(words)
     data = []
-    c1 = Q(userId=request.user.id)
+    # c1 = Q(userId=request.user)
     for w in wl:
-        c2 = Q(wordId=w)
-        us = User_Stream.objects.filter(c1 and c2)
+        # c2 = Q(wordId=w)
+        # c1 and c2
+        us = User_Stream.objects.filter(userId=request.user).filter(wordId=w)
         if(us.count() >= 1):
             stream_info = Stream.objects.get(pk=us[0].streamId.pk)
             data.append({
