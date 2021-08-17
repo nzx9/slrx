@@ -54,7 +54,7 @@ def streams_rec_view(request, e_word):
         curr_word = all_words.get(in_english=e_word)
         prev_word = all_words.filter(pk__lt=curr_word.pk).last()
         next_word = all_words.filter(pk__gt=curr_word.pk).first()
-        us = User_Stream.objects.filter(Q(userId=request.user.id))
+        us = User_Stream.objects.filter(userId=request.user.id)
         done_count = us.count()
         all_count = all_words.count()
 
@@ -95,7 +95,7 @@ def submit(request, e_word):
             blob.upload_from_filename(mp4Path)
 
             stream_exist = Stream.objects.filter(
-                Q(userId=request.user.id) and Q(wordId=word.pk))
+                userId=request.user).filter(wordId=word)
 
             if(stream_exist.count() == 0):
                 stream = Stream(userId=request.user, wordId=word, pos_server=mp4Path,
