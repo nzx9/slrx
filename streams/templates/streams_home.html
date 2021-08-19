@@ -115,19 +115,17 @@
           </tbody>
           <!--- -->
           <tfoot class="full-width">
-            <tr>
-              <th></th>
-              <th colspan="10">
+            <tr style="padding-top: 10px">
+              <th colspan="11">
                 <div
                   id="task-progress"
                   class="ui indicating progress"
-                  data-value="1"
-                  data-total="200"
+                  data-value="{{ done_count }}"
+                  data-total="{{ total_count }}"
                 >
                   <div class="bar">
                     <div class="progress"></div>
                   </div>
-                  <div class="label">...</div>
                 </div>
               </th>
             </tr>
@@ -138,4 +136,15 @@
     </div>
   </div>
 </div>
+<script>
+  $("#task-progress").progress({
+    duration: 200,
+    label: "ratio",
+    total: "{{ all_count }}",
+    value: "{{ done_count }}",
+    text: {
+      success: "Completed!",
+    },
+  });
+</script>
 {% endblock %}

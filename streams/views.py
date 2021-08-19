@@ -44,11 +44,14 @@ def streams_view(request):
                 },
                 "comp": False
             })
-    return render(request, "streams_home.html", {"data": data})
+    all_count = Word.objects.all().count()
+    done_count = User_Stream.objects.filter(userId=request.user.id).count()
+    return render(request, "streams_home.html", {"data": data, "all_count": all_count, "done_count": done_count})
 
 
 @ login_required(login_url='/accounts/login/')
 def streams_rec_view(request, e_word):
+    curr_stream = None
     try:
         all_words = Word.objects.all()
         curr_word = all_words.get(in_english=e_word)
@@ -58,9 +61,15 @@ def streams_rec_view(request, e_word):
         done_count = us.count()
         all_count = all_words.count()
 
+        current_us = User_Stream.objects.filter(
+            userId=request.user).filter(wordId=curr_word)
+
+        if(current_us.count() > 0):
+            curr_stream = Stream.objects.get(pk=us[0].streamId.pk)
+
     except ObjectDoesNotExist:
         return render(request, "404.html")
-    return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": e_word, "done_count": done_count, "all_count": all_count})
+    return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": e_word, "done_count": done_count, "all_count": all_count, "curr_stream": curr_stream})
 
 
 @ login_required(login_url='/accounts/login/')
