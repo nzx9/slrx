@@ -65,7 +65,7 @@ def streams_rec_view(request, e_word):
             userId=request.user).filter(wordId=curr_word)
 
         if(current_us.count() > 0):
-            curr_stream = Stream.objects.get(pk=us[0].streamId.pk)
+            curr_stream = Stream.objects.get(pk=current_us[0].streamId.pk)
 
     except ObjectDoesNotExist:
         return render(request, "404.html")
