@@ -20,7 +20,7 @@
               <th rowspan="2">#</th>
 
               <th colspan="4">Word</th>
-              <th colspan="5">Stream</th>
+              <th colspan="6">Stream</th>
               <th rowspan="2">Actions</th>
             </tr>
             <tr>
@@ -33,18 +33,14 @@
               <th>Done</th>
               <th>Verified</th>
               <th>@</th>
+              <th>Comment</th>
             </tr>
           </thead>
           <tbody class="center aligned">
             <!--- -->
             {% for d in data %}
             <tr>
-              <td class="collapsing">
-                <!-- <div class="ui fitted slider checkbox">
-                <input type="checkbox" /> <label></label>
-              </div> -->
-                {{forloop.counter}}
-              </td>
+              <td class="collapsing">{{forloop.counter}}</td>
               <td class="collapsing">{{d.w_info.pk}}</td>
               <td>{{d.w_info.in_sinhala}}</td>
               <td>{{d.w_info.in_english}}</td>
@@ -58,8 +54,6 @@
                 <!-- -->
                 {% endif %}
               </td>
-              <!-- src="gs://drg-dc.appspot.com/{{d.s_info.pos_firebase}}" -->
-              <!-- "https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ d.s_info.pos_firebase| urlencode }}?alt=media&" -->
               <td style="padding: 0">
                 {% if d.comp == True %}
                 <video
@@ -80,8 +74,12 @@
               <td class="collapsing">
                 {% if d.comp == True and d.s_info.verified == True %}
                 <i class="check circle large green icon"></i>
-                {% else %}
+                {% elif d.comp == True and d.s_info.verified == None %}
+                <i class="exclamation circle large yellow icon"></i>
+                {% elif d.comp == True and d.s_info.verified == False %}
                 <i class="times circle large red icon"></i>
+                {% else %}
+                <i class="minus circle large icon"></i>
                 {% endif %}
               </td>
               {% localtime on %}
@@ -95,6 +93,7 @@
                 {% endif %}
               </td>
               {% endlocaltime %}
+              <td>{{d.s_info.comment}}</td>
               <td>
                 {% if d.comp == True %}
                 <a

@@ -1,6 +1,6 @@
 import streams
 from django.db import models
-from django.db.models.deletion import CASCADE
+from django.db.models.deletion import CASCADE, SET_NULL
 from django.contrib.auth.models import User
 from words.models import Word
 
@@ -12,7 +12,10 @@ class Stream(models.Model):
     wordId = models.ForeignKey(Word, on_delete=CASCADE)
     pos_server = models.CharField(max_length=200)
     pos_firebase = models.CharField(max_length=200)
-    verified = models.BooleanField(default=False)
+    verified = models.BooleanField(null=True)
+    verified_by = models.ForeignKey(
+        User, null=True, on_delete=SET_NULL, related_name="verified_by")
+    comment = models.CharField(max_length=250, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

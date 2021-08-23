@@ -39,6 +39,7 @@ def streams_view(request):
                     "pos_server": None,
                     "pos_firebase": None,
                     "verified": None,
+                    "comment": None,
                     "created_at": None,
                     "updated_at": None
                 },
