@@ -1,12 +1,11 @@
 from django.contrib.messages.api import success
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from words.models import Word
 from django.contrib.auth.models import User
 from django.contrib import messages
 import json
-from django.contrib.auth.decorators import permission_required
 # Create your views here.
 
 
