@@ -1,8 +1,45 @@
 {% extends 'layout.html' %}
 <!--- -->
-{% block title %} Clusters{% endblock %}
+{% block title %} Clusters {% endblock %}
+<!--- -->
+{% block scripts %}
+<style>
+  #centered-container {
+    height: 90vh;
+    width: 100%;
+  }
+
+  .top75px {
+    position: relative;
+    top: 75px;
+  }
+</style>
+{% endblock %}
 <!--- -->
 {% block content %}
-<h1>Clusters</h1>
+<div id="centered-container" class="ui middle aligned grid">
+  <div class="row">
+    <div class="column">
+      <div class="ui centered middle aligned grid">
+        <div class="ui inverted statistics">
+          <div class="statistic">
+            <div class="value">{{ total_count }}</div>
+            <div class="label">Total Recordings</div>
+          </div>
+          <div class="statistic">
+            <div class="value">{{ verified_count }}</div>
+            <div class="label">Verified Recordings</div>
+          </div>
+        </div>
+      </div>
+      <a
+        class="ui inverted float black button top75px"
+        href="{% url 'clusters_verify'%}"
+      >
+        Goto Verification
+      </a>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
