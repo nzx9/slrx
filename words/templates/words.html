@@ -9,10 +9,9 @@
   <div class="column">
     {% csrf_token %}
     <div class="ui inverted raised segment">
+      {% if empty == True %}
       <h1 class="ui header">Word List</h1>
       <div class="ui inverted divider"></div>
-
-      {% if empty == True %}
       <h1 class="ui header">No Words To Show</h1>
       <a
         href="{% url 'add_new_words' %}"
