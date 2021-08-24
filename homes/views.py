@@ -5,3 +5,7 @@ from django.shortcuts import render
 
 def home_view(request):
     return render(request, "home.html")
+
+
+def terms_view(request):
+    return render(request, "terms.html")
