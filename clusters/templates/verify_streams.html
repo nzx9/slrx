@@ -18,6 +18,7 @@
         <th rowspan="2">@</th>
         <th rowspan="2">Preview</th>
         <th rowspan="2">Comments</th>
+        <th rowspan="2">Actions</th>
       </tr>
       <tr>
         <th>Sinhala</th>
@@ -37,7 +38,7 @@
       {% else %} {% for content in page_obj %}
       <tr class="ui center aligned">
         <td class="collapsing">{{forloop.counter}}</td>
-        <td class="collapsing">{{content.pk}}</td>
+        <td id="#pk-{{content.id}}" class="collapsing">{{content.pk}}</td>
         <td>{{content.wordId.in_sinhala}}</td>
         <td>{{content.wordId.in_english}}</td>
         <td>{{content.wordId.in_singlish}}</td>
@@ -51,17 +52,48 @@
             src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ content.pos_firebase| uriencode }}?alt=media&"
           ></video>
         </td>
+        <td>{{content.comment}}</td>
         <td>
-          Creatine supplementation is the reference compound for increasing
-          muscular creatine levels; there is variability in this increase,
-          however, with some nonresponders.
+          {% if content.verified == True %}
+          <button
+            class="ui yellow button"
+            onclick="showModel({
+              pk: '{{content.pk}}', 
+              sin: '{{content.wordId.in_sinhala}}', 
+              eng: '{{content.wordId.in_english}}', 
+              sie: '{{content.wordId.in_singlish}}', 
+              user: '{{ content.userId.username }}', 
+              ts: '{{ content.created_at| timesince }} ago',
+              src: 'https:\/\/firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ content.pos_firebase| uriencode }}?alt=media&', 
+              comment: '{{content.comment}}',
+            })"
+          >
+            Re-Inspect
+          </button>
+          {% else %}
+          <button
+            class="ui inverted button"
+            onclick="showModel({
+              pk: '{{content.pk}}', 
+              sin: '{{content.wordId.in_sinhala}}', 
+              eng: '{{content.wordId.in_english}}', 
+              sie: '{{content.wordId.in_singlish}}', 
+              user: '{{ content.userId.username }}', 
+              ts: '{{ content.created_at| timesince }} ago',
+              src: 'https:\/\/firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ content.pos_firebase| uriencode }}?alt=media&', 
+              comment: '{{content.comment}}',
+            })"
+          >
+            Inspect
+          </button>
+          {% endif %}
         </td>
       </tr>
       {% endfor %} {% endif %}
     </tbody>
     <tfoot>
       <tr>
-        <th colspan="9">
+        <th colspan="10">
           <span class="ui inverted sub header">
             Filter:
             <div id="filter-dropdown" class="ui inline dropdown">
@@ -101,7 +133,108 @@
   </table>
 </div>
 <div style="height: 20px"></div>
+<div class="ui modal">
+  <i class="close icon"></i>
+  <div id="model-title" class="header"></div>
+  <div class="ui two column divided grid">
+    <div class="stretched row">
+      <div class="column">
+        <div class="ui basic segment">
+          <div class="image content">
+            <div class="ui medium image">
+              <video
+                width="400px"
+                height="300px"
+                id="model-prev"
+                controls
+              ></video>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="ui basic segment">
+          <div class="description">
+            <p><b>StreamID: </b><span id="model-pk"></span></p>
+            <p><b>Recorded By: </b><span id="model-user"></span></p>
+            <p><b>Recorded: </b><span id="model-ts"></span></p>
+            <div class="ui divider"></div>
+            <div class="ui form">
+              <div class="inline fields">
+                <label>Verification: </label>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input
+                      type="radio"
+                      name="valid"
+                      onclick="setDisable(true)"
+                      checked="checked"
+                    />
+                    <label style="width: 75px">Accept</label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input
+                      type="radio"
+                      name="valid"
+                      onclick="setDisable(false)"
+                    />
+                    <label>Reject</label>
+                  </div>
+                </div>
+              </div>
+              <div class="inline fields">
+                <label style="width: 75px">Reason: </label>
+                <div class="field">
+                  <select id="model-select" class="ui disabled search dropdown">
+                    <option>Not Clear</option>
+                    <option>Invalid Sign</option>
+                    <option>Other Reason</option>
+                  </select>
+                </div>
+              </div>
+              <div class="inline fields">
+                <label style="width: 75px">Comment: </label>
+                <div class="field">
+                  <div id="model-input" class="ui disabled input">
+                    <input type="text" placeholder="Comments" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui black deny button">Cancel</div>
+    <div class="ui positive right labeled icon button">
+      Save
+      <i class="checkmark icon"></i>
+    </div>
+  </div>
+</div>
 <script>
   $("#filter-dropdown").dropdown();
+
+  function showModel(content) {
+    $("#model-title").html(`${content.sin} | ${content.eng} | ${content.sie}`);
+    $("#model-prev").attr("src", content.src);
+    $("#model-sin").html(content.sin);
+    $("#model-eng").html(content.eng);
+    $("#model-sie").html(content.sie);
+    $("#model-pk").html(content.pk);
+    $("#model-user").html(content.user);
+    $("#model-ts").html(content.ts);
+
+    $(".ui.modal").modal("show");
+  }
+
+  function setDisable(value) {
+    if (value) $("#model-select, #model-input").addClass("disabled");
+    else $("#model-select, #model-input").removeClass("disabled");
+  }
 </script>
 {% endblock %}
