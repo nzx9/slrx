@@ -37,7 +37,7 @@ else:
 cred = credentials.Certificate(CREDENTIALS)
 
 firebase_admin.initialize_app(cred, {
-    'storageBucket': 'drg-dc.appspot.com'
+    'storageBucket': os.environ.get("BUCKET")
 })
 
 
@@ -50,7 +50,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = ['localhost', 'dgrdc.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', 'dscapp.herokuapp.com']
 
 
 # Application definition
