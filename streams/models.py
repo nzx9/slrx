@@ -15,6 +15,7 @@ class Stream(models.Model):
     verified = models.BooleanField(null=True)
     verified_by = models.ForeignKey(
         User, null=True, on_delete=SET_NULL, related_name="verified_by")
+    reason = models.CharField(max_length=100, null=True)
     comment = models.CharField(max_length=250, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
