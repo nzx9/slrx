@@ -135,9 +135,13 @@ def streams_verification(request):
     if(request.user.is_superuser or request.user.groups.filter(name='Validator').exists()):
         filter = request.GET.get('filter')
         if(filter == "verified"):
+            s = Stream.objects.all().exclude(verified=None).order_by('-pk')
+        elif(filter == "verified:accepted"):
             s = Stream.objects.filter(verified=True).order_by('-pk')
-        elif(filter == "not-verified"):
+        elif (filter == "verified:rejected"):
             s = Stream.objects.filter(verified=False).order_by('-pk')
+        elif(filter == "not-verified"):
+            s = Stream.objects.filter(verified=None).order_by('-pk')
         else:
             s = Stream.objects.all().order_by('-pk')
             filter = "ALL"
