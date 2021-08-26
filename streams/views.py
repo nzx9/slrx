@@ -1,15 +1,14 @@
-import streams
-from django.http.response import HttpResponseRedirect
-from django.shortcuts import redirect, render, HttpResponse, reverse
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, HttpResponse
+from django.contrib.auth.decorators import login_required, permission_required
 from firebase_admin import storage
 from streams.models import Stream, User_Stream
-from django.contrib import messages
 from words.models import Word
 import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 import os
+from django.core.paginator import Paginator
+from .templatetags import encoders
 # Create your views here.
 
 
@@ -40,6 +39,7 @@ def streams_view(request):
                     "pos_firebase": None,
                     "verified": None,
                     "comment": None,
+                    "reason": None,
                     "created_at": None,
                     "updated_at": None
                 },
@@ -129,3 +129,122 @@ def submit(request, e_word):
     else:
         msg = "Error!, Request is not a POST request"
         return HttpResponse(json.dumps({"title": "error", "msg": msg}), content_type='application/json')
+
+
+def streams_verification(request):
+    if(request.user.is_superuser or request.user.groups.filter(name='Validator').exists()):
+        filter = request.GET.get('filter')
+        if(filter == "verified"):
+            s = Stream.objects.filter(verified=True).order_by('-pk')
+        elif(filter == "not-verified"):
+            s = Stream.objects.filter(verified=False).order_by('-pk')
+        else:
+            s = Stream.objects.all().order_by('-pk')
+            filter = "ALL"
+
+        p = Paginator(s, 5)
+
+        page_number = request.GET.get('page')
+        if page_number == None:
+            page_number = 1
+        page_obj = p.get_page(page_number)
+        return render(request, "streams_verification.html", {"page_obj": page_obj, "filter": filter, "count": s.count()})
+    else:
+        return render(request, "403.html")
+
+
+def get_stream(request, pk):
+    if(request.user.is_superuser or request.user.groups.filter(name='Validator').exists()):
+        try:
+            stream = Stream.objects.get(pk=pk)
+            resp = json.dumps(
+                {
+                    "success": True,
+                    "msg": None,
+                    "data": {
+                        "pk": stream.pk,
+                        "user": {
+                            "pk": stream.userId.pk,
+                            "name": stream.userId.username
+                        },
+                        "word": {
+                            "pk": stream.wordId.pk,
+                            "sin": stream.wordId.in_sinhala if stream.wordId.in_sinhala != None else None,
+                            "eng": stream.wordId.in_english if stream.wordId.in_english != None else None,
+                            "sie": stream.wordId.in_singlish if stream.wordId.in_singlish != None else None,
+                        },
+                        "src": 'https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{}?alt=media&'.format(encoders.uriencode(stream.pos_firebase)),
+                        "verification": {
+                            "verified": stream.verified,
+                            "verified_by": {
+                                "pk": stream.verified_by.pk if stream.verified_by != None else None,
+                                "name": stream.verified_by.username if stream.verified_by != None else None,
+                            },
+                            "reason": stream.reason
+                        },
+                        "comment": stream.comment,
+                        "ts": {
+                            "created": str(stream.created_at),
+                            "updated": str(stream.updated_at)
+                        }
+                    }
+                })
+            return HttpResponse(resp, content_type='application/json')
+        except ObjectDoesNotExist:
+            resp = json.dumps({
+                "success": False,
+                "msg": "Stream Not Found",
+                "data": None
+            })
+            return HttpResponse(resp, content_type='application/json')
+    else:
+        resp = json.dumps({
+            "success": False,
+            "msg": "Forbidden",
+            "data": None
+        })
+        return HttpResponse(resp, content_type='application/json')
+
+
+def verify_stream(request, pk):
+    if(request.user.is_superuser or request.user.groups.filter(name='Validator').exists()):
+        try:
+            stream = Stream.objects.get(pk=pk)
+            body_data = json.loads(request.body)
+            if(body_data['verify'] == "accepted"):
+                stream.verified = True
+                stream.reason = None
+            elif (body_data['verify'] == "rejected"):
+                if(body_data['reason'] == None):
+                    return HttpResponse(json.dumps({
+                        "success": False,
+                        "msg": "Reason is required"
+                    }), content_type='application/json')
+                else:
+                    stream.verified = False
+                    stream.reason = body_data['reason']
+            else:
+                return HttpResponse(json.dumps({
+                    "success": False,
+                    "msg": "Verify status is required"
+                }), content_type='application/json')
+
+            stream.comment = None if body_data['comment'] == "" else body_data['comment']
+            stream.verified_by = request.user
+            stream.save()
+            resp = json.dumps({
+                "success": True,
+                "msg": "Updated Successfully"
+            })
+        except:
+            resp = json.dumps({
+                "success": False,
+                "msg": "Stream not found"
+            })
+            return HttpResponse(resp, content_type='application/json')
+    else:
+        resp = json.dumps({
+            "success": False,
+            "msg": "No Permission to perform action",
+        })
+    return HttpResponse(resp, content_type='application/json')

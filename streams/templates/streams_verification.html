@@ -1,0 +1,342 @@
+{% extends 'layout.html' %}
+<!---->
+{% load maths_op %} {% load encoders %}
+<!---->
+{% block title %} Clusters | Verification {% endblock %}
+<!---->
+{% block scripts %}
+<style>
+  .hide {
+    display: none !important;
+  }
+</style>
+{% endblock %}
+<!---->
+{% block content %}
+<div class="ui container">
+  <div id="success-msg" class="ui success message transition hidden">
+    <i class="close icon" onclick="$('#success-msg').addClass('hidden')"></i>
+    <div class="header">Updated!</div>
+    <p id="success-msg-i"></p>
+  </div>
+  <div id="error-msg" class="ui negative message transition hidden">
+    <i class="close icon" onclick="$('#error-msg').addClass('hidden')"></i>
+    <div class="header">Error!</div>
+    <p id="error-msg-i"></p>
+  </div>
+  <table class="ui celled inverted padded structured table">
+    <thead class="center aligned">
+      <tr>
+        <th rowspan="2">#</th>
+        <th rowspan="2" class="single line">SID</th>
+        <th colspan="3">Word</th>
+        <th rowspan="2">User</th>
+        <th rowspan="2">@</th>
+        <th rowspan="2">Preview</th>
+        <th rowspan="2">Status</th>
+        <th rowspan="2">Actions</th>
+      </tr>
+      <tr>
+        <th>Sinhala</th>
+        <th>English</th>
+        <th>Singlish</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if count == 0 %}
+      <tr rowspan="4" class="ui center aligned">
+        <td colspan="9">
+          <span class="ui inverted header"><i class="ui frown icon"></i> No Result</span>
+        </td>
+      </tr>
+      {% else %} {% for content in page_obj %}
+      <tr class="ui center aligned">
+        <td class="collapsing">{{forloop.counter}}</td>
+        <td id="#pk-{{content.id}}" class="collapsing">{{content.pk}}</td>
+        <td>{{content.wordId.in_sinhala}}</td>
+        <td>{{content.wordId.in_english}}</td>
+        <td>{{content.wordId.in_singlish}}</td>
+        <td class="single line">{{ content.userId.username }}</td>
+        <td>{{ content.created_at| timesince }} ago</td>
+        <td class="right aligned">
+          <video width="300px" height="200px" controls
+            src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ content.pos_firebase| uriencode }}?alt=media&"></video>
+        </td>
+        <td id="tb-stu-{{content.pk}}">
+          {% if content.verified == True %}
+          <i class="check circle green icon"></i>Accepted
+          <!-- -->
+          {% elif content.verified == False %}
+          <i class="times circle red icon"></i>Rejected
+          <!-- -->
+          {% else %}
+          <div class="ui active centered inline text tiny loader">Pending</div>
+          {% endif %}
+        </td>
+        <td>
+          <button class="ui inverted button" onclick="showModel({
+              pk: '{{content.pk}}', 
+            })">
+            Inspect
+          </button>
+        </td>
+      </tr>
+      {% endfor %} {% endif %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="10">
+          <span class="ui inverted sub header">
+            Filter:
+            <div id="filter-dropdown" class="ui inline dropdown">
+              <div class="text">{{ filter }}</div>
+              <i class="dropdown icon"></i>
+              <div class="menu">
+                <a class="item" href="?filter=verified">Verified</a>
+                <a class="item" href="?filter=not-verified">Not-Verified</a>
+                <a class="item" href="?filter=all">ALL</a>
+              </div>
+            </div>
+          </span>
+          <div class="ui right floated inverted pagination menu">
+            {% if page_obj.has_previous %}
+            <a class="icon item" href="?filter={{filter}}&page={{ page_obj.previous_page_number }}">
+              <i class="left chevron icon"></i>
+            </a>
+            {% endif %}
+            <a class="item">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a>
+            {% if page_obj.has_next %}
+            <a class="icon item" href="?filter={{filter}}&page={{ page_obj.next_page_number }}">
+              <i class="right chevron icon"></i>
+            </a>
+            {% endif %}
+          </div>
+        </th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<div style="height: 20px"></div>
+<div class="ui modal">
+  <div id="dimmer" class="ui active inverted dimmer">
+    <div class="ui text loader">Loading</div>
+  </div>
+  <div id="model-title" class="header"></div>
+  <div id="model-error-body" class="hide">
+    <div class="ui negative message">
+      <div class="header">Something Went Wrong...</div>
+      <p id="err-desc"></p>
+    </div>
+  </div>
+  <div id="model-success-body" class="ui two column divided grid">
+    <div class="stretched row">
+      <div class="column">
+        <div class="ui basic segment">
+          <div class="image content">
+            <div class="ui medium image">
+              <video width="400px" height="300px" id="model-prev" controls></video>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="ui basic segment">
+          <div class="description">
+            <p><b>StreamID: </b><span id="model-pk"></span></p>
+            <p><b>Recorded By: </b><span id="model-user"></span></p>
+            <p><b>Recorded: </b><span id="model-ts-cr"></span></p>
+            <p><b>Updated: </b><span id="model-ts-up"></span></p>
+            <div class="ui divider"></div>
+            <div class="ui form">
+              <p><b>Reviewed By: </b><span id="model-rev"></span></p>
+              <div class="inline fields">
+                <label>Verification: </label>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input id="accept-r" type="radio" name="valid" onclick="setDisable(true)" value="accepted" />
+                    <label style="width: 75px">Accept</label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input id="reject-r" type="radio" name="valid" onclick="setDisable(false)" value="rejected" />
+                    <label>Reject</label>
+                  </div>
+                </div>
+              </div>
+              <div class="inline fields">
+                <label style="width: 75px">Reason: </label>
+                <div class="field">
+                  <select id="model-select" class="ui disabled search dropdown">
+                    <option value="Not Clear">Not Clear</option>
+                    <option value="Sign Invalid">Sign Invalid</option>
+                    <option value="Other">Other Reasons</option>
+                  </select>
+                </div>
+              </div>
+              <div class="inline fields">
+                <label style="width: 75px">Comment: </label>
+                <div class="field">
+                  <div id="model-input" class="ui disabled input">
+                    <textarea id="model-input-i" type="text" placeholder="Comments" rows="3"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="actions" style="margin-bottom: 10px">
+    <div class="ui black deny button">Cancel</div>
+    <button id="save-btn" class="ui positive right labeled icon button">
+      Save
+      <i class="checkmark icon"></i>
+    </button>
+  </div>
+</div>
+<script>
+  $("#filter-dropdown").dropdown();
+
+  function showModel(content) {
+    $("#success-msg").addClass("hidden");
+    $("#error-msg").addClass("hidden");
+    const csrftoken = Cookies.get("csrftoken");
+    $(".ui.modal")
+      .modal({
+        onShow: function () {
+          fetch(`/streams/get/${content.pk}`, {
+              method: "get",
+              headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json",
+              },
+            })
+            .then((response) =>
+              response.json().then((res, error) => {
+                $("#dimmer").removeClass("active");
+                if (error) {
+                  $("#save-btn").addClass("hide");
+                  $("#model-title").html("Error!");
+                  $("#model-title").addClass("ui red");
+                  $("#err-desc").html(error.toString());
+                  $("#model-success-body").addClass("hide");
+                  $("#model-error-body").removeClass("hide");
+                } else {
+                  $("#model-title").removeClass("ui red");
+                  if (res.success === true) {
+                    $("#model-title").html(
+                      `${res.data.word.sin} | ${res.data.word.eng} | ${res.data.word.sie}`
+                    );
+                    $("#model-prev").attr("src", res.data.src);
+                    $("#model-pk").html(res.data.pk);
+                    $("#model-user").html(res.data.user.name);
+                    $("#model-ts-cr").html(new Date(res.data.ts.created));
+                    $("#model-ts-up").html(new Date(res.data.ts.updated));
+                    $("#model-rev").html(res.data.verification.verified_by.name === null ? "None" : res.data
+                      .verification.verified_by.name);
+                    $("#model-input-i").val(res.data.comment);
+                    $("#model-select").val(res.data.verification.reason);
+                    if (res.data.verification.verified === true)
+                      $("#accept-r").prop("checked", true);
+                    else if (res.data.verification.verified === false) {
+                      $("#reject-r").prop("checked", true);
+                    } else {
+                      $("#accept-r").prop("checked", false);
+                      $("#reject-r").prop("checked", false);
+                    }
+                  } else {
+                    $("#save-btn").addClass("hide");
+                    $("#model-title").html("Error!");
+                    $("#model-title").addClass("ui red");
+                    $("#err-desc").html(res.msg);
+                    $("#model-success-body").addClass("hide");
+                    $("#model-error-body").removeClass("hide");
+                  }
+                }
+              })
+            )
+            .catch((error) => {
+              $("#save-btn").addClass("hide");
+              $("#model-title").html("Error!");
+              $("#model-title").addClass("ui red");
+              $("#err-desc").html(error.toString());
+              $("#model-success-body").addClass("hide");
+              $("#model-error-body").removeClass("hide");
+            });
+        },
+        onApprove: function () {
+          $("#dimmer").addClass("active");
+          let verify =
+            $('input[name="valid"]:checked').val() === undefined ?
+            null :
+            $('input[name="valid"]:checked').val();
+          let reason = $("#model-select").val();
+          let comment = $("#model-input-i").val();
+          fetch(`/streams/verify/${content.pk}`, {
+              method: "post",
+              body: JSON.stringify({
+                verify: verify,
+                reason: reason,
+                comment: comment,
+              }),
+              headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json",
+              },
+            })
+            .then((response) =>
+              response.json().then((res, error) => {
+                if (error) {
+                  $("#error-msg").removeClass("hidden");
+                  $("#error-msg-i").html(
+                    `Error in (SID: ${content.pk}) => ${error.toString()}`
+                  );
+                } else {
+                  if (res.success) {
+                    $("#success-msg-i").html(
+                      `Success (SID:${content.pk}) => ${res.msg}`
+                    );
+                    $("#success-msg").removeClass("hidden");
+                    if (verify == "accepted") {
+                      $(`#tb-stu-${content.pk}`).html(
+                        '<i class="check circle green icon"></i>Accepted'
+                      );
+                    } else if (verify == "rejected") {
+                      $(`#tb-stu-${content.pk}`).html(
+                        '<i class="times circle red icon"></i>Rejected'
+                      );
+                    }
+                  } else {
+                    $("#error-msg").removeClass("hidden");
+                    $("#error-msg-i").html(
+                      `Error in (SID: ${content.pk}) => ${res.msg}`
+                    );
+                  }
+                }
+              })
+            )
+            .catch((error) => {
+              $("#error-msg").removeClass("hidden");
+              $("#error-msg-i").html(
+                `Error in (SID: ${content.pk}) => ${error.toString()}`
+              );
+            });
+          return true;
+        },
+        onDeny: function () {
+          $("#dimmer").addClass("active");
+          return true;
+        },
+        closable: false,
+      })
+      .modal("show");
+  }
+
+  function setDisable(value) {
+    if (value) $("#model-select, #model-input").addClass("disabled");
+    else $("#model-select, #model-input").removeClass("disabled");
+  }
+</script>
+{% endblock %}
