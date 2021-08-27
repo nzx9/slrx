@@ -119,9 +119,18 @@ def submit(request, e_word):
                 msg = "Success!, File uploaded and updated the DB"
                 return HttpResponse(json.dumps(
                     {"title": "success", "msg": msg}), content_type='application/json')
-            msg = "Success!, File uploaded to Firebase"
-            return HttpResponse(json.dumps(
-                {"title": "success", "msg": msg}), content_type='application/json')
+            else:
+                stream = stream_exist[0]
+                print(stream)
+                stream.verified = None
+                stream.verified_by = None
+                stream.reason = None
+                stream.comment = "NEW"
+                stream.save()
+                msg = "Success!, New Recording uploaded and updated the DB"
+                return HttpResponse(json.dumps(
+                    {"title": "success", "msg": msg}), content_type='application/json')
+
         except:
             msg = "Error!, Something went wrong. Can't upload the file"
             return HttpResponse(json.dumps(

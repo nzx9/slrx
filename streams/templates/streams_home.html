@@ -24,7 +24,7 @@
 
               <th colspan="4">Word</th>
               <th colspan="6">Stream</th>
-              <th rowspan="2">Actions</th>
+              <th rowspan="2">REC</th>
             </tr>
             <tr>
               <th>Id</th>
@@ -96,16 +96,16 @@
               <td>
                 {% if d.comp == True and d.s_info.verified == False %}
                 <!---->
-                Reason: {{ d.s_info.reason }} <br />
-                {% endif %} Comment: {{d.s_info.comment}}
+                Reason: {{ d.s_info.reason }} <br />Comment:
+                {% endif %}  {{d.s_info.comment}}
               </td>
               <td>
-                {% if d.comp == True %}
+                {% if d.comp == True and d.s_info.verified != True %}
                 <a class="ui inverted tiny button" href="{% url 'streams_rec_view' d.w_info.in_english %}"><i
-                    class="redo icon"></i>Re-record</a>
-                {% else %}
+                    class="redo icon"></i></a>
+                {% elif d.comp == False %}
                 <a class="ui inverted tiny button" href="{% url 'streams_rec_view' d.w_info.in_english %}"><i
-                    class="record icon"></i>Record</a>
+                    class="record icon"></i></a>
                 {% endif %}
               </td>
             </tr>
