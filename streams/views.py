@@ -121,7 +121,6 @@ def submit(request, e_word):
                     {"title": "success", "msg": msg}), content_type='application/json')
             else:
                 stream = stream_exist[0]
-                print(stream)
                 stream.verified = None
                 stream.verified_by = None
                 stream.reason = None

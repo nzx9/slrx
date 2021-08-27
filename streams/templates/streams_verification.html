@@ -14,16 +14,6 @@
 <!---->
 {% block content %}
 <div class="ui container">
-  <div id="success-msg" class="ui success message transition hidden">
-    <i class="close icon" onclick="$('#success-msg').addClass('hidden')"></i>
-    <div class="header">Updated!</div>
-    <p id="success-msg-i"></p>
-  </div>
-  <div id="error-msg" class="ui negative message transition hidden">
-    <i class="close icon" onclick="$('#error-msg').addClass('hidden')"></i>
-    <div class="header">Error!</div>
-    <p id="error-msg-i"></p>
-  </div>
   <table class="ui celled inverted padded structured table">
     <thead class="center aligned">
       <tr>
@@ -46,7 +36,9 @@
       {% if count == 0 %}
       <tr rowspan="4" class="ui center aligned">
         <td colspan="9">
-          <span class="ui inverted header"><i class="ui frown icon"></i> No Result</span>
+          <span class="ui inverted header"
+            ><i class="ui frown icon"></i> No Result</span
+          >
         </td>
       </tr>
       {% else %} {% for content in page_obj %}
@@ -59,8 +51,12 @@
         <td class="single line">{{ content.userId.username }}</td>
         <td>{{ content.created_at| timesince }} ago</td>
         <td class="right aligned">
-          <video width="300px" height="200px" controls
-            src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ content.pos_firebase| uriencode }}?alt=media&"></video>
+          <video
+            width="300px"
+            height="200px"
+            controls
+            src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ content.pos_firebase| uriencode }}?alt=media&"
+          ></video>
         </td>
         <td id="tb-stu-{{content.pk}}">
           {% if content.verified == True %}
@@ -74,9 +70,12 @@
           {% endif %}
         </td>
         <td>
-          <button class="ui inverted button" onclick="showModel({
+          <button
+            class="ui inverted button"
+            onclick="showModel({
               pk: '{{content.pk}}', 
-            })">
+            })"
+          >
             Inspect
           </button>
         </td>
@@ -93,8 +92,12 @@
               <i class="dropdown icon"></i>
               <div class="menu">
                 <a class="item" href="?filter=verified">Verified</a>
-                <a class="item" href="?filter=verified:accepted">Verified:Accepted</a>
-                <a class="item" href="?filter=verified:rejected">Verified:Rejected</a>
+                <a class="item" href="?filter=verified:accepted"
+                  >Verified:Accepted</a
+                >
+                <a class="item" href="?filter=verified:rejected"
+                  >Verified:Rejected</a
+                >
                 <a class="item" href="?filter=not-verified">Not-Verified</a>
                 <a class="item" href="?filter=all">ALL</a>
               </div>
@@ -102,13 +105,21 @@
           </span>
           <div class="ui right floated inverted pagination menu">
             {% if page_obj.has_previous %}
-            <a class="icon item" href="?filter={{filter}}&page={{ page_obj.previous_page_number }}">
+            <a
+              class="icon item"
+              href="?filter={{filter}}&page={{ page_obj.previous_page_number }}"
+            >
               <i class="left chevron icon"></i>
             </a>
             {% endif %}
-            <a class="item">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a>
+            <a class="item"
+              >{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a
+            >
             {% if page_obj.has_next %}
-            <a class="icon item" href="?filter={{filter}}&page={{ page_obj.next_page_number }}">
+            <a
+              class="icon item"
+              href="?filter={{filter}}&page={{ page_obj.next_page_number }}"
+            >
               <i class="right chevron icon"></i>
             </a>
             {% endif %}
@@ -136,8 +147,18 @@
         <div class="ui basic segment">
           <div class="image content">
             <div class="ui medium image">
-              <video width="400px" height="300px" id="model-prev" controls></video>
+              <video
+                width="400px"
+                height="300px"
+                id="model-prev"
+                controls
+              ></video>
             </div>
+          </div>
+          <div id="msg" class="ui message transition hidden">
+            <i class="close icon" onclick="$('#msg').addClass('hidden')"></i>
+            <div id="msg-title" class="header"></div>
+            <p id="msg-desc"></p>
           </div>
         </div>
       </div>
@@ -155,13 +176,25 @@
                 <label>Verification: </label>
                 <div class="field">
                   <div class="ui radio checkbox">
-                    <input id="accept-r" type="radio" name="valid" onclick="setDisable(true)" value="accepted" />
+                    <input
+                      id="accept-r"
+                      type="radio"
+                      name="valid"
+                      onclick="setDisable(true)"
+                      value="accepted"
+                    />
                     <label style="width: 75px">Accept</label>
                   </div>
                 </div>
                 <div class="field">
                   <div class="ui radio checkbox">
-                    <input id="reject-r" type="radio" name="valid" onclick="setDisable(false)" value="rejected" />
+                    <input
+                      id="reject-r"
+                      type="radio"
+                      name="valid"
+                      onclick="setDisable(false)"
+                      value="rejected"
+                    />
                     <label>Reject</label>
                   </div>
                 </div>
@@ -180,7 +213,12 @@
                 <label style="width: 75px">Comment: </label>
                 <div class="field">
                   <div id="model-input" class="ui disabled input">
-                    <textarea id="model-input-i" type="text" placeholder="Comments" rows="3"></textarea>
+                    <textarea
+                      id="model-input-i"
+                      type="text"
+                      placeholder="Comments"
+                      rows="2"
+                    ></textarea>
                   </div>
                 </div>
               </div>
@@ -191,7 +229,7 @@
     </div>
   </div>
   <div class="actions" style="margin-bottom: 10px">
-    <div class="ui black deny button">Cancel</div>
+    <div class="ui black deny button">Close</div>
     <button id="save-btn" class="ui positive right labeled icon button">
       Save
       <i class="checkmark icon"></i>
@@ -209,12 +247,12 @@
       .modal({
         onShow: function () {
           fetch(`/streams/get/${content.pk}`, {
-              method: "get",
-              headers: {
-                "X-CSRFToken": csrftoken,
-                "Content-Type": "application/json",
-              },
-            })
+            method: "get",
+            headers: {
+              "X-CSRFToken": csrftoken,
+              "Content-Type": "application/json",
+            },
+          })
             .then((response) =>
               response.json().then((res, error) => {
                 $("#dimmer").removeClass("active");
@@ -236,8 +274,11 @@
                     $("#model-user").html(res.data.user.name);
                     $("#model-ts-cr").html(new Date(res.data.ts.created));
                     $("#model-ts-up").html(new Date(res.data.ts.updated));
-                    $("#model-rev").html(res.data.verification.verified_by.name === null ? "None" : res.data
-                      .verification.verified_by.name);
+                    $("#model-rev").html(
+                      res.data.verification.verified_by.name === null
+                        ? "None"
+                        : res.data.verification.verified_by.name
+                    );
                     $("#model-input-i").val(res.data.comment);
                     $("#model-select").val(res.data.verification.reason);
                     if (res.data.verification.verified === true)
@@ -271,36 +312,45 @@
         onApprove: function () {
           $("#dimmer").addClass("active");
           let verify =
-            $('input[name="valid"]:checked').val() === undefined ?
-            null :
-            $('input[name="valid"]:checked').val();
+            $('input[name="valid"]:checked').val() === undefined
+              ? null
+              : $('input[name="valid"]:checked').val();
           let reason = $("#model-select").val();
           let comment = $("#model-input-i").val();
+
           fetch(`/streams/verify/${content.pk}`, {
-              method: "post",
-              body: JSON.stringify({
-                verify: verify,
-                reason: reason,
-                comment: comment,
-              }),
-              headers: {
-                "X-CSRFToken": csrftoken,
-                "Content-Type": "application/json",
-              },
-            })
+            method: "post",
+            body: JSON.stringify({
+              verify: verify,
+              reason: reason,
+              comment: comment,
+            }),
+            headers: {
+              "X-CSRFToken": csrftoken,
+              "Content-Type": "application/json",
+            },
+          })
             .then((response) =>
               response.json().then((res, error) => {
                 if (error) {
-                  $("#error-msg").removeClass("hidden");
-                  $("#error-msg-i").html(
-                    `Error in (SID: ${content.pk}) => ${error.toString()}`
+                  $("#msg").addClass("red");
+                  $("#msg").removeClass("green");
+                  $("#msg-title").html(`ERROR`);
+                  $("#msg-desc").html(
+                    `<code><b>${error.toString()}</b></code> (SID : ${
+                      content.pk
+                    })`
                   );
+                  $("#msg").removeClass("hidden");
                 } else {
                   if (res.success) {
-                    $("#success-msg-i").html(
-                      `Success (SID:${content.pk}) => ${res.msg}`
+                    $("#msg").addClass("green");
+                    $("#msg").removeClass("red");
+                    $("#msg-title").html(`SUCCESS`);
+                    $("#msg-desc").html(
+                      `<code><b>${res.msg}</b></code> (SID : ${content.pk})`
                     );
-                    $("#success-msg").removeClass("hidden");
+                    $("#msg").removeClass("hidden");
                     if (verify == "accepted") {
                       $(`#tb-stu-${content.pk}`).html(
                         '<i class="check circle green icon"></i>Accepted'
@@ -311,21 +361,28 @@
                       );
                     }
                   } else {
-                    $("#error-msg").removeClass("hidden");
-                    $("#error-msg-i").html(
-                      `Error in (SID: ${content.pk}) => ${res.msg}`
+                    $("#msg").addClass("red");
+                    $("#msg").removeClass("green");
+                    $("#msg-title").html(`ERROR `);
+                    $("#msg-desc").html(
+                      `<code><b>${res.msg}</b></code> (SID : ${content.pk})`
                     );
+                    $("#msg").removeClass("hidden");
                   }
                 }
+                $("#dimmer").removeClass("active");
               })
             )
             .catch((error) => {
-              $("#error-msg").removeClass("hidden");
-              $("#error-msg-i").html(
-                `Error in (SID: ${content.pk}) => ${error.toString()}`
+              $("#msg").addClass("red");
+              $("#msg-title").html(`ERROR`);
+              $("#msg-desc").html(
+                `<code><b>${error.toString()}</b></code> (SID : ${content.pk})`
               );
+              $("#msg").removeClass("hidden");
+              $("#dimmer").removeClass("active");
             });
-          return true;
+          return false;
         },
         onDeny: function () {
           $("#dimmer").addClass("active");
