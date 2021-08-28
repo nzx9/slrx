@@ -2,7 +2,7 @@
 
 ## _Dynamic Sign Collector_
 
-[![Heroku](https://img.shields.io/static/v1?message=heroku&logo=Heroku&labelColor=FFF&color=430098&logoColor=430098&style=for-the-badge&label=%20)](https://dgrdc.herokuapp.com)
+[![Heroku](https://img.shields.io/static/v1?message=heroku&logo=Heroku&labelColor=FFF&color=430098&logoColor=430098&style=for-the-badge&label=%20)](https://dsc.herokuapp.com)
 
 ## Developers
 
@@ -15,14 +15,6 @@ DSC is built for Collect Dynamic Signs Remotly for
 - Validating Data
 - Many More..
 
-## Features
-
--
--
--
--
--
-
 ## Tech
 
 DSC uses a number of open source projects to work properly:
@@ -32,7 +24,7 @@ DSC uses a number of open source projects to work properly:
 - [Firebase] - as file storage
 - [jQuery] - duh
 
-And of course DSC itself is open source with a [public repository][dill]
+And of course DSC itself is open source with a [public repository][dsc]
 on GitHub.
 
 ## Installation
@@ -41,25 +33,41 @@ DSC requires [Python](https://python.org/) v3.6+ to run.
 
 Install the requiements and start the server.
 
+### **For Linux/ MacOS (BASH/ ZSH)**
+
 ```sh
 git clone https://github.com/krypto-i9/dsc.git
-cd dgr.dc
+cd dsc
+python3 -m env ./env
 pip install requirements.txt
 source ./env/bin/activate
+./manage.py runserver
+```
+
+Then open browser and goto
+
+```sh
+127.0.0.1:8000
+```
+
+### **For Windows (CMD)**
+
+Download and Extract the [DSC][dsc].
+Then run this in CMD
+
+```cmd
+cd dsc
+python -m env ./env
+pip install requirements.txt
+env\Scripts\activate.bat
 python manage.py runserver
 ```
 
-For production environments...
+Then open browser and goto
 
 ```sh
-
+127.0.0.1:8000
 ```
-
-## Development
-
-Want to contribute? Great!
-
-Open your favorite Terminal and run these commands.
 
 ## Docker
 
@@ -74,14 +82,10 @@ your preferred browser.
 
 ## License
 
-MIT
+[BSD-3-Clause License][license]
 
-**Free Software, Hell Yeah!**
-
-[//]: # "These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax"
-[dsc]: https://github.com/krypto-i9/dgr.dc
-[git-repo-url]: https://github.com/krypto-i9/dgr.dc.git
-[john gruber]: http://daringfireball.net
+[dsc]: https://github.com/krypto-i9/dsc
+[git-repo-url]: https://github.com/krypto-i9/dsc.git
 [python]: https://python.org/
 [django]: https://www.djangoproject.com/
 [sementic ui]: https://semantic-ui.com/
@@ -90,3 +94,4 @@ MIT
 [@nav_i9]: https://twitter.com/nav_i9
 [navindu dananga]: https://www.linkedin.com/in/navindu-dananga/
 [jennive cole]: https://www.linkedin.com/in/jennive-cole/
+[license]: https://github.com/krypto-i9/dsc/blob/main/LICENSE
