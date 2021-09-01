@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block body%} {% block head%}
+{% extends 'base.html' %} {% load encoders %} {% block body%} {% block head%}
 <style>
   .hidden.menu {
     display: none;
@@ -42,6 +42,30 @@
 
   .secondary.pointing.menu .toc.item {
     display: none;
+  }
+
+  #feedback-btn {
+    position: absolute;
+    top: 60px;
+    left: -100px;
+  }
+
+  #feedback-btn:hover {
+    position: absolute;
+    top: 60px;
+    left: 0px;
+  }
+
+  #validate-btn {
+    position: absolute;
+    top: 110px;
+    left: -105px;
+  }
+
+  #validate-btn:hover {
+    position: absolute;
+    top: 110px;
+    left: 0px;
   }
 
   @media only screen and (max-width: 700px) {
@@ -112,35 +136,62 @@
           </div>
         </div>
         <div>{% block content %}{% endblock %}</div>
+        {% if user|has_group:"Tester" or user.is_superuser %}
+        <div
+          id="feedback-btn"
+          class="ui left labeled button"
+          tabindex="0"
+          onclick="window.open('https://forms.gle/yzjp6wyZTTXud3Uu7', '_blank')"
+        >
+          <a class="ui basic label"> FEEDBACK </a>
+          <div class="ui yellow icon button">
+            <i class="external icon"></i>
+          </div>
+        </div>
+        {% endif %}
+        <!---->
+        {% if user|has_group:"Validator" or user.is_superuser %}
+        <div
+          id="validate-btn"
+          class="ui left labeled button"
+          tabindex="0"
+          onclick="window.open(`{% url 'stream_verification' %}`, '_blank')"
+        >
+          <a class="ui basic label"> VALIDATOR </a>
+          <div class="ui green icon button">
+            <i class="external icon"></i>
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
+    <!-- Sidebar Menu -->
+    <div class="ui vertical inverted sidebar menu">
+      {% if request.path == "/" %}
+      <a class="active item" href="{% url 'home_view'%}">Home</a>
+      {% else %}
+      <a class="item" href="{% url 'home_view'%}">Home</a>
+      {% endif%} {% if "/streams/" in request.path %}
+      <a class="active item" href="{% url 'streams_view'%}">Streams</a>
+      {% else %}
+      <a class="item" href="{% url 'streams_view'%}">Streams</a>
+      {% endif%} {% if "/clusters/" in request.path %}
+      <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
+      {% else %}
+      <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
+      {% endif%} {% if "/words/" in request.path %}
+      <a class="active item" href="{% url 'words_view'%}">Words</a>
+      {% else %}
+      <a class="item" href="{% url 'words_view'%}">Words</a>
+      {% endif%} {% if user.is_authenticated %}
+      <a class="ui item" href="{% url 'logout' %}"
+        ><i class="logout icon"></i> Logout
+      </a>
+      {% else %}
+      <a class="item">Login</a>
+      <a class="item">Signup</a>
+      {% endif %}
+    </div>
+    {% endblock %}
   </div>
-  <!-- Sidebar Menu -->
-  <div class="ui vertical inverted sidebar menu">
-    {% if request.path == "/" %}
-    <a class="active item" href="{% url 'home_view'%}">Home</a>
-    {% else %}
-    <a class="item" href="{% url 'home_view'%}">Home</a>
-    {% endif%} {% if "/streams/" in request.path %}
-    <a class="active item" href="{% url 'streams_view'%}">Streams</a>
-    {% else %}
-    <a class="item" href="{% url 'streams_view'%}">Streams</a>
-    {% endif%} {% if "/clusters/" in request.path %}
-    <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
-    {% else %}
-    <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
-    {% endif%} {% if "/words/" in request.path %}
-    <a class="active item" href="{% url 'words_view'%}">Words</a>
-    {% else %}
-    <a class="item" href="{% url 'words_view'%}">Words</a>
-    {% endif%} {% if user.is_authenticated %}
-    <a class="ui item" href="{% url 'logout' %}"
-      ><i class="logout icon"></i> Logout
-    </a>
-    {% else %}
-    <a class="item">Login</a>
-    <a class="item">Signup</a>
-    {% endif %}
-  </div>
-  {% endblock %}
 </div>
