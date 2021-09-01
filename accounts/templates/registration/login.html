@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block head %}
+{% extends "base.html" %} {% load static %} {% block head %}
 <style type="text/css">
   @media only screen and (max-width: 767px) {
     .box {
@@ -8,9 +8,6 @@
     }
   }
 
-  body {
-    background-color: #312e2e;
-  }
   body > .grid {
     height: 100%;
   }
@@ -26,13 +23,13 @@
     height: 70px;
   }
 
-  .a {
+  /* .a {
     text-decoration: none;
     color: #16ab39;
   }
   .a:hover {
     color: darkgreen;
-  }
+  } */
 </style>
 <script>
   $(document).ready(function () {
@@ -73,13 +70,10 @@
   <div class="ui middle aligned center aligned grid">
     <div class="column">
       <p class="box computer only" />
-      <h2 class="ui green image header">
-        <!-- <img
-              src="Login%20Example%20-%20Semantic_files/logo.png"
-              class="image"
-            /> -->
+      <h3 class="ui inverted image header">
+        <img src="{% static 'favicon.ico' %}" class="image" />
         <div class="content">Login to Your Account</div>
-      </h2>
+      </h3>
       <form class="ui large form" method="POST" action="{% url 'login' %}">
         {% csrf_token %}
         <div class="ui stacked segment">
@@ -112,7 +106,7 @@
             </div>
           </div>
           <input
-            class="ui fluid large green submit button"
+            class="ui fluid large black submit button"
             type="submit"
             value="Login"
           />
