@@ -25,27 +25,29 @@ def words_view(request):
 
 
 @login_required(login_url='/accounts/login/')
-@permission_required('word.can_view', raise_exception=True)
 def add_new_words(request):
-    if request.method == "POST":
-        if request.POST['sinhala-word'] != None and request.POST['english-word'] != None:
-            newWord = Word()
-            newWord.in_sinhala = request.POST['sinhala-word']
-            newWord.in_english = request.POST['english-word']
-            newWord.in_singlish = request.POST['singlish-word']
-            newWord.created_by = request.user.id
-            try:
-                newWord.save()
-                messages.success(request, "New Word Created")
-            except Exception as e:
-                messages.error(request, f"Something went wrong: {str(e)}")
-        else:
-            messages.error("NULL Value Provided")
-    return render(request, "add_words.html")
+    if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
+        if request.method == "POST":
+            if request.POST['sinhala-word'] != None and request.POST['english-word'] != None:
+                newWord = Word()
+                newWord.in_sinhala = request.POST['sinhala-word']
+                newWord.in_english = request.POST['english-word']
+                newWord.in_singlish = request.POST['singlish-word']
+                newWord.created_by = request.user.id
+                try:
+                    newWord.save()
+                    messages.success(request, "New Word Created")
+                except Exception as e:
+                    messages.error(request, f"Something went wrong: {str(e)}")
+            else:
+                messages.error("NULL Value Provided")
+        return render(request, "add_words.html")
+    else:
+        return render(request, "403.html")
 
 
 @login_required(login_url='/accounts/login/')
-@permission_required('word.can_edit', raise_exception=True)
+@permission_required('word.can_delete', raise_exception=True)
 def delete_word(request, pk):
     word = Word.objects.get(id=pk)
     word.delete()
@@ -53,7 +55,7 @@ def delete_word(request, pk):
 
 
 @login_required(login_url='/accounts/login/')
-@permission_required('word.can_view', raise_exception=True)
+@permission_required('word.can_change', raise_exception=True)
 def bulk_upload(request):
     file_name = None
     titles = None
@@ -123,7 +125,7 @@ def bulk_upload(request):
 
 
 @login_required(login_url='/accounts/login/')
-@permission_required('word.can_edit', raise_exception=True)
+@permission_required('word.can_change', raise_exception=True)
 def add_bulk_words_to_db(request):
     title = "METHOD not recognized..."
     msg = ""
