@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block head %}
+{% extends "base.html" %} {% load static %}{% block head %}
 <style type="text/css">
   @media only screen and (max-width: 767px) {
     .box {
@@ -8,9 +8,6 @@
     }
   }
 
-  body {
-    background-color: #312e2e;
-  }
   body > .grid {
     height: 100%;
   }
@@ -26,13 +23,13 @@
     height: 70px;
   }
 
-  .a {
+  /* .a {
     text-decoration: none;
     color: #16ab39;
   }
   .a:hover {
     color: darkgreen;
-  }
+  } */
   .errorlist {
     text-align: left;
   }
@@ -96,120 +93,189 @@
       },
     });
   });
+
+  function termspopup() {
+    $("#agreement-checkbox").prop("checked", false);
+    $("#terms-modal")
+      .modal({
+        onApprove: function () {
+          $("#agreement-checkbox").prop("checked", true);
+        },
+        onDeny: function () {
+          $("#agreement-checkbox").prop("checked", false);
+        },
+      })
+      .modal("show");
+  }
 </script>
-{% endblock %} {% block title %}Register{% endblock %}
-
-{% block body %}
-  <div class="ui center aligned container">
-    <div class="ui middle aligned center aligned grid">
-      <div class="column">
-        <p class="box computer only" />
-        <h2 class="ui green image header">
-          <!-- <img
-                src="Login%20Example%20-%20Semantic_files/logo.png"
-                class="image"
-              /> -->
-          <div class="content">Register a New Account</div>
-        </h2>
-        <form class="ui large form" method="POST" action="">
-          {% csrf_token %}
-          <div class="ui stacked segment">
-            <div class="field">
-              <div class="ui left icon input">
-                <i class="user icon"></i>
-                <input
-                  id="id_username"
-                  type="text"
-                  name="username"
-                  autofocus=""
-                  autocapitalize="none"
-                  placeholder="username"
-                  autocomplete="username"
-                  maxlength="150"
-                />
-              </div>
+{% endblock %} {% block title %}Register{% endblock %} {% block body %}
+<div class="ui center aligned container">
+  <div class="ui middle aligned center aligned grid">
+    <div class="column">
+      <p class="box computer only" />
+      <h3 class="ui inverted image header">
+        <img src="{% static 'favicon.ico' %}" class="image" />
+        <div class="content">Register a New Account</div>
+      </h3>
+      <form class="ui large form" method="POST" action="">
+        {% csrf_token %}
+        <div class="ui stacked segment">
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="user icon"></i>
+              <input
+                id="id_username"
+                type="text"
+                name="username"
+                autofocus=""
+                autocapitalize="none"
+                placeholder="username"
+                autocomplete="username"
+                maxlength="150"
+              />
             </div>
-            <div class="field">
-              <div class="ui left icon input">
-                <i class="mail icon"></i>
-                <input
-                  id="id_email"
-                  type="email"
-                  name="email"
-                  autofocus=""
-                  autocapitalize="none"
-                  placeholder="email"
-                  autocomplete="email"
-                  maxlength="254"
-                />
-              </div>
-            </div>
-            <div class="field">
-              <div class="ui left icon input">
-                <i class="lock icon"></i>
-                <input
-                  color="green"
-                  id="id_password1"
-                  type="password"
-                  name="password1"
-                  autocomplete="new-password"
-                  placeholder="password1 (password)"
-                />
-              </div>
-            </div>
-            <div class="field">
-              <div class="ui left icon input">
-                <i class="lock icon"></i>
-                <input
-                  color="green"
-                  id="id_password2"
-                  type="password"
-                  name="password2"
-                  autocomplete="new-password"
-                  placeholder="password2 (retype-password)"
-                />
-              </div>
-            </div>
-            <div class="field">
-              <div class="ui checkbox">
-                <input type="checkbox" required>
-                <label >I acknowledge that my videos will be used for academic research purposes and I agree with all the <a  href="{% url 'terms' %}">terms and conditions</a></label>
-              </div>
-            </div>
-            <input
-              class="ui fluid large green submit button"
-              type="submit"
-              value="Register"
-            />
           </div>
-
-          <div class="ui error message"></div>
-          {% if form.errors %}
-          <div class="ui red message">
-            <ul class="list">
-              {% for key, value in form.errors.items %}
-
-              <li><b>{{ key }}</b></li>
-              {{value}} {% endfor %}
-            </ul>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="mail icon"></i>
+              <input
+                id="id_email"
+                type="email"
+                name="email"
+                autofocus=""
+                autocapitalize="none"
+                placeholder="email"
+                autocomplete="email"
+                maxlength="254"
+              />
+            </div>
           </div>
-          {% endif %} {% if messages %}
-          <div class="ui green message">
-            <ul class="list">
-              {% for message in messages %}
-              <li><b>{{ message }}</b></li>
-              {% endfor %}
-            </ul>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="lock icon"></i>
+              <input
+                color="green"
+                id="id_password1"
+                type="password"
+                name="password1"
+                autocomplete="new-password"
+                placeholder="password1 (password)"
+              />
+            </div>
           </div>
-          {% endif %}
-        </form>
-
-        <div class="ui message">
-          Already has account?
-          <a href="/accounts/login/" class="a">Login</a>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="lock icon"></i>
+              <input
+                color="green"
+                id="id_password2"
+                type="password"
+                name="password2"
+                autocomplete="new-password"
+                placeholder="password2 (retype-password)"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui checkbox">
+              <input
+                id="agreement-checkbox"
+                type="checkbox"
+                onclick="termspopup()"
+                required
+              />
+              <label
+                >I acknowledge that my videos will be used for academic research
+                purposes and I agree with all the
+                <a href="{% url 'terms' %}">terms and conditions</a></label
+              >
+            </div>
+          </div>
+          <input
+            class="ui fluid large submit black button"
+            type="submit"
+            value="Register"
+          />
         </div>
+
+        <div class="ui error message"></div>
+        {% if form.errors %}
+        <div class="ui red message">
+          <ul class="list">
+            {% for key, value in form.errors.items %}
+
+            <li><b>{{ key }}</b></li>
+            {{value}} {% endfor %}
+          </ul>
+        </div>
+        {% endif %} {% if messages %}
+        <div class="ui green message">
+          <ul class="list">
+            {% for message in messages %}
+            <li><b>{{ message }}</b></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </form>
+      <div class="ui message">
+        Already has account?
+        <a href="/accounts/login/" class="a">Login</a>
       </div>
     </div>
   </div>
-</body>
+</div>
+<div id="terms-modal" class="ui inverted mini modal">
+  <div class="header">Terms and Conditions</div>
+  <div class="ui inverted content">
+    <p style="color: black">
+      Welcome to DSC, a platform created to collect dynamic signs of Sri Lankan
+      sign language for a research project. Our research focuses on a system
+      that would detect and recognize dynamic signs in Sri Lankan Sign Language.
+      On registration to this website, you are agreeing to be bound by the
+      following terms and conditions of use and agree that you're responsible
+      for the data you provide.
+    </p>
+    <ul style="color: black">
+      <li>Permission for webcam access</li>
+      <li>Provide accurate Sri Lankan signs for given words</li>
+      <li>Need to know signs for all the provided words</li>
+      <li>The signs will be validated by a professional</li>
+      <li>
+        Once you complete recording all the signs provided, they will be
+        verified and if all signs are correct you will be paid.
+      </li>
+      <li>
+        If there are errors or incorrect signs, you will have to record again.
+      </li>
+    </ul>
+
+    <h3 style="color: black">Privacy</h3>
+    <ul style="color: black">
+      <li>
+        The video recordings of signs will solely be used for academic purposes.
+      </li>
+      <li>
+        The personal information we collect during registration will be used in
+        the verification process and to contact during the payment process.
+      </li>
+      <li>
+        We ensure that the data we collect will not be unprofessionally used.
+      </li>
+    </ul>
+  </div>
+  <div class="actions">
+    <div class="actions" style="margin-bottom: 10px">
+      <div class="ui deny red button">Reject</div>
+      <button
+        id="save-btn"
+        class="ui approve submit green right labeled icon button"
+        type="submit"
+      >
+        Approve and Continue
+        <i class="checkmark icon"></i>
+      </button>
+    </div>
+  </div>
+</div>
 {% endblock %}
