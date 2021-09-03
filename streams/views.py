@@ -9,6 +9,7 @@ from django.db.models import Q
 import os
 from django.core.paginator import Paginator
 from .templatetags import encoders
+import time
 # Create your views here.
 
 
@@ -100,14 +101,15 @@ def submit(request, e_word):
                 "ffmpeg -i {0} {1} -y".format(serverFileName, mp4Path))
 
             os.system("rm -f {0}".format(serverFileName))
-            # upload to firebase
-            blob = bucket.blob(fireBaseFileName)
-            blob.upload_from_filename(mp4Path)
 
             stream_exist = Stream.objects.filter(
                 userId=request.user).filter(wordId=word)
 
             if(stream_exist.count() == 0):
+                # upload to firebase
+                blob = bucket.blob(fireBaseFileName)
+                blob.upload_from_filename(mp4Path)
+
                 stream = Stream(userId=request.user, wordId=word, pos_server=mp4Path,
                                 pos_firebase=fireBaseFileName)
                 stream.save()
@@ -127,9 +129,21 @@ def submit(request, e_word):
                 stream.comment = "NEW"
                 stream.save()
                 msg = "Success!, New Recording uploaded and updated the DB"
+
+                source_blob = bucket.blob(stream.pos_firebase)
+                new_location = 'archive/{0}/{1}_{2}.mp4'.format(
+                    request.user.pk, stream.wordId.in_sinhala, time.time())
+                bucket.copy_blob(
+                    source_blob, bucket, new_location
+                )
+                bucket.delete_blob(stream.pos_firebase)
+
+                # upload to firebase
+                blob = bucket.blob(fireBaseFileName)
+                blob.upload_from_filename(mp4Path)
+
                 return HttpResponse(json.dumps(
                     {"title": "success", "msg": msg}), content_type='application/json')
-
         except:
             msg = "Error!, Something went wrong. Can't upload the file"
             return HttpResponse(json.dumps(
