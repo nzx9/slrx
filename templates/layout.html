@@ -188,8 +188,8 @@
         ><i class="logout icon"></i> Logout
       </a>
       {% else %}
-      <a class="item">Login</a>
-      <a class="item">Signup</a>
+      <a class="item" href="{% url 'login' %}">Login</a>
+      <a class="item" href="{% url 'register'%}">Register</a>
       {% endif %}
     </div>
     {% endblock %}

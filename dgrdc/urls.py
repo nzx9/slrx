@@ -25,7 +25,7 @@ from accounts.views import registerPage
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/register/', registerPage),
+    path('accounts/register/', registerPage, name="register"),
     path('clusters/', include('clusters.urls')),
     path('streams/', include('streams.urls')),
     path('words/', include('words.urls')),
