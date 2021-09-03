@@ -23,13 +23,6 @@
     height: 70px;
   }
 
-  /* .a {
-    text-decoration: none;
-    color: #16ab39;
-  }
-  .a:hover {
-    color: darkgreen;
-  } */
   .errorlist {
     text-align: left;
   }
@@ -98,6 +91,7 @@
     $("#agreement-checkbox").prop("checked", false);
     $("#terms-modal")
       .modal({
+        blurring: true,
         onApprove: function () {
           $("#agreement-checkbox").prop("checked", true);
         },
@@ -225,44 +219,115 @@
     </div>
   </div>
 </div>
-<div id="terms-modal" class="ui inverted mini modal">
+<div id="terms-modal" class="ui mini modal">
   <div class="header">Terms and Conditions</div>
-  <div class="ui inverted content">
-    <p style="color: black">
+  <div class="ui scrolling content" style="color: black">
+    <p>
       Welcome to DSC, a platform created to collect dynamic signs of Sri Lankan
       sign language for a research project. Our research focuses on a system
       that would detect and recognize dynamic signs in Sri Lankan Sign Language.
-      On registration to this website, you are agreeing to be bound by the
-      following terms and conditions of use and agree that you're responsible
-      for the data you provide.
+      On registration to this website DSC, you are agreeing to be bound by these
+      terms of service, all applicable laws and regulations, and agree that you
+      are responsible for compliance with any applicable local laws and data you
+      provide. If you do not agree with any of these terms, you are prohibited
+      from using or accessing DSC. The materials contained in DSC are protected
+      by applicable copyright and trademark law.
     </p>
-    <ul style="color: black">
-      <li>Permission for webcam access</li>
-      <li>Provide accurate Sri Lankan signs for given words</li>
-      <li>Need to know signs for all the provided words</li>
-      <li>The signs will be validated by a professional</li>
-      <li>
-        Once you complete recording all the signs provided, they will be
-        verified and if all signs are correct you will be paid.
-      </li>
-      <li>
-        If there are errors or incorrect signs, you will have to record again.
-      </li>
-    </ul>
 
-    <h3 style="color: black">Privacy</h3>
-    <ul style="color: black">
-      <li>
+    <h3 class="ui header">Privacy</h3>
+    <ul class="ui middle aligned animated bulleted list">
+      <div class="item">
         The video recordings of signs will solely be used for academic purposes.
-      </li>
-      <li>
+      </div>
+      <div class="item">
         The personal information we collect during registration will be used in
         the verification process and to contact during the payment process.
-      </li>
-      <li>
-        We ensure that the data we collect will not be unprofessionally used.
-      </li>
+      </div>
+      <div class="item">
+        We will implement reasonable and appropriate measures designed to help
+        you secure Your Content against accidental or unlawful loss, access or
+        disclosure.
+      </div>
+      <div class="item">
+        We will not disclose Your Content to any government or third party.
+      </div>
+      <div class="item">
+        Unless it would violate the law or a binding order of a governmental
+        body, we will give you notice of any legal requirement.
+      </div>
+      <div class="item">
+        But remember that no method of transmission over the internet, or method
+        of electronic storage is 100% secure and reliable, and we cannot
+        guarantee its absolute security.
+      </div>
     </ul>
+
+    <h3 class="ui header">Monitoring</h3>
+    <p>
+      We have the right, but not the obligation, to monitor the content of the
+      Site, to determine compliance with these Terms of Use, any other agreement
+      between you and us, and any operating rules established by us, as well as
+      to satisfy any law, regulation, authorized government request, or trade
+      association guideline.
+    </p>
+
+    <h3 class="ui header">Payments</h3>
+    <p>
+      DSC has the right to pay the user (Provider of sign language) any amount
+      agreed upon registration on the website. You are in charge of maintaining
+      all hardware and software needed to access the DSC software and web
+      services and you are responsible for any charges these services may need
+      to function. You agree to not to act in any way that could be viewed as
+      fraudulent. You shall pay all applicable taxes yourself which may be
+      incurred due to your location. You must be 18 or older to use DSC. Payment
+      for the user (Provider of sign language) will depend on the following,
+    </p>
+    <ul class="ui middle aligned animated bulleted list">
+      <div class="item">Permission for webcam access</div>
+      <div class="item">Provide accurate Sri Lankan signs for given words</div>
+      <div class="item">Need to know signs for all the provided words</div>
+      <div class="item">The signs will be validated by a professional</div>
+      <div class="item">
+        Once you complete recording all the signs provided, they will be
+        verified and if all signs are correct, you will be paid.
+      </div>
+      <div class="item">
+        If there are errors or incorrect signs, you will have to record again.
+      </div>
+    </ul>
+
+    <h3 class="header">Termination</h3>
+    <p>
+      DSC Reserves the right to terminate any contract made with any user
+      (Provider of Sign Language) for any reason deemed acceptable to the staff
+      of DSC..
+    </p>
+
+    <h3 class="header">Children’s Privacy</h3>
+    <p>
+      These Services do not address anyone under the age of 18. We do not
+      knowingly collect personally identifiable information from children under
+      18. In the case we discover that a child under 18 has provided us with
+      personal information, we immediately delete this from our servers. If you
+      are a parent or guardian and you are aware that your child has provided us
+      with personal information, please contact us so that we will be able to do
+      necessary actions.
+    </p>
+
+    <h3 class="header">Modifications</h3>
+    <p>
+      DSC may revise these terms of service for its website at any time without
+      notice. By using DSC you are agreeing to be bound by the then current
+      version of these terms of service.
+    </p>
+
+    <h3 class="header">Terms of use enforceability</h3>
+    <p>
+      You acknowledge and agree that you have freely and voluntarily entered
+      into these Terms of Use for DSC, have read and understood each and every
+      provision, and any interpretation of these Terms of Use shall not be
+      construed against us because we drafted these Terms of Use.
+    </p>
   </div>
   <div class="actions">
     <div class="actions" style="margin-bottom: 10px">
