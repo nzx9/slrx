@@ -2,6 +2,98 @@
 <!-- -->
 {% block title %}Home{% endblock %}
 <!-- -->
-{% block content %}
-<h1>Home</h1>
-{% endblock %}
+{% block scripts %}
+<style>
+  #centered-container {
+    height: 90vh;
+    width: 100%;
+  }
+</style>
+{% endblock %} {% block content %}
+<div id="centered-container" class="ui middle aligned grid">
+  <div class="row">
+    <div class="column">
+      <div class="ui centered middle aligned grid">
+        {% if user.is_authenticated %}
+        <h2 class="ui inverted icon header">
+          <i class="smile icon"></i>
+          <div class="content">
+            Welcome, {{ user.username }}
+            <div class="sub header">
+              Last login : {{ user.last_login }} (+00.00)
+            </div>
+          </div>
+        </h2>
+        {% else %}
+        <h2 class="ui inverted icon header">
+          <i class="user icon"></i>
+          <div class="content">
+            Welcome, Guest.
+            <div class="sub header">Please log in.</div>
+          </div>
+        </h2>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% if user.is_authenticated %}
+  <div class="ui inverted horizontal divider">statistics</div>
+  <div class="row">
+    <div class="column">
+      <div class="ui centered middle aligned two column grid">
+        <div class="ui inverted statistics">
+          <div class="ui inverted blue statistic">
+            <div class="value">{{ done_count }}</div>
+            <div class="label">Completed</div>
+          </div>
+          <div class="ui inverted yellow statistic">
+            <div class="value">{{ not_done_count }}</div>
+            <div class="label">To Record</div>
+          </div>
+          <div class="ui inverted olive statistic">
+            <div class="value">{{ to_verify_count }}</div>
+            <div class="label">To Verify</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <div class="ui centered middle aligned two column grid">
+        <div class="ui inverted statistics">
+          <div class="ui inverted green statistic">
+            <div class="value">{{ accept_count }}</div>
+            <div class="label">Accepted</div>
+          </div>
+          <div class="ui inverted red statistic">
+            <div class="value">{{ reject_count }}</div>
+            <div class="label">Rejected</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <div class="ui centered middle aligned grid">
+        <div class="ui inverted statistics">
+          <div class="ui inverted teal statistic">
+            <div class="value">{{percent}} <i class="percent icon"></i></div>
+            <div class="label">Done</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <div class="ui centered middle aligned grid">
+        <a class="ui inverted button" href="{% url 'streams_view'%}"
+          >Continue</a
+        >
+      </div>
+    </div>
+  </div>
+  {% endif %} {% endblock %}
+</div>
