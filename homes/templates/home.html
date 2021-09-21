@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout.html' %} {% load encoders %} {% load static %}
 <!-- -->
 {% block title %}Home{% endblock %}
 <!-- -->
@@ -8,6 +8,14 @@
     height: 90vh;
     width: 100%;
   }
+  #continue-btn {
+    background-color: transparent;
+    border: 2px solid white;
+  }
+  #continue-btn:hover {
+    background-color: white;
+    color: black;
+  }
 </style>
 {% endblock %} {% block content %}
 <div id="centered-container" class="ui middle aligned grid">
@@ -15,13 +23,43 @@
     <div class="column">
       <div class="ui centered middle aligned grid">
         {% if user.is_authenticated %}
-        <h2 class="ui inverted icon header">
-          <i class="smile icon"></i>
+        <h2 class="ui inverted header">
+          {% if user.is_superuser %}
+          <img src="{% static 'super-user.png' %}" />
+          <!-- -->
+          {% elif user|has_group:"Tester" %}
+          <img src="{% static 'tester.png' %}" />
+          <!-- -->
+          {% elif user|has_group: "Validator"}
+          <img src="{% static 'validator.png' %}" />
+          {% else %}
+          <img src="{% static 'user.png' %}" />
+          {% endif %}
           <div class="content">
-            Welcome,<br />
             {{ user.username }}
             <div class="sub header">
-              Last login : {{ user.last_login }} (+00.00)
+              {% if user.is_superuser %}
+              <p>
+                Privilage Level: <b><i>Super User</i></b>
+              </p>
+              {% elif user|has_group:"Tester" %}
+              <p>
+                Privilage Level: <b><i>Tester</i></b>
+              </p>
+              <b>Tester</b>
+              <!-- -->
+              {% elif user|has_group: "Validator"}
+              <p>
+                Privilage Level: <b><i>Validator</i></b>
+              </p>
+              {% else %}
+              <p>
+                Privilage Level: <b><i>User</i></b>
+              </p>
+              {% endif %}
+            </div>
+            <div class="sub header">
+              Last login : {{ user.last_login| timesince }} ago
             </div>
           </div>
         </h2>
@@ -38,61 +76,99 @@
     </div>
   </div>
   {% if user.is_authenticated %}
-  <div class="ui inverted horizontal divider">statistics</div>
   <div class="row">
     <div class="column">
-      <div class="ui centered middle aligned two column grid">
-        <div class="ui inverted statistics">
-          <div class="ui inverted blue statistic">
-            <div class="value">{{ done_count }}</div>
-            <div class="label">Completed</div>
-          </div>
-          <div class="ui inverted yellow statistic">
-            <div class="value">{{ not_done_count }}</div>
-            <div class="label">To Record</div>
-          </div>
-          <div class="ui inverted olive statistic">
-            <div class="value">{{ to_verify_count }}</div>
-            <div class="label">To Verify</div>
-          </div>
-        </div>
-      </div>
+      {% if user|has_group:"Validator" or user.is_superuser %}
+      <a class="ui inverted button" href="{% url 'stream_verification'%}">
+        CONTINUE
+        <i class="chevron circle right icon"></i>
+      </a>
+      {% else %}
+      <a class="ui inverted button" href="{% url 'streams_view'%}">
+        CONTINUE
+        <i class="chevron circle right icon"></i>
+      </a>
+      {% endif %}
     </div>
   </div>
   <div class="row">
     <div class="column">
-      <div class="ui centered middle aligned two column grid">
-        <div class="ui inverted statistics">
-          <div class="ui inverted green statistic">
-            <div class="value">{{ accept_count }}</div>
-            <div class="label">Accepted</div>
-          </div>
-          <div class="ui inverted red statistic">
-            <div class="value">{{ reject_count }}</div>
-            <div class="label">Rejected</div>
-          </div>
+      {% if user|has_group:"Tester" or user.is_superuser %}
+      <div
+        class="ui left labeled button"
+        tabindex="0"
+        onclick="window.open('https://forms.gle/yzjp6wyZTTXud3Uu7', '_blank')"
+      >
+        <a class="ui basic label"> FEEDBACK </a>
+        <div class="ui yellow icon button">
+          <i class="external icon"></i>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="column">
-      <div class="ui centered middle aligned grid">
-        <div class="ui inverted statistics">
-          <div class="ui inverted teal statistic">
-            <div class="value">{{percent}} <i class="percent icon"></i></div>
-            <div class="label">Done</div>
-          </div>
+      {% endif %}
+      <!---->
+      {% if user|has_group:"Validator" or user.is_superuser %}
+      <div
+        class="ui left labeled button"
+        tabindex="0"
+        onclick="window.open(`{% url 'stream_verification' %}`, '_blank')"
+      >
+        <a class="ui basic label"> VALIDATOR </a>
+        <div class="ui green icon button">
+          <i class="external icon"></i>
         </div>
       </div>
+      {% endif %}
     </div>
   </div>
   <div class="row">
     <div class="column">
       <div class="ui centered middle aligned grid">
-        <a class="ui inverted button" href="{% url 'streams_view'%}"
-          >Continue</a
-        >
+        <div class="ui inverted brown center aligned circular segment">
+          <h2 class="ui header">
+            {{percent}}%
+            <div class="sub header">DONE</div>
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <div class="ui centered grid">
+        <div class="ui inverted center aligned segment">
+          <div class="ui statistics">
+            <div class="ui blue statistic">
+              <div class="value">{{ done_count }}</div>
+              <div class="label" style="color: white">Completed</div>
+            </div>
+            <div class="ui blue statistic">
+              <div class="value">{{ not_done_count }}</div>
+              <div class="label" style="color: white">To Record</div>
+            </div>
+            <div class="ui blue statistic">
+              <div class="value">{{ to_verify_count }}</div>
+              <div class="label" style="color: white">To Verify</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <div class="ui centered grid">
+        <div class="ui inverted center aligned segment">
+          <div class="ui statistics">
+            <div class="ui green statistic">
+              <div class="value">{{ accept_count }}</div>
+              <div class="inverted label" style="color: white">Accepted</div>
+            </div>
+            <div class="ui red statistic">
+              <div class="value">{{ reject_count }}</div>
+              <div class="label" style="color: white">Rejected</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
