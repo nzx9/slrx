@@ -30,7 +30,7 @@
           {% elif user|has_group:"Tester" %}
           <img src="{% static 'tester.png' %}" />
           <!-- -->
-          {% elif user|has_group: "Validator"}
+          {% elif user|has_group:"Validator" %}
           <img src="{% static 'validator.png' %}" />
           {% else %}
           <img src="{% static 'user.png' %}" />
@@ -46,9 +46,8 @@
               <p>
                 Privilage Level: <b><i>Tester</i></b>
               </p>
-              <b>Tester</b>
               <!-- -->
-              {% elif user|has_group: "Validator"}
+              {% elif user|has_group:"Validator" %}
               <p>
                 Privilage Level: <b><i>Validator</i></b>
               </p>
