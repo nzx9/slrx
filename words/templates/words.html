@@ -30,7 +30,9 @@
               <th rowspan="2">Records</th>
               <th rowspan="2">Created By</th>
               <th rowspan="2">Created</th>
+              {% if user.is_superuser %}
               <th rowspan="2">Delete</th>
+              {% endif %}
             </tr>
             <tr>
               <th>Id</th>
@@ -58,19 +60,22 @@
               {% localtime on %}
               <td>{{ word.created_at| timesince }} ago</td>
               {% endlocaltime %}
+              <!-- -->
+              {% if user.is_superuser %}
               <td>
                 <a href="{% url 'delete_word' word.pk %}"
                   ><i class="trash red icon"></i
                 ></a>
               </td>
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
           <!--- -->
           <tfoot class="full-width">
             <tr>
-              <th></th>
-              <th colspan="8">
+              <th colspan="9">
+                {% if user.is_superuser %}
                 <a href="{% url 'add_new_words' %}">
                   <button
                     class="ui right floated small inverted labeled icon button"
@@ -78,6 +83,7 @@
                     <i class="database icon"></i> Add New Words
                   </button>
                 </a>
+                {% endif %}
               </th>
             </tr>
           </tfoot>
