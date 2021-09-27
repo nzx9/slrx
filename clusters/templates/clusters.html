@@ -8,6 +8,10 @@
     height: 90vh;
     width: 100%;
   }
+  .box {
+    width: 100%;
+    height: 50px;
+  }
 </style>
 {% endblock %}
 <!--- -->
@@ -27,8 +31,59 @@
           </div>
         </div>
       </div>
+      <div class="ui centered middle aligned grid">
+        <div class="box"></div>
+        <div
+          id="download-all-btn"
+          class="ui yellow button"
+          onclick="download('download-all-btn', 'all')"
+          href="{% url 'download_clusters' 'all' %}"
+        >
+          <i class="exclamation triangle red icon"></i>DOWNLOAD EVERYTHING
+        </div>
+        <div
+          id="download-verified-btn"
+          class="ui green button"
+          onclick="download('download-verified-btn', 'verified')"
+          href="{% url 'download_clusters' 'verified'%}"
+        >
+          <i class="download icon"></i>DOWNLOAD VERIFIED
+        </div>
+      </div>
+      <div class="ui centered middle aligned grid">
+        <div class="box"></div>
+        <p>
+          Downloading files may take some time.<br />
+          Because server need to pre-process and create zip file before download
+        </p>
+        <br />
+      </div>
+      <div class="ui centered middle aligned grid">
+        <div class="box"></div>
+        <p id="download-log"></p>
+        <br />
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+  function download(id, type) {
+    $(`#download-all-btn`).addClass("disabled");
+    $(`#download-verified-btn`).addClass("disabled");
+    $(`#${id}`).addClass("loading");
+    $(`#download-log`).text("Please wait, this may take while.");
+
+    location.href = `{% url 'download_clusters' '${type}' %}`;
+    document.readyState = "loading";
+
+    window.addEventListener("blur", function () {
+      $(`#download-all-btn`).removeClass("disabled");
+      $(`#download-verified-btn`).removeClass("disabled");
+      $(`#${id}`).removeClass("loading");
+      $(`#download-log`).text("Files Processed Successfully!");
+    });
+  }
+</script>
 
 {% endblock %}
