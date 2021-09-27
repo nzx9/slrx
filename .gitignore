@@ -5,3 +5,4 @@ db.sqlite3
 .env
 *.mp4
 *.webm
+*.zip
