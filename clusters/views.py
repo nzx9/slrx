@@ -54,12 +54,12 @@ def download_clusters(request, type):
         "./media/archives/{}".format(file_name), 'zip', root_dir="./media/tmp", base_dir=file_name)
     zippath = "./media/archives/{}.zip".format(file_name)
     # Open the file for reading content
-    with ZipFile(zippath, 'r') as path:
+    with open(zippath, 'rb') as zip:
         # Set the mime type
         mime_type, _ = mimetypes.guess_type(zippath)
         # Set the return value of the HttpResponse
-        response = HttpResponse(path, content_type=mime_type)
+        response = HttpResponse(zip, content_type=mime_type)
         # Set the HTTP header for sending to browser
-        response['Content-Disposition'] = "attachment; filename=%s" % file_name
+        response['Content-Disposition'] = "attachment; filename=%s.zip" % file_name
         # Return the response value
         return response
