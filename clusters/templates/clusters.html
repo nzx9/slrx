@@ -36,16 +36,14 @@
         <div
           id="download-all-btn"
           class="ui yellow button"
-          onclick="download('download-all-btn', 'all')"
-          href="{% url 'download_clusters' 'all' %}"
+          onclick="download_all('download-all-btn', 'all')"
         >
           <i class="exclamation triangle red icon"></i>DOWNLOAD EVERYTHING
         </div>
         <div
           id="download-verified-btn"
           class="ui green button"
-          onclick="download('download-verified-btn', 'verified')"
-          href="{% url 'download_clusters' 'verified'%}"
+          onclick="download_verified('download-verified-btn', 'verified')"
         >
           <i class="download icon"></i>DOWNLOAD VERIFIED
         </div>
@@ -68,13 +66,29 @@
 </div>
 
 <script>
-  function download(id, type) {
+  function download_all(id) {
     $(`#download-all-btn`).addClass("disabled");
     $(`#download-verified-btn`).addClass("disabled");
     $(`#${id}`).addClass("loading");
     $(`#download-log`).text("Please wait, this may take while.");
 
-    location.href = `{% url 'download_clusters' '${type}' %}`;
+    location.href = `{% url 'download_clusters' 'all' %}`;
+    document.readyState = "loading";
+
+    window.addEventListener("blur", function () {
+      $(`#download-all-btn`).removeClass("disabled");
+      $(`#download-verified-btn`).removeClass("disabled");
+      $(`#${id}`).removeClass("loading");
+      $(`#download-log`).text("Files Processed Successfully!");
+    });
+  }
+  function download_verified(id) {
+    $(`#download-all-btn`).addClass("disabled");
+    $(`#download-verified-btn`).addClass("disabled");
+    $(`#${id}`).addClass("loading");
+    $(`#download-log`).text("Please wait, this may take while.");
+
+    location.href = `{% url 'download_clusters' 'verified' %}`;
     document.readyState = "loading";
 
     window.addEventListener("blur", function () {
