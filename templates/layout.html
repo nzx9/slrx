@@ -122,6 +122,10 @@
           <a class="active item" href="{% url 'words_view'%}">Words</a>
           {% else %}
           <a class="item" href="{% url 'words_view'%}">Words</a>
+          {% endif%} {% if "/categories/" in request.path %}
+          <a class="active item" href="{% url 'category_view'%}">Categories</a>
+          {% else %}
+          <a class="item" href="{% url 'category_view'%}">Categories</a>
           {% endif%}
           <div class="right menu">
             {% if user.is_authenticated %}
@@ -183,6 +187,10 @@
       <a class="active item" href="{% url 'words_view'%}">Words</a>
       {% else %}
       <a class="item" href="{% url 'words_view'%}">Words</a>
+      {% endif%} {% if "/categories/" in request.path %}
+      <a class="active item" href="{% url 'category_view'%}">Categories</a>
+      {% else %}
+      <a class="item" href="{% url 'category_view'%}">Categories</a>
       {% endif%} {% if user.is_authenticated %}
       <a class="ui item" href="{% url 'logout' %}"
         ><i class="logout icon"></i> Logout
