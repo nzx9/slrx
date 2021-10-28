@@ -29,6 +29,7 @@ urlpatterns = [
     path('clusters/', include('clusters.urls')),
     path('streams/', include('streams.urls')),
     path('words/', include('words.urls')),
+    path('categories', include('categories.urls')),
     path('', include('homes.urls')),
     path(
         "favicon.ico",

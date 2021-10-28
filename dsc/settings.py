@@ -71,7 +71,8 @@ INSTALLED_APPS = [
     'clusters',
     'streams',
     'words',
-    'homes'
+    'homes',
+    'categories'
 ]
 
 MIDDLEWARE = [
