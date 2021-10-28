@@ -86,7 +86,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'dgrdc.urls'
+ROOT_URLCONF = 'dsc.urls'
 
 TEMPLATES = [
     {
@@ -104,7 +104,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'dgrdc.wsgi.application'
+WSGI_APPLICATION = 'dsc.wsgi.application'
 
 
 # Database
@@ -169,4 +169,4 @@ LOGIN_REDIRECT_URL = "/"
 
 LOGOUT_REDIRECT_URL = "/"
 
-ASGI_APPLICATION = "dgrdc.asgi.application"
+ASGI_APPLICATION = "dsc.asgi.application"
