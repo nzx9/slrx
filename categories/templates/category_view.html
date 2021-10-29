@@ -1,0 +1,189 @@
+{% extends "layout.html" %} {% load static %} {% load encoders %}
+<!-- -->
+{% block title %} Categories {% endblock %}
+<!-- -->
+{%block scripts %}
+<script src="{% static 'js/main.js' %}"></script>
+{% endblock %}<!--- -->
+{% block content %}
+<!-- <h1>Categories</h1> -->
+<div class="ui stackable two column internally celled grid">
+  {% if user|has_group:"Tester" or user.is_superuser %}
+  <div class="twelve wide column">
+    {% else %}
+    <div class="sixteen wide column">
+      {% endif %}
+      <div>
+        <div class="ui inverted center raised segment">
+          <h1 class="ui header" style="margin-bottom: 15px">
+            Available Categories
+          </h1>
+          <div class="ui centered middle aligned grid" style="display: auto">
+            {% if empty %}
+            <div style="margin-top: 25px">
+              <img style="height: 350px" src="{% static 'nodata.png' %}" />
+              <h3 class="ui inverted header">
+                No Categories Available
+                <!-- -->
+                {% if user|has_group:"Tester" or user.is_superuser %}
+                <div class="sub header">
+                  Use 'Create New' to create new category
+                </div>
+                {% else %}
+                <div class="sub header">
+                  After super-users add categories, you can see the categories
+                </div>
+                {% endif %}
+              </h3>
+            </div>
+            {% else %} {% for category in categories %}
+            <div
+              class="ui green card"
+              style="
+                float: left;
+                margin-right: 10px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+              "
+            >
+              <div class="content">
+                <div class="header">{{category.name}}</div>
+              </div>
+              <div class="content">
+                <div class="ui small feed">
+                  <div class="event">
+                    <div class="content">
+                      <div class="summary">Category ID : {{category.pk}}</div>
+                    </div>
+                  </div>
+                  <div class="event">
+                    <div class="content">
+                      <div class="summary">
+                        Number of Words: {{category.word_count}}
+                      </div>
+                    </div>
+                  </div>
+                  <h4 class="ui sub header" style="margin-top: 5px">
+                    Description
+                  </h4>
+                  <div class="event">
+                    <div class="content">
+                      <div
+                        class="summary"
+                        style="overflow-y: scroll; height: 40px"
+                      >
+                        {{category.description}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="extra content">
+                <button class="ui inverted green button">View</button>
+                {% if user|has_group:"Tester" or user.is_superuser %}
+                <button class="ui inverted red button">Delete</button>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %} {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if user|has_group:"Tester" or user.is_superuser %}
+    <div class="four wide column">
+      <div>
+        <form class="ui large form" method="POST" onsubmit="sendData()">
+          {% csrf_token %}
+          <div class="ui inverted raised segment">
+            <h1 class="ui header">Create New</h1>
+            <div class="field">
+              <div class="ui action input">
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  required
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui action input">
+                <textarea
+                  id="description"
+                  type="text"
+                  name="description"
+                  rows="10"
+                  placeholder="Description"
+                  required
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="ui message" id="log" style="display: none"></div>
+            </div>
+          </div>
+          <div class="field">
+            <button class="ui inverted button" type="submit">CREATE</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function sendData() {
+    let data = {
+      name: $("#name").val(),
+      desc: $("#description").val(),
+    };
+    console.log(data);
+    if (
+      data.name !== null &&
+      data.name !== undefined &&
+      data.name !== "" &&
+      data.desc !== null &&
+      data.desc !== undefined &&
+      data.desc !== ""
+    ) {
+      const csrftoken = Cookies.get("csrftoken");
+      fetch(`create`, {
+        method: "post",
+        body: JSON.stringify(data),
+        headers: {
+          "X-CSRFToken": csrftoken,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) =>
+          response.json().then((res, error1) => {
+            if (error1) {
+              log(error1, "error");
+            } else {
+              log(res.msg, res.type);
+              window.location.reload();
+            }
+          })
+        )
+        .catch((error2) => {
+          log(error2, "error", "error");
+        });
+    } else {
+      log("Name or Description can't be empty", "error");
+    }
+  }
+  function log(msg, type = null) {
+    $("#log").html(`<p>${msg}</p>`);
+    $("#log").css("display", "block");
+    if (type == "success") {
+      $("#log").addClass("green");
+    } else if (type == "error") {
+      $("#log").addClass("red");
+    }
+  }
+</script>
+{% endblock %}
