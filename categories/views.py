@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponse
 from categories.models import Category
+from words.models import Word
 import json
 # Create your views here.
 
@@ -38,3 +39,43 @@ def create_category(request):
         else:
             return HttpResponse(json.dumps({"msg": "Not a POST request", "type": "error"}))
     return HttpResponse(json.dumps({"msg": "No permission to perfrom action", "type": "error"}))
+
+
+def category_each_view(request, category):
+    cat_data = Category.objects.get(name=category)
+    if(cat_data == None):
+        return render(request, '404.html')
+
+    words = Word.objects.filter(category=cat_data)
+    empty = (len(words)) == 0 if True else False
+    return render(request, 'category_each.html', {"cat_data": cat_data, "words": words, "empty": empty})
+
+
+def update_category(request, pk):
+    edited = False
+    if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
+        if request.method == "UPDATE":
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            name = body['name']
+            desc = body['desc']
+            try:
+                category = Category.objects.get(pk=pk)
+                if(category.name != name):
+                    category.name = name
+                    edited = True
+                if(category.description != desc):
+                    category.description = desc
+                    edited = True
+                if(edited):
+                    category.last_edit_by = request.user
+                    category.save()
+                    return HttpResponse(json.dumps({"msg": "Category '{}' Updated".format(name), "type": "success"}))
+                else:
+                    return HttpResponse(json.dumps({"msg": "Nothing to Update".format(name), "type": "warning"}))
+            except:
+                return HttpResponse(json.dumps({"msg": "Something went wrong", "type": "error"}))
+        else:
+            return HttpResponse(json.dumps({"msg": "Not a POST request", "type": "error"}))
+    else:
+        return HttpResponse(json.dumps({"msg": "No permission to perfrom action", "type": "error"}))
