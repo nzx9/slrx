@@ -14,7 +14,44 @@
         <span style="color: greenyellow">{{cat_data.name}}</span> Category
       </h3>
     </div>
-    {% else %} {% for word in words %} {% endfor %} {% endif %}
+    {% else %}
+    <h4 class="ui header inverted left aligned" style="padding-left: 40px">
+      Words for
+      <span style="color: greenyellow">{{cat_data.name}}</span> Category
+    </h4>
+    <div class="ui cards">
+      {% for word in words %}
+      <div class="ui card">
+        <div class="content">
+          <div class="center aligned header">{{word.in_sinhala}}</div>
+          <div class="center aligned description">
+            <table style="width: 100%" class="ui celled center aligned table">
+              <thead>
+                <th>ID</th>
+                <th>English</th>
+                <th>Singlish</th>
+              </tr>
+              <thead>
+                <td>{{word.pk}}</td>
+                <td>{{word.in_english}}</td>
+                <td>{{word.in_singlish}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="extra content">
+          <div class="center aligned author">
+            <div>
+               
+              <i class="ui black file video outline icon"></i>
+              <b>Rec. Count:</b> {{word.recorde_count}}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
   <div class="four wide column">
     <form
@@ -23,18 +60,19 @@
       id="{{cat_data.pk}}"
       onsubmit="update_cat(this.id)"
     >
+      {% csrf_token %}
       <div class="ui inverted raised segment">
         <div class="field">
           <h5><div class="ui inverted sub header">Category ID</div></h5>
           <div class="ui action input">
             <input
+              readonly
               id="cat-id"
               type="text"
               name="Category ID"
               placeholder="Category ID"
               required
               value="{{ cat_data.pk }}"
-              disabled
             />
           </div>
         </div>
@@ -52,13 +90,13 @@
             />
             {% else %}
             <input
+              readonly
               id="name"
               type="text"
               name="name"
               placeholder="Name"
               required
               value="{{ cat_data.name }}"
-              disabled
             />
             {% endif %}
           </div>
@@ -82,10 +120,10 @@
               id="description"
               type="text"
               name="description"
-              rows="5"
               placeholder="Description"
               required
-              disabled
+              readonly
+              rows="5"
             >
 {{cat_data.description}}</textarea
             >
@@ -96,13 +134,13 @@
           <h5><div class="ui inverted sub header">Created By</div></h5>
           <div class="ui action input">
             <input
+              readonly
               id="created-by"
               type="text"
               name="Created By"
               placeholder="Created By"
               required
               value="{{ cat_data.created_by }}"
-              disabled
             />
           </div>
         </div>
@@ -110,13 +148,13 @@
           <h5><div class="ui inverted sub header">Last Edit By</div></h5>
           <div class="ui action input">
             <input
+              readonly
               id="last-edit-by"
               type="text"
               name="Last Edit By"
               placeholder="Last Edit By"
               required
               value="{{ cat_data.last_edit_by }}"
-              disabled
             />
           </div>
         </div>
