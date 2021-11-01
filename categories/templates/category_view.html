@@ -85,7 +85,11 @@
                   >View</a
                 >
                 {% if user|has_group:"Tester" or user.is_superuser %}
-                <button class="ui inverted red button">Delete</button>
+                <a
+                  class="ui inverted red button"
+                  href="{% url 'delete_category' category.pk %}"
+                  >Delete</a
+                >
                 {% endif %}
               </div>
             </div>

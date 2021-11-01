@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from categories.models import Category
 from words.models import Word
 import json
@@ -79,3 +79,12 @@ def update_category(request, pk):
             return HttpResponse(json.dumps({"msg": "Not a POST request", "type": "error"}))
     else:
         return HttpResponse(json.dumps({"msg": "No permission to perfrom action", "type": "error"}))
+
+
+def delete_category(request, pk):
+    if request.user.is_superuser:
+        category = Category.objects.get(pk=pk)
+        category.delete()
+        return redirect('category_view')
+    else:
+        return render(request, "403.html")
