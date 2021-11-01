@@ -79,7 +79,11 @@
                 </div>
               </div>
               <div class="extra content">
-                <button class="ui inverted green button">View</button>
+                <a
+                  class="ui inverted green button"
+                  href="{% url 'category_each' category.name%}"
+                  >View</a
+                >
                 {% if user|has_group:"Tester" or user.is_superuser %}
                 <button class="ui inverted red button">Delete</button>
                 {% endif %}
@@ -93,7 +97,7 @@
     {% if user|has_group:"Tester" or user.is_superuser %}
     <div class="four wide column">
       <div>
-        <form class="ui large form" method="POST" onsubmit="sendData()">
+        <form class="ui large form" method="POST" onsubmit="create_cat()">
           {% csrf_token %}
           <div class="ui inverted raised segment">
             <h1 class="ui header">Create New</h1>
@@ -136,7 +140,7 @@
 </div>
 
 <script>
-  function sendData() {
+  function create_cat() {
     let data = {
       name: $("#name").val(),
       desc: $("#description").val(),
@@ -170,7 +174,7 @@
           })
         )
         .catch((error2) => {
-          log(error2, "error", "error");
+          log(error2, "error");
         });
     } else {
       log("Name or Description can't be empty", "error");
