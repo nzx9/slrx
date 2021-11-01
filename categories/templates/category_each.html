@@ -1,0 +1,189 @@
+{% extends "layout.html" %} {% load static %} {% load encoders %}
+<!-- -->
+{% block title %}Categories | {{ cat_data.name }}{% endblock %}
+<!---->
+{% block content %}
+
+<div class="ui stackable two column internally celled grid">
+  <div class="twelve wide column">
+    {% if empty %}
+    <div style="margin-top: 25px">
+      <img style="height: 350px" src="{% static 'nodata.png' %}" />
+      <h3 class="ui inverted header">
+        No Words In
+        <span style="color: greenyellow">{{cat_data.name}}</span> Category
+      </h3>
+    </div>
+    {% else %} {% for word in words %} {% endfor %} {% endif %}
+  </div>
+  <div class="four wide column">
+    <form
+      class="ui large form"
+      method="POST"
+      id="{{cat_data.pk}}"
+      onsubmit="update_cat(this.id)"
+    >
+      <div class="ui inverted raised segment">
+        <div class="field">
+          <h5><div class="ui inverted sub header">Category ID</div></h5>
+          <div class="ui action input">
+            <input
+              id="cat-id"
+              type="text"
+              name="Category ID"
+              placeholder="Category ID"
+              required
+              value="{{ cat_data.pk }}"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Category Name</div></h5>
+          <div class="ui action input">
+            {% if user|has_group:'Tester' or user.is_superuser %}
+            <input
+              id="name"
+              type="text"
+              name="name"
+              placeholder="Name"
+              required
+              value="{{ cat_data.name }}"
+            />
+            {% else %}
+            <input
+              id="name"
+              type="text"
+              name="name"
+              placeholder="Name"
+              required
+              value="{{ cat_data.name }}"
+              disabled
+            />
+            {% endif %}
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Description</div></h5>
+          <div class="ui action input">
+            {% if user|has_group:'Tester' or user.is_superuser %}
+            <textarea
+              id="description"
+              type="text"
+              name="description"
+              rows="5"
+              placeholder="Description"
+              required
+            >
+{{cat_data.description}}</textarea
+            >
+            {% else %}
+            <textarea
+              id="description"
+              type="text"
+              name="description"
+              rows="5"
+              placeholder="Description"
+              required
+              disabled
+            >
+{{cat_data.description}}</textarea
+            >
+            {% endif %}
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Created By</div></h5>
+          <div class="ui action input">
+            <input
+              id="created-by"
+              type="text"
+              name="Created By"
+              placeholder="Created By"
+              required
+              value="{{ cat_data.created_by }}"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Last Edit By</div></h5>
+          <div class="ui action input">
+            <input
+              id="last-edit-by"
+              type="text"
+              name="Last Edit By"
+              placeholder="Last Edit By"
+              required
+              value="{{ cat_data.last_edit_by }}"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui message" id="log" style="display: none"></div>
+        </div>
+      </div>
+      {% if user|has_group:'Tester' or user.is_superuser %}
+      <div class="field">
+        <button class="ui inverted button" type="submit">SAVE</button>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<script>
+  function update_cat(pk) {
+    let data = {
+      name: $("#name").val(),
+      desc: $("#description").val(),
+    };
+    console.log(data);
+    if (
+      data.name !== null &&
+      data.name !== undefined &&
+      data.name !== "" &&
+      data.desc !== null &&
+      data.desc !== undefined &&
+      data.desc !== ""
+    ) {
+      const csrftoken = Cookies.get("csrftoken");
+      fetch(`update/${pk}`, {
+        method: "update",
+        body: JSON.stringify(data),
+        headers: {
+          "X-CSRFToken": csrftoken,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) =>
+          response.json().then((res, error1) => {
+            if (error1) {
+              log(error1, "error");
+            } else {
+              log(res.msg, res.type);
+              window.location.reload();
+            }
+          })
+        )
+        .catch((error2) => {
+          log(error2, "error");
+        });
+    } else {
+      log("Name or Description can't be empty", "error");
+    }
+  }
+  function log(msg, type = null) {
+    $("#log").html(`<p>${msg}</p>`);
+    $("#log").css("display", "block");
+    if (type == "success") {
+      $("#log").addClass("green");
+    } else if (type == "error") {
+      $("#log").addClass("red");
+    } else if (type == "warning") {
+      $("#log").addClass("yellow");
+    }
+  }
+</script>
+{% endblock %}
