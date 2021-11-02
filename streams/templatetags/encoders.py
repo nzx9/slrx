@@ -7,7 +7,7 @@ register = template.Library()
 
 @register.filter
 def uriencode(value):
-    value = urllib.parse.quote(value)
+    value = urllib.parse.quote(value.encode('utf-8'))
     return value.replace("/", "%2F")
 
 
