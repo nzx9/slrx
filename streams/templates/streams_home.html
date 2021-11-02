@@ -1,144 +1,159 @@
 {% extends "layout.html" %}
 <!--- -->
-{% load tz %}
+{% load tz %} {% load static %}
 <!--- -->
 {% load encoders %}
 <!--- -->
 {% block title %} Streams {% endblock %}
 <!--- -->
 {% block content %} {% if user|has_group:"Validator" or user.is_superuser %}
-<a class="ui inverted button" href="{% url 'stream_verification' %}">Verify Streams</a>
+<div class="ui buttons" style="margin-bottom: 10px">
+  <a class="ui labeled icon blue button" href="{% url 'streams_table_home'%}">
+    <i class="table icon"></i>
+    TABLE VIEW
+  </a>
+  <a
+    class="ui right labeled icon green button"
+    href="{% url 'stream_verification' %}"
+  >
+    VALIDATOR
+    <i class="check circle icon"></i>
+  </a>
+</div>
+{% else %}
+<div class="one ui buttons" style="margin-bottom: 10px">
+  <a class="ui labeled icon blue button" href="{% url 'streams_table_home'%}">
+    <i class="table icon"></i>
+    TABLE VIEW
+  </a>
+</div>
 {% endif %}
-<div class="ui stackable one column grid">
+<div class="ui centered stackable one column grid" style="margin-left: 6px">
   <div class="column">
-    {% csrf_token %}
     <div class="ui inverted raised segment">
-      {% if empty == True %}
+      {% if empty %}
       <h1 class="ui header">No Words To Show</h1>
       {% else %}
-      <div class="ui container">
-        <table class="ui inverted center celled structured table">
-          <thead class="center aligned">
-            <tr>
-              <th rowspan="2">#</th>
+      <div class="ui link cards">
+        {% for d in data %}
+        <div class="card">
+          <div class="image center aligned">
+            {% if d.s_info.pos_firebase != None %}
+            <video
+              width="280px"
+              height="150px"
+              src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ d.s_info.pos_firebase | uriencode }}?alt=media&"
+              controls
+            ></video>
+            {%else%}
+            <div
+              style="
+                width: 100%;
+                height: 150px;
+                background-color: black;
+                border-radius: 2px;
+              "
+            >
+              <img
+                style="height: 100px; margin-top: 10px"
+                src="{% static 'nodata.png' %}"
+              />
+              <h3 class="ui inverted header" style="margin-top: 5px">
+                <div class="ui sub header">No Preview</div>
+              </h3>
+            </div>
+            {% endif %}
+          </div>
+          <div class="content">
+            <div class="header">
+              {{d.w_info.in_sinhala}} ({{d.w_info.in_english}})
+              <span
+                class="meta right floated ui sub header"
+                style="font-size: 12px"
+              >
+                {% if d.w_info.category != None %}
+                <a href="{% url 'category_each' d.w_info.category.name %}"
+                  >{{d.w_info.category.name}}</a
+                >
+                {% endif %}
+              </span>
+            </div>
+            <div class="meta">
+              {% if d.s_info.updated_at != None %}
+              <!---->
+              {{d.s_info.updated_at | timesince }} ago
+              <!---->
+              {% else %} Not Recorded Yet
+              <!---->
+              {% endif %}
+            </div>
+            <div class="ui divider"></div>
+            <div class="description">
+              <h4 class="ui sub header" style="margin-top: 5px">Comments</h4>
+              <div style="height: 30px; overflow-y: scroll">
+                {{d.s_info.comment}}
+              </div>
+            </div>
+          </div>
+          <div class="extra content">
+            <span class="left floated">
+              {% if d.comp == True and d.s_info.verified == True %}
+              <i class="check circle green icon"></i>
+              <span style="color: green">Accepted</span>
+              <!-- -->
+              {% elif d.comp == True and d.s_info.verified == None %}
+              <i class="exclamation circle yellow icon"></i>
+              <span>Pending</span>
+              <!-- -->
+              {% elif d.comp == True and d.s_info.verified == False %}
+              <i class="times circle red icon"></i>
+              <span style="color: red">Rejected</span>
+              <!-- -->
+              {% else %}
+              <i class="minus circle icon"></i> <span>Not Recorded</span>
+              <!-- -->
+              {% endif %}
+            </span>
 
-              <th colspan="4">Word</th>
-              <th colspan="6">Stream</th>
-              <th rowspan="2">REC</th>
-            </tr>
-            <tr>
-              <th>Id</th>
-              <th>In Sinhala</th>
-              <th>In English</th>
-              <th>In Singlish</th>
-              <th>Id</th>
-              <th>Preview</th>
-              <th>Done</th>
-              <th>Verified</th>
-              <th>@</th>
-              <th>Comment</th>
-            </tr>
-          </thead>
-          <tbody class="center aligned">
-            <!--- -->
-            {% for d in data %}
-            <tr>
-              <td class="collapsing">{{forloop.counter}}</td>
-              <td class="collapsing">{{d.w_info.pk}}</td>
-              <td>{{d.w_info.in_sinhala}}</td>
-              <td>{{d.w_info.in_english}}</td>
-              <td>{{d.w_info.in_singlish}}</td>
-              <td class="collapsing">
-                {% if d.comp == True %}
-                <!-- -->
-                {{ d.s_info.pk }}
-                <!-- -->
-                {% else %} #
-                <!-- -->
-                {% endif %}
-              </td>
-              <td style="padding: 0">
-                {% if d.comp == True %}
-                <video width="180px" height="100px"
-                  src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ d.s_info.pos_firebase| uriencode }}?alt=media&"
-                  controls></video>
-                {% else %} No Previews {% endif %}
-              </td>
-              <td class="collapsing">
-                {% if d.comp == True %}
-                <i class="check circle large green icon"></i>
-                {% else %}
-                <i class="times circle large red icon"></i>
-                {% endif %}
-              </td>
-              <td class="collapsing">
-                {% if d.comp == True and d.s_info.verified == True %}
-                <i class="check circle large green icon"></i>
-                {% elif d.comp == True and d.s_info.verified == None %}
-                <i class="exclamation circle large yellow icon"></i>
-                {% elif d.comp == True and d.s_info.verified == False %}
-                <i class="times circle large red icon"></i>
-                {% else %}
-                <i class="minus circle large icon"></i>
-                {% endif %}
-              </td>
-              {% localtime on %}
-              <td>
-                {% if d.comp == True %}
-                <!-- -->
-                {{ d.s_info.created_at| timesince }} ago
-                <!-- -->
-                {% else %} -
-                <!-- -->
-                {% endif %}
-              </td>
-              {% endlocaltime %}
-              <td>
-                {% if d.comp == True and d.s_info.verified == False %}
-                <!---->
-                Reason: {{ d.s_info.reason }} <br />Comment:
-                {% endif %}  {{d.s_info.comment}}
-              </td>
-              <td>
-                {% if d.comp == True and d.s_info.verified != True %}
-                <a class="ui inverted tiny button" href="{% url 'streams_rec_view' d.w_info.in_english %}"><i
-                    class="redo icon"></i></a>
-                {% elif d.comp == False %}
-                <a class="ui inverted tiny button" href="{% url 'streams_rec_view' d.w_info.in_english %}"><i
-                    class="record icon"></i></a>
-                {% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-          <!--- -->
-          <tfoot class="full-width">
-            <tr style="padding-top: 10px">
-              <th colspan="12">
-                <div id="task-progress" class="ui indicating progress" data-value="{{ done_count }}"
-                  data-total="{{ total_count }}">
-                  <div class="bar">
-                    <div class="progress"></div>
-                  </div>
-                </div>
-              </th>
-            </tr>
-          </tfoot>
-        </table>
+            <span class="right floated">
+              {% if d.comp == True and d.s_info.verified == True %}
+              <a
+                class="ui tiny red disabled button"
+                href="{% url 'streams_rec_view' d.w_info.in_english %}"
+                >Re-Record</a
+              >
+              {% elif d.comp == True and d.s_info.verified == None %}
+              <a
+                class="ui tiny yellow button"
+                href="{% url 'streams_rec_view' d.w_info.in_english %}"
+                >Re-Record</a
+              >
+              {% elif d.comp == True and d.s_info.verified == False %}
+              <a
+                class="ui tiny green button"
+                href="{% url 'streams_rec_view' d.w_info.in_english %}"
+                >Re-Record</a
+              >
+              {% else %}
+              <a
+                class="ui tiny green button"
+                href="{% url 'streams_rec_view' d.w_info.in_english %}"
+                >Record</a
+              >
+              {% endif %}
+            </span>
+            <br />
+            {% if d.comp == True and d.s_info.verified == False %}
+            <div class="left floated" style="color: black">
+              <i class="info blue circle icon"></i>{{d.s_info.reason}}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
       </div>
       {% endif %}
     </div>
   </div>
 </div>
-<script>
-  $("#task-progress").progress({
-    duration: 200,
-    label: "ratio",
-    total: "{{ all_count }}",
-    value: "{{ done_count }}",
-    text: {
-      success: "Completed!",
-    },
-  });
-</script>
 {% endblock %}
