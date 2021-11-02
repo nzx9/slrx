@@ -74,6 +74,44 @@ def streams_rec_view(request, e_word):
     return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": e_word, "done_count": done_count, "all_count": all_count, "curr_stream": curr_stream})
 
 
+@login_required(login_url='/accounts/login/')
+def streams_table_home(request):
+    words = Word.objects.all().order_by('pk')
+    wl = list(words)
+    data = []
+    # c1 = Q(userId=request.user)
+    for w in wl:
+        # c2 = Q(wordId=w)
+        # c1 and c2
+        us = User_Stream.objects.filter(userId=request.user).filter(wordId=w)
+        if(us.count() >= 1):
+            stream_info = Stream.objects.get(pk=us[0].streamId.pk)
+            data.append({
+                "w_info": w,
+                "s_info": stream_info,
+                "comp": True
+            })
+        else:
+            data.append({
+                "w_info": w,
+                "s_info": {
+                    "userId": request.user.id,
+                    "wordId": w.pk,
+                    "pos_server": None,
+                    "pos_firebase": None,
+                    "verified": None,
+                    "comment": None,
+                    "reason": None,
+                    "created_at": None,
+                    "updated_at": None
+                },
+                "comp": False
+            })
+    all_count = Word.objects.all().count()
+    done_count = User_Stream.objects.filter(userId=request.user.id).count()
+    return render(request, "streams_table_home.html", {"data": data, "all_count": all_count, "done_count": done_count})
+
+
 @ login_required(login_url='/accounts/login/')
 def submit(request, e_word):
     bucket = storage.bucket()
