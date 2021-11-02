@@ -109,11 +109,11 @@
       <div
         class="ui left labeled button"
         tabindex="0"
-        onclick="window.open(`{% url 'stream_verification' %}`, '_blank')"
+        onclick="window.location.href = `{% url 'stream_verification' %}`"
       >
         <a class="ui basic label"> VALIDATOR </a>
         <div class="ui green icon button">
-          <i class="external icon"></i>
+          <i class="check circle icon"></i>
         </div>
       </div>
       {% endif %}
