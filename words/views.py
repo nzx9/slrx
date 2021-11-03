@@ -1,38 +1,82 @@
-from django.contrib.messages.api import success
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from words.models import Word
-from django.contrib.auth.models import User
 from django.contrib import messages
 import json
+from categories.models import Category
+from streams.models import Stream
+from django.db.models import Q
 # Create your views here.
 
 
-@login_required(login_url='/accounts/login/')
 def words_view(request):
-    words = Word.objects.all().order_by('pk')
-    wl = list(words)
-    for w in wl:
-        username = User.objects.get(pk=w.created_by)
-        w.created_by = username
+    query_category = request.GET.get('category')
+    query_search = request.GET.get('search')
+    words = []
+    categories = Category.objects.all().order_by('pk')
 
-    if not words:
+    category_exist = Category.objects.filter(name=query_category).exists()
+
+    if(query_category != None and query_search == None):
+        if category_exist:
+            category = Category.objects.get(name=query_category)
+            words = Word.objects.filter(category=category).order_by('pk')
+        else:
+            words = []
+
+    elif(query_search != None and query_category == None):
+        words = Word.objects.filter(
+            Q(in_sinhala__icontains=query_search) |
+            Q(in_english__icontains=query_search) |
+            Q(in_singlish__icontains=query_search) |
+            Q(category__name__icontains=query_search)
+        ).order_by('pk')
+
+    elif (query_search != None and query_category != None):
+        if category_exist:
+            category = Category.objects.get(name=query_category)
+            words = Word.objects.filter(category=category).filter(
+                Q(in_sinhala__contains=query_search) |
+                Q(in_english__contains=query_search) |
+                Q(in_singlish__contains=query_search)).order_by('pk')
+        else:
+            words = []
+    else:
+        words = Word.objects.all().order_by('pk')
+
+    if len(words) == 0:
         empty = True
     else:
         empty = False
-    return render(request, "words.html", {'words': words, "empty": empty})
+    return render(request, "words.html", {"words": words, "empty": empty, "categories": categories})
 
 
-@login_required(login_url='/accounts/login/')
+@ login_required(login_url='/accounts/login/')
 def add_new_words(request):
     if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
         if request.method == "POST":
-            if request.POST['sinhala-word'] != None and request.POST['english-word'] != None:
+            si = request.POST['sinhala-word']
+            en = request.POST['english-word']
+            se = request.POST['singlish-word']
+            cat_pk = request.POST['category']
+            cat = None
+            try:
+                cat_pk = int(cat_pk)
+            except:
+                pass
+
+            if type(cat_pk) == int:
+                cat = Category.objects.get(pk=cat_pk)
+            if(cat == None):
+                messages.warning(request, "Category set to NULL")
+
+            if si != None and en != None and se != None:
                 newWord = Word()
-                newWord.in_sinhala = request.POST['sinhala-word']
-                newWord.in_english = request.POST['english-word']
-                newWord.in_singlish = request.POST['singlish-word']
+                newWord.in_sinhala = si
+                newWord.in_english = en
+                newWord.in_singlish = se
+                newWord.category = cat
                 newWord.created_by = request.user.id
                 try:
                     newWord.save()
@@ -40,22 +84,22 @@ def add_new_words(request):
                 except Exception as e:
                     messages.error(request, f"Something went wrong: {str(e)}")
             else:
-                messages.error("NULL Value Provided")
-        return render(request, "add_words.html")
+                messages.error(request, "NULL Values Provided")
+        return redirect("words_view")
     else:
         return render(request, "403.html")
 
 
-@login_required(login_url='/accounts/login/')
-@permission_required('word.can_delete', raise_exception=True)
+@ login_required(login_url='/accounts/login/')
+@ permission_required('word.can_delete', raise_exception=True)
 def delete_word(request, pk):
     word = Word.objects.get(id=pk)
     word.delete()
     return redirect('words_view')
 
 
-@login_required(login_url='/accounts/login/')
-@permission_required('word.can_change', raise_exception=True)
+@ login_required(login_url='/accounts/login/')
+@ permission_required('word.can_change', raise_exception=True)
 def bulk_upload(request):
     file_name = None
     titles = None
@@ -124,8 +168,8 @@ def bulk_upload(request):
     return render(request, "word_bulk_upload.html", {'file_name': file_name, 'titles': titles, 'word_list': word_list[1:], 'error': error, 'error_msg': error_msg, "word_json": word_json})
 
 
-@login_required(login_url='/accounts/login/')
-@permission_required('word.can_change', raise_exception=True)
+@ login_required(login_url='/accounts/login/')
+@ permission_required('word.can_change', raise_exception=True)
 def add_bulk_words_to_db(request):
     title = "METHOD not recognized..."
     msg = ""
@@ -163,3 +207,15 @@ def add_bulk_words_to_db(request):
     else:
         msg += "<p><i class='times circle red icon'></i> Only POST requests are accepted</p>"
     return HttpResponse(json.dumps({"title": title, "msg": msg}), content_type='application/json')
+
+
+def detailed_word_view(request, word_pk):
+    word_exists = Word.objects.filter(pk=word_pk).exists()
+    if not word_exists:
+        return render(request, "404.html")
+
+    word = Word.objects.get(pk=word_pk)
+    categories = Category.objects.all().order_by('pk')
+    streams = Stream.objects.filter(wordId=word).order_by('pk')
+    empty = True if len(streams) == 0 else False
+    return render(request, "detailed_view.html", {"word": word, "categories": categories, "streams": streams, "empty": empty})
