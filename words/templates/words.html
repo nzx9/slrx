@@ -1,96 +1,274 @@
-{% extends 'layout.html' %} {% load tz %}
+{% extends 'layout.html' %} {% load tz %} {% load static %} {% load encoders %}
 <!--- -->
 {% block title %} Words{% endblock %}
 <!--- -->
 {% block scripts%} {%endblock%}
 <!--- -->
 {% block content %}
-<div class="ui stackable one column grid">
-  <div class="column">
-    {% csrf_token %}
-    <div class="ui inverted raised segment">
-      {% if empty == True %}
-      <h1 class="ui header">Word List</h1>
-      <div class="ui inverted divider"></div>
-      <h1 class="ui header">No Words To Show</h1>
-      <a
-        href="{% url 'add_new_words' %}"
-        class="ui small inverted labeled icon button"
-      >
-        <i class="database icon"></i> Add New Words
-      </a>
-      {% else %}
-      <div class="ui container">
-        <table class="ui inverted center celled structured table">
-          <thead class="center aligned">
-            <tr>
-              <th rowspan="2">#</th>
 
-              <th colspan="4">Word</th>
-              <th rowspan="2">Records</th>
-              <th rowspan="2">Created By</th>
-              <th rowspan="2">Created</th>
-              {% if user.is_superuser %}
-              <th rowspan="2">Delete</th>
-              {% endif %}
-            </tr>
-            <tr>
-              <th>Id</th>
-              <th>In Sinhala</th>
-              <th>In English</th>
-              <th>In Singlish</th>
-            </tr>
-          </thead>
-          <tbody class="center aligned">
-            <!--- -->
-            {% for word in words %}
-            <tr>
-              <td class="collapsing">
-                <!-- <div class="ui fitted slider checkbox">
-                <input type="checkbox" /> <label></label>
-              </div> -->
-                {{forloop.counter}}
-              </td>
-              <td class="collapsing">{{word.pk}}</td>
-              <td>{{word.in_sinhala}}</td>
-              <td>{{word.in_english}}</td>
-              <td>{{word.in_singlish}}</td>
-              <td>{{word.recorde_count}}</td>
-              <td>{{word.created_by}}</td>
-              {% localtime on %}
-              <td>{{ word.created_at| timesince }} ago</td>
-              {% endlocaltime %}
-              <!-- -->
-              {% if user.is_superuser %}
-              <td>
-                <a href="{% url 'delete_word' word.pk %}"
-                  ><i class="trash red icon"></i
-                ></a>
-              </td>
-              {% endif %}
-            </tr>
-            {% endfor %}
-          </tbody>
-          <!--- -->
-          <tfoot class="full-width">
-            <tr>
-              <th colspan="9">
-                {% if user.is_superuser %}
-                <a href="{% url 'add_new_words' %}">
-                  <button
-                    class="ui right floated small inverted labeled icon button"
-                  >
-                    <i class="database icon"></i> Add New Words
-                  </button>
-                </a>
-                {% endif %}
-              </th>
-            </tr>
-          </tfoot>
-        </table>
+<div class="ui centered stackable two column internally celled grid">
+  {% if user|has_group:"Tester" or user.is_superuser %}
+  <div class="twelve wide column">
+    {% else %}
+    <div class="sixteen wide column">
+      {% endif %}
+      <div class="row">
+        <div class="ui grid">
+          <div class="four column row">
+            <div class="left floated column">
+              <div
+                class="ui search selection dropdown"
+                id="search-category-dropdown"
+              >
+                <input
+                  type="hidden"
+                  name="search-dropdown"
+                  id="search-dropdown"
+                />
+                <div class="default text">Select Category</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                  {% for category in categories %}
+                  <div class="item" data-value="{{category.name}}">
+                    {{category.name}}
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="right floated column">
+              <div
+                class="ui right aligned category search"
+                style="margin-right: 55px"
+              >
+                <div class="ui icon input">
+                  <input
+                    class="prompt"
+                    type="text"
+                    placeholder="Search words..."
+                    id="search"
+                  />
+                  <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if empty %}
+      <div class="ui centered middle aligned grid">
+        <div style="margin-top: 25px">
+          <img style="height: 350px" src="{% static 'nodata.png' %}" />
+          <h3 class="ui inverted header">No Words Found</h3>
+        </div>
+      </div>
+      {% else %}
+      <div
+        class="ui cards"
+        id="ui-cards"
+        style="margin-top: 10px; margin-left: 8px"
+      >
+        <!---->
+        {% for word in words %}
+        <div class="ui raised card">
+          <div class="content">
+            <div class="header">{{word.in_sinhala}} ({{word.in_english}})</div>
+            <div class="meta">
+              {% if word.category != None%}
+              <a
+                class="category"
+                href="{% url 'category_each' word.category.name %}"
+              >
+                {{word.category.name}}
+              </a>
+              {%else%}
+              <a class="category"> Not Categorized </a>
+              {%endif%}
+            </div>
+            <div class="description">
+              <div class="ui divider"></div>
+              <p><b>Singlish: </b> {{word.in_singlish}}</p>
+              <p><b>Created By: </b> {{word.created_by}}</p>
+              <p><b>Record Count: </b> {{ word.recorde_count}}</p>
+              <div class="ui divider"></div>
+              <p><b>Created: </b>{{ word.created_at | timesince}} ago</p>
+              <p><b>Updated: </b>{{ word.updated_at | timesince }} ago</p>
+            </div>
+          </div>
+          <div class="extra content">
+            <div class="right floated author">
+              <a
+                class="ui tiny green button"
+                href="{% url 'detailed_word_view' word.pk %}"
+                >VIEW</a
+              >
+            </div>
+          </div>
+        </div>
+        {% endfor %}
       </div>
       {% endif %}
     </div>
+    {% if user|has_group:"Tester" or user.is_superuser %}
+    <div class="four wide column">
+      <div>
+        <form class="ui large form" method="POST" action="new/">
+          {% csrf_token %}
+          <div class="ui inverted raised segment">
+            <h1 class="ui header">Add New Word</h1>
+            <div class="field">
+              <div class="ui action input">
+                <input
+                  id="sinhala-word"
+                  type="text"
+                  name="sinhala-word"
+                  placeholder="වචනය"
+                  required
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui action input">
+                <input
+                  id="english-word"
+                  type="text"
+                  name="english-word"
+                  placeholder="Word"
+                  required
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui action input">
+                <input
+                  id="singlish-word"
+                  type="text"
+                  name="singlish-word"
+                  placeholder="Wachanaya"
+                  required
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div
+                class="ui fluid search selection dropdown"
+                id="category-dropdown"
+              >
+                <input type="hidden" name="category" required />
+                <div class="default text">Select Category</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                  {% for category in categories %}
+                  <div class="item" data-value="{{category.pk}}">
+                    {{category.name}}
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui error message"></div>
+              {% if form.errors %}
+              <div class="ui red message">
+                <ul class="list">
+                  {% for key, value in form.errors.items %}
+
+                  <li><b>{{ key }}</b></li>
+                  {{value}} {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+              <!-- -->
+              {% if messages %} {% for message in messages %}
+              <!-- -->
+              {% if message.tags == 'error' %}
+              <div class="ui red message">
+                <b>{{ message }}</b>
+              </div>
+              {% endif %} {% if message.tags == 'success' %}
+              <div class="ui green message">
+                <b>{{ message }}</b>
+              </div>
+              {% endif %} {% if message.tags == 'warning' %}
+              <div class="ui yellow message">
+                <b>{{ message }}</b>
+              </div>
+              {% endif %}
+              <!-- -->
+              {% endfor %} {% endif %}
+            </div>
+          </div>
+          <div class="field">
+            <button class="ui inverted button right floated" type="submit">
+              ADD
+            </button>
+          </div>
+        </form>
+        <div class="ui inverted divider" style="margin-top: 70px"></div>
+        <h1 class="ui inverted header">Bulk Upload</h1>
+        <form
+          class="ui large form"
+          method="POST"
+          enctype="multipart/form-data"
+          action="{% url 'bulk_upload_words' %}"
+        >
+          {% csrf_token %}
+          <div class="file_f field">
+            <input name="bulk-file" type="file" required />
+          </div>
+
+          <div class="ui error message"></div>
+          <button class="ui inverted button right floated">Upload</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
   </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const category = params.get("category");
+    const search = params.get("search");
+    if (category !== null) $("#search-dropdown").val(category);
+    if (search !== null) $("#search").val(search);
+
+    $("#category-dropdown").dropdown({
+      clearable: true,
+    });
+    $("#search-category-dropdown").dropdown({
+      clearable: true,
+    });
+
+    $("#search-dropdown").change(() => {
+      do_search();
+    });
+
+    $("#search").keyup((event) => {
+      if (event.keyCode == 13) {
+        do_search();
+      }
+    });
+
+    function do_search() {
+      const s_dropdown = $("#search-dropdown").val();
+      const s_input = $("#search").val();
+      const s_dropdown_not_empty =
+        s_dropdown !== "" && s_dropdown !== undefined && s_dropdown !== null;
+      const s_input_not_empty =
+        s_input !== "" && s_input !== undefined && s_input !== null;
+
+      if (s_dropdown_not_empty && !s_input_not_empty) {
+        window.location.href = `${window.location.origin}${window.location.pathname}?category=${s_dropdown}`;
+      } else if (s_input_not_empty && !s_dropdown_not_empty) {
+        window.location.href = `${window.location.origin}${window.location.pathname}?search=${s_input}`;
+      } else if (s_input_not_empty && s_dropdown_not_empty) {
+        window.location.href = `${window.location.origin}${window.location.pathname}?category=${s_dropdown}&search=${s_input}`;
+      } else {
+        window.location.href = `${window.location.origin}${window.location.pathname}`;
+      }
+    }
+  </script>
+  {% endblock %}
 </div>
-{% endblock %}
