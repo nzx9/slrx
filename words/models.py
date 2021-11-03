@@ -12,6 +12,8 @@ class Word(models.Model):
     recorde_count = models.IntegerField(default=0)
     category = models.ForeignKey(Category, on_delete=SET_NULL, null=True)
     created_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
+    last_edit_by = models.ForeignKey(
+        User, null=True, on_delete=SET_NULL, related_name="updated_by")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
