@@ -91,14 +91,6 @@ def add_new_words(request):
 
 
 @ login_required(login_url='/accounts/login/')
-@ permission_required('word.can_delete', raise_exception=True)
-def delete_word(request, pk):
-    word = Word.objects.get(id=pk)
-    word.delete()
-    return redirect('words_view')
-
-
-@ login_required(login_url='/accounts/login/')
 @ permission_required('word.can_change', raise_exception=True)
 def bulk_upload(request):
     file_name = None
@@ -219,3 +211,60 @@ def detailed_word_view(request, word_pk):
     streams = Stream.objects.filter(wordId=word).order_by('pk')
     empty = True if len(streams) == 0 else False
     return render(request, "detailed_view.html", {"word": word, "categories": categories, "streams": streams, "empty": empty})
+
+
+@login_required(login_url='/accounts/login/')
+def update_word(request, pk):
+    edited = False
+    cat_ok = False
+    if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
+        if request.method == "UPDATE":
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            si = body['si']
+            en = body['en']
+            se = body['se']
+            category = body['category']
+            try:
+                word = Word.objects.get(pk=pk)
+                if(category != None and Category.objects.filter(pk=category).exists()):
+                    category = Category.objects.get(pk=category)
+                    cat_ok = True
+                if(word.in_sinhala != si):
+                    word.in_sinhala = si
+                    edited = True
+                if(word.in_english != en):
+                    word.in_english = en
+                    edited = True
+                if(word.in_singlish != se):
+                    word.in_singlish = se
+                    edited = True
+                if(cat_ok and word.category != category):
+                    word.category = category
+                    edited = True
+                elif(category == None and word.category != None):
+                    word.category = None
+                    edited = True
+                if(edited):
+                    word.last_edit_by = request.user
+                    word.save()
+                    return HttpResponse(json.dumps({"msg": "Word '{} ({})' Updated".format(si, en), "type": "success"}))
+                else:
+                    return HttpResponse(json.dumps({"msg": "Nothing to Update in {} ({}) word".format(si, en), "type": "warning"}))
+            except:
+                return HttpResponse(json.dumps({"msg": "Something went wrong", "type": "error"}))
+        else:
+            return HttpResponse(json.dumps({"msg": "Not a POST request", "type": "error"}))
+    else:
+        return HttpResponse(json.dumps({"msg": "No permission to perfrom action", "type": "error"}))
+
+
+@login_required(login_url='/accounts/login/')
+def delete_word(request, pk):
+    if request.user.is_superuser:
+        if(Word.objects.filter(pk=pk).exists()):
+            word = Word.objects.get(pk=pk)
+            word.delete()
+        return redirect('words_view')
+    else:
+        return render(request, "403.html")
