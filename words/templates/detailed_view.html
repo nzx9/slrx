@@ -123,8 +123,8 @@
     <form
       class="ui large form"
       method="POST"
-      id="{{cat_data.pk}}"
-      onsubmit="update_cat(this.id)"
+      id="{{word.pk}}"
+      onsubmit="update_word(this.id)"
     >
       {% csrf_token %}
       <div class="ui inverted raised segment">
@@ -133,10 +133,10 @@
           <div class="ui action input">
             <input
               readonly
-              id="cat-id"
+              id="word-id"
               type="text"
-              name="Category ID"
-              placeholder="Category ID"
+              name="Word ID"
+              placeholder="Word ID"
               required
               value="{{ word.pk }}"
             />
@@ -193,7 +193,7 @@
           </div>
         </div>
         <div class="field">
-          <h5><div class="ui inverted sub header">Word In Sinhala</div></h5>
+          <h5><div class="ui inverted sub header">Word In Singlish</div></h5>
           <div class="ui action input">
             {% if user|has_group:'Tester' or user.is_superuser %}
             <input
@@ -225,17 +225,21 @@
               class="ui search fluid selection dropdown"
               id="category-dropdown"
             >
+              {% if word.category != None%}
               <input
                 type="hidden"
                 name="category"
                 id="category"
-                value="{{word.category}}"
+                value="{{word.category.pk}}"
               />
+              {% else %}
+              <input type="hidden" name="category" id="category" value="None" />
+              {% endif %}
               <div class="default text">Select Category</div>
               <i class="dropdown icon"></i>
               <div class="menu">
                 {% for category in categories %}
-                <div class="item" data-value="{{category.name}}">
+                <div class="item" data-value="{{category.pk}}">
                   {{category.name}}
                 </div>
                 {% endfor %}
@@ -288,7 +292,9 @@
       </div>
       {% if user|has_group:'Tester' or user.is_superuser %}
       <div class="field">
-        <button class="ui inverted button" type="submit">SAVE</button>
+        <button class="ui inverted button right floated" type="submit">
+          UPDATE
+        </button>
       </div>
       {% endif %}
     </form>
@@ -299,22 +305,20 @@
   function not_empty(value) {
     return value !== null && value !== undefined && value !== "";
   }
+  function empty(value) {
+    return value === null || value === undefined || value === "";
+  }
 
   function update_word(pk) {
-    let data = {
-      name: $("#name").val(),
-      desc: $("#description").val(),
+    const data = {
+      si: $("#w_si").val(),
+      en: $("#w_en").val(),
+      se: $("#w_se").val(),
+      category: $("#category").val() == "None" ? null : $("#category").val(),
     };
-    if (
-      data.name !== null &&
-      data.name !== undefined &&
-      data.name !== "" &&
-      data.desc !== null &&
-      data.desc !== undefined &&
-      data.desc !== ""
-    ) {
+    if (not_empty(data.si) && not_empty(data.en) && not_empty(data.se)) {
       const csrftoken = Cookies.get("csrftoken");
-      fetch(`update/${pk}`, {
+      fetch(`../update/${pk}`, {
         method: "update",
         body: JSON.stringify(data),
         headers: {
