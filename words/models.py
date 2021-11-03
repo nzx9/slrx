@@ -1,6 +1,7 @@
 from django.db import models
 from categories.models import Category
 from django.db.models.deletion import SET_NULL
+from django.contrib.auth.models import User
 # Create your models here.
 
 
@@ -10,7 +11,7 @@ class Word(models.Model):
     in_singlish = models.CharField(max_length=50, null=True)
     recorde_count = models.IntegerField(default=0)
     category = models.ForeignKey(Category, on_delete=SET_NULL, null=True)
-    created_by = models.IntegerField(null=True)
+    created_by = models.ForeignKey(User, on_delete=SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
