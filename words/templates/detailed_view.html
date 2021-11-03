@@ -1,0 +1,358 @@
+{% extends "layout.html" %} {% load static %} {% load encoders %}
+<!-- -->
+{% block title %}Categories | {{ cat_data.name }}{% endblock %}
+<!---->
+{% block content %}
+
+<div class="ui centered stackable two column internally celled grid">
+  <div class="twelve wide column">
+    {% if empty %}
+    <div class="ui centered middle aligned grid">
+      <div style="margin-top: 25px">
+        <img style="height: 350px" src="{% static 'nodata.png' %}" />
+        <h3 class="ui inverted header">
+          No Recorded Streams for
+          <span style="color: greenyellow"
+            >{{word.in_sinhala}} ({{word.in_english}})</span
+          >
+          Word
+        </h3>
+      </div>
+    </div>
+    {% else %}
+    <h2 class="ui header inverted left aligned" style="padding-left: 40px">
+      Streams for
+      <span style="color: greenyellow"
+        >{{word.in_sinhala}} ({{word.in_english}})</span
+      >
+      <!---->
+      {% if word.category.name == None%} is
+      <span style="color: greenyellow"> Not Categorized</span> {% else %} in
+      <span style="color: greenyellow">{{word.category.name}}</span> Category
+      <!---->
+      {% endif %}
+    </h2>
+    <div class="ui link cards">
+      {% for stream in streams %}
+      <div class="card">
+        <div class="image center aligned">
+          {% if stream.pos_firebase != None %}
+          <video
+            width="280px"
+            height="150px"
+            src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ stream.pos_firebase | uriencode }}?alt=media&"
+            controls
+          ></video>
+          {%else%}
+          <div
+            style="
+              width: 100%;
+              height: 150px;
+              background-color: black;
+              border-radius: 2px;
+            "
+          >
+            <img
+              style="height: 100px; margin-top: 10px"
+              src="{% static 'nodata.png' %}"
+            />
+            <h3 class="ui inverted header" style="margin-top: 5px">
+              <div class="ui sub header">No Preview</div>
+            </h3>
+          </div>
+          {% endif %}
+        </div>
+        <div class="content">
+          <div class="header">
+            SID: {{stream.pk}}
+            <span
+              class="meta right floated ui sub header"
+              style="font-size: 12px"
+            >
+              By: <span>{{stream.userId.username}}</span>
+            </span>
+          </div>
+          <div class="meta">
+            {% if stream.updated_at != None %}
+            <!---->
+            {{stream.updated_at | timesince }} ago
+            <!---->
+            {% else %} Not Recorded Yet
+            <!---->
+            {% endif %}
+          </div>
+          <div class="ui divider"></div>
+          <div class="description">
+            <h4 class="ui sub header" style="margin-top: 5px">Comments</h4>
+            <div style="height: 30px; overflow-y: scroll">
+              {{stream.comment}}
+            </div>
+          </div>
+        </div>
+        <div class="extra content">
+          <span class="left floated">
+            {% if stream.verified == True %}
+            <i class="check circle green icon"></i>
+            <span style="color: green">Accepted</span>
+            <!-- -->
+            {% elif stream.verified == False %}
+            <i class="times circle red icon"></i>
+            <span style="color: red">Rejected</span>
+            {% else %}
+            <i class="exclamation circle yellow icon"></i>
+            <span>Pending</span>
+            {% endif %}
+          </span>
+          <br />
+          {% if stream.verified == False %}
+          <div class="left floated" style="color: black">
+            <i class="info blue circle icon"></i>{{stream.reason}}
+          </div>
+          {% elif stream.verified %}
+          <div class="left floated" style="color: black">
+            <i class="info blue circle icon"></i>{{stream.verified_by.username}}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="four wide column">
+    <form
+      class="ui large form"
+      method="POST"
+      id="{{cat_data.pk}}"
+      onsubmit="update_cat(this.id)"
+    >
+      {% csrf_token %}
+      <div class="ui inverted raised segment">
+        <div class="field">
+          <h5><div class="ui inverted sub header">Word ID</div></h5>
+          <div class="ui action input">
+            <input
+              readonly
+              id="cat-id"
+              type="text"
+              name="Category ID"
+              placeholder="Category ID"
+              required
+              value="{{ word.pk }}"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Word In Sinhala</div></h5>
+          <div class="ui action input">
+            {% if user|has_group:'Tester' or user.is_superuser %}
+            <input
+              id="w_si"
+              type="text"
+              name="w_si"
+              placeholder="Word In Sinhala"
+              required
+              value="{{ word.in_sinhala }}"
+            />
+            {% else %}
+            <input
+              readonly
+              id="w_si"
+              type="text"
+              name="w_si"
+              placeholder="Word In Sinhala"
+              required
+              value="{{ word.in_sinhala }}"
+            />
+            {% endif %}
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Word In English</div></h5>
+          <div class="ui action input">
+            {% if user|has_group:'Tester' or user.is_superuser %}
+            <input
+              id="w_en"
+              type="text"
+              name="w_en"
+              placeholder="Word In English"
+              required
+              value="{{ word.in_english }}"
+            />
+            {% else %}
+            <input
+              readonly
+              id="w_en"
+              type="text"
+              name="w_en"
+              placeholder="Word In English"
+              required
+              value="{{ word.in_english }}"
+            />
+            {% endif %}
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Word In Sinhala</div></h5>
+          <div class="ui action input">
+            {% if user|has_group:'Tester' or user.is_superuser %}
+            <input
+              id="w_se"
+              type="text"
+              name="w_se"
+              placeholder="Word In Singlish"
+              required
+              value="{{ word.in_singlish }}"
+            />
+            {% else %}
+            <input
+              readonly
+              id="w_se"
+              type="text"
+              name="w_se"
+              placeholder="Word In Singlish"
+              required
+              value="{{ word.in_singlish }}"
+            />
+            {% endif %}
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Category</div></h5>
+          <div class="ui action input">
+            {% if user|has_group:'Tester' or user.is_superuser %}
+            <div
+              class="ui search fluid selection dropdown"
+              id="category-dropdown"
+            >
+              <input
+                type="hidden"
+                name="category"
+                id="category"
+                value="{{word.category}}"
+              />
+              <div class="default text">Select Category</div>
+              <i class="dropdown icon"></i>
+              <div class="menu">
+                {% for category in categories %}
+                <div class="item" data-value="{{category.name}}">
+                  {{category.name}}
+                </div>
+                {% endfor %}
+                <div class="item" data-value="None">Not Categorized</div>
+              </div>
+            </div>
+            {% else %}
+            <input
+              readonly
+              id="category"
+              type="text"
+              name="category"
+              placeholder="Category"
+              value="{{ word.category }}"
+            />
+            {% endif %}
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Created By</div></h5>
+          <div class="ui action input">
+            <input
+              readonly
+              id="created-by"
+              type="text"
+              name="Created By"
+              placeholder="Created By"
+              required
+              value="{{ word.created_by }}"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <h5><div class="ui inverted sub header">Last Edit By</div></h5>
+          <div class="ui action input">
+            <input
+              readonly
+              id="last-edit-by"
+              type="text"
+              name="Last Edit By"
+              placeholder="Last Edit By"
+              required
+              value="{{ word.last_edit_by }}"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui message" id="log" style="display: none"></div>
+        </div>
+      </div>
+      {% if user|has_group:'Tester' or user.is_superuser %}
+      <div class="field">
+        <button class="ui inverted button" type="submit">SAVE</button>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<script>
+  function not_empty(value) {
+    return value !== null && value !== undefined && value !== "";
+  }
+
+  function update_word(pk) {
+    let data = {
+      name: $("#name").val(),
+      desc: $("#description").val(),
+    };
+    if (
+      data.name !== null &&
+      data.name !== undefined &&
+      data.name !== "" &&
+      data.desc !== null &&
+      data.desc !== undefined &&
+      data.desc !== ""
+    ) {
+      const csrftoken = Cookies.get("csrftoken");
+      fetch(`update/${pk}`, {
+        method: "update",
+        body: JSON.stringify(data),
+        headers: {
+          "X-CSRFToken": csrftoken,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) =>
+          response.json().then((res, error1) => {
+            if (error1) {
+              log(error1, "error");
+            } else {
+              log(res.msg, res.type);
+              window.location.reload();
+            }
+          })
+        )
+        .catch((error2) => {
+          log(error2, "error");
+        });
+    } else {
+      log("Name or Description can't be empty", "error");
+    }
+  }
+  function log(msg, type = null) {
+    $("#log").html(`<p>${msg}</p>`);
+    $("#log").css("display", "block");
+    if (type == "success") {
+      $("#log").addClass("green");
+    } else if (type == "error") {
+      $("#log").addClass("red");
+    } else if (type == "warning") {
+      $("#log").addClass("yellow");
+    }
+  }
+
+  $("#category-dropdown").dropdown({
+    clearable: true,
+  });
+</script>
+{% endblock %}
