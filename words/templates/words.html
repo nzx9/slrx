@@ -99,6 +99,11 @@
           <div class="extra content">
             <div class="right floated author">
               <a
+                class="ui tiny red button"
+                href="{% url 'delete_word' word.pk %}"
+                >DELETE</a
+              >
+              <a
                 class="ui tiny green button"
                 href="{% url 'detailed_word_view' word.pk %}"
                 >VIEW</a
