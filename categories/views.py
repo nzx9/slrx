@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from categories.models import Category
 from words.models import Word
 import json
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
@@ -20,6 +21,7 @@ def category_view(request):
     return render(request, 'category_view.html', {"empty": empty, "categories": categories})
 
 
+@login_required(login_url='/accounts/login/')
 def create_category(request):
     if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
         if request.method == "POST":
@@ -51,6 +53,7 @@ def category_each_view(request, category):
     return render(request, 'category_each.html', {"cat_data": cat_data, "words": words, "empty": empty})
 
 
+@login_required(login_url='/accounts/login/')
 def update_category(request, pk):
     edited = False
     if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
@@ -81,6 +84,7 @@ def update_category(request, pk):
         return HttpResponse(json.dumps({"msg": "No permission to perfrom action", "type": "error"}))
 
 
+@login_required(login_url='/accounts/login/')
 def delete_category(request, pk):
     if request.user.is_superuser:
         category = Category.objects.get(pk=pk)
