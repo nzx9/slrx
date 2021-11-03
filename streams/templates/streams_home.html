@@ -147,6 +147,11 @@
             <div class="left floated" style="color: black">
               <i class="info blue circle icon"></i>{{d.s_info.reason}}
             </div>
+            {% endif %} {% if d.comp == True and d.s_info.verified == True %}
+            <div class="left floated" style="color: black">
+              <i class="info blue user circle icon"></i>
+              {{d.s_info.verified_by.username}}
+            </div>
             {% endif %}
           </div>
         </div>
