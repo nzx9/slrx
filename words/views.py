@@ -77,7 +77,7 @@ def add_new_words(request):
                 newWord.in_english = en
                 newWord.in_singlish = se
                 newWord.category = cat
-                newWord.created_by = request.user.id
+                newWord.created_by = request.user
                 try:
                     newWord.save()
                     messages.success(request, "New Word Created")
