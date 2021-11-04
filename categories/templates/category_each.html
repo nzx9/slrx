@@ -187,7 +187,7 @@
     ) {
       const csrftoken = Cookies.get("csrftoken");
       fetch(`update/${pk}`, {
-        method: "update",
+        method: "put",
         body: JSON.stringify(data),
         headers: {
           "X-CSRFToken": csrftoken,

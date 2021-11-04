@@ -218,7 +218,7 @@ def update_word(request, pk):
     edited = False
     cat_ok = False
     if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
-        if request.method == "UPDATE":
+        if request.method == "PUT":
             body_unicode = request.body.decode('utf-8')
             body = json.loads(body_unicode)
             si = body['si']
@@ -254,7 +254,7 @@ def update_word(request, pk):
             except:
                 return HttpResponse(json.dumps({"msg": "Something went wrong", "type": "error"}))
         else:
-            return HttpResponse(json.dumps({"msg": "Not a POST request", "type": "error"}))
+            return HttpResponse(json.dumps({"msg": "Not a PUT request", "type": "error"}))
     else:
         return HttpResponse(json.dumps({"msg": "No permission to perfrom action", "type": "error"}))
 

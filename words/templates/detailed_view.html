@@ -319,7 +319,7 @@
     if (not_empty(data.si) && not_empty(data.en) && not_empty(data.se)) {
       const csrftoken = Cookies.get("csrftoken");
       fetch(`../update/${pk}`, {
-        method: "update",
+        method: "PUT",
         body: JSON.stringify(data),
         headers: {
           "X-CSRFToken": csrftoken,
