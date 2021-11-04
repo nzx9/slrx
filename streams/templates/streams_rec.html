@@ -14,7 +14,7 @@
     <div class="three wide column">
       <div class="ui inverted segment">
         <div class="ui segment">
-          <div class="ui header center aligned huge">
+          <div class="ui header center aligned large">
             {{ curr_word.in_sinhala }}
             <div class="ui inverted divider"></div>
             <span id="word-in-english" class="ui sub header">
@@ -29,10 +29,26 @@
         <div class="ui inverted divider"></div>
         <div
           class="ui segment left aligned"
-          style="height: 300px; max-height: 300px; overflow-y: auto"
+          style="height: 250px; max-height: 250px; overflow-y: auto"
         >
           <div class="ui header center aligned fixed">Log</div>
           <div class="ui relaxed divided list" id="log"></div>
+        </div>
+        <div class="ui inverted segment">
+          <div
+            class="ui right labeled input"
+            style="position: absolute; left: 0px"
+          >
+            <input
+              type="number"
+              placeholder="End time..."
+              style="width: 75%"
+              id="end-time"
+              min="0"
+              max="120"
+            />
+            <div class="ui basic label">seconds</div>
+          </div>
         </div>
       </div>
     </div>
@@ -167,8 +183,20 @@
 
   let submitButton = document.getElementById("submit-btn");
 
-  let recordingTimeMS = 5000;
+  let recordingTimeMS = Number(localStorage.getItem("recordingTimeMS"))
+    ? Number(localStorage.getItem("recordingTimeMS"))
+    : 5000;
+  recordingTimeMS =
+    recordingTimeMS < 0
+      ? 0
+      : recordingTimeMS > 7200 * 1000
+      ? 7200 * 1000
+      : recordingTimeMS;
+
   let recordedBlob = null;
+
+  $("#end-time").val(recordingTimeMS / 1000);
+  $("#timer").html(recordingTimeMS / 1000);
 
   function updateProgress(action = "inc") {
     let $progress = $("#task-progress"),
@@ -354,6 +382,17 @@
         "warning"
       );
     }
+  });
+
+  $("#end-time").change(() => {
+    const time_val = Number($("#end-time").val());
+    if (time_val > 7200) {
+      recordingTimeMS = 7200 * 1000;
+      $("#end-time").val(recordingTimeMS / 1000);
+    } else if (time_val < 0) recordingTimeMS = 0;
+    else recordingTimeMS = time_val * 1000;
+    localStorage.setItem("recordingTimeMS", recordingTimeMS);
+    $("#timer").html(recordingTimeMS / 1000);
   });
 </script>
 
