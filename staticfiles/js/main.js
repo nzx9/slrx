@@ -4,7 +4,7 @@ function addLeadingZero(num) {
 
 function getTime() {
   const d = new Date();
-  let hh = addLeadingZero(d.getDate());
+  let hh = addLeadingZero(d.getHours());
   let mm = addLeadingZero(d.getMinutes());
   let ss = addLeadingZero(d.getSeconds());
   return `${hh}:${mm}:${ss}`;
