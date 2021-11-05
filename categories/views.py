@@ -44,9 +44,10 @@ def create_category(request):
 
 
 def category_each_view(request, category):
-    cat_data = Category.objects.get(name=category)
-    if(cat_data == None):
+    if not Category.objects.filter(name=category).exists():
         return render(request, '404.html')
+        
+    cat_data = Category.objects.get(name=category)
 
     words = Word.objects.filter(category=cat_data)
     empty = (len(words)) == 0 if True else False
