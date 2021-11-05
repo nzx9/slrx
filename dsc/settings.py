@@ -49,7 +49,7 @@ firebase_admin.initialize_app(cred, {
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG")
+DEBUG = False if os.environ.get("DEBUG") == "False" else True
 
 ALLOWED_HOSTS = ['localhost', 'dscapp.herokuapp.com']
 
