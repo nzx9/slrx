@@ -77,10 +77,12 @@ def add_new_words(request):
                 newWord.in_english = en
                 newWord.in_singlish = se
                 newWord.category = cat
+                cat.word_count += 1
                 newWord.created_by = request.user
                 try:
                     newWord.save()
                     messages.success(request, "New Word Created")
+                    cat.save()
                 except Exception as e:
                     messages.error(request, f"Something went wrong: {str(e)}")
             else:
@@ -240,7 +242,12 @@ def update_word(request, pk):
                     word.in_singlish = se
                     edited = True
                 if(cat_ok and word.category != category):
+                    if(word.category != None and word.category.word_count > 0):
+                        word.category.word_count -= 1
+                        word.category.save()
                     word.category = category
+                    category.word_count += 1
+                    category.save()
                     edited = True
                 elif(category == None and word.category != None):
                     word.category = None
