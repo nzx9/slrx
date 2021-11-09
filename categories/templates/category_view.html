@@ -81,14 +81,14 @@
               <div class="extra content">
                 <a
                   class="ui inverted green button"
-                  href="{% url 'category_each' category.name%}"
+                  href="{% url 'category_each' category.name %}"
                   >View</a
                 >
                 {% if user|has_group:"Tester" or user.is_superuser %}
-                <a
+                <button
                   class="ui inverted red button"
-                  href="{% url 'delete_category' category.pk %}"
-                  >Delete</a
+                  onclick="deleteConfirmation(`{% url 'delete_category' category.pk %}`)"
+                  >Delete</button
                 >
                 {% endif %}
               </div>
@@ -141,7 +141,27 @@
     </div>
     {% endif %}
   </div>
+  <div class="ui mini modal" id="model-conf">
+    <i class="close icon"></i>
+    <div class="header">Attention!</div>
+    <div class="content">
+      <div class="description">
+        <div class="ui header">Delete Category?</div>
+        <p style="color: black">
+          This action can't undone. All the words with this category will set it's category as NULL.
+        </p>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">Cancel</div>
+      <div class="ui red approve right labeled icon button">
+        Discard and Proceed
+        <i class="exclamation mark icon"></i>
+      </div>
+    </div>
+  </div>
 </div>
+
 
 <script>
   function create_cat() {
@@ -159,7 +179,7 @@
       data.desc !== ""
     ) {
       const csrftoken = Cookies.get("csrftoken");
-      fetch(`create`, {
+      fetch("create", {
         method: "post",
         body: JSON.stringify(data),
         headers: {
@@ -185,13 +205,24 @@
     }
   }
   function log(msg, type = null) {
-    $("#log").html(`<p>${msg}</p>`);
+    $("#log").html("<p>" + msg + "</p>");
     $("#log").css("display", "block");
     if (type == "success") {
       $("#log").addClass("green");
     } else if (type == "error") {
       $("#log").addClass("red");
     }
+  }
+
+  function deleteConfirmation(url) {
+      $("#model-conf")
+        .modal({
+          onApprove: function () {
+            location.href = url;
+          },
+          onDeny: function () {},
+        })
+        .modal("show");
   }
 </script>
 {% endblock %}
