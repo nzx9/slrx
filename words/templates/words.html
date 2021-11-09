@@ -98,10 +98,10 @@
           </div>
           <div class="extra content">
             <div class="right floated author">
-              <a
+              <button
                 class="ui tiny red button"
-                href="{% url 'delete_word' word.pk %}"
-                >DELETE</a
+                onclick="deleteConfirmation(`{% url 'delete_word' word.pk %}`)"
+                >DELETE</button
               >
               <a
                 class="ui tiny green button"
@@ -229,6 +229,25 @@
       </div>
     </div>
     {% endif %}
+    <div class="ui mini modal" id="model-conf">
+      <i class="close icon"></i>
+      <div class="header">Attention!</div>
+      <div class="content">
+        <div class="description">
+          <div class="ui header">Delete Word?</div>
+          <p style="color: black">
+            This action can't undone. All the recordings under this word will be also deleted.
+          </p>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="ui black deny button">Cancel</div>
+        <div class="ui red approve right labeled icon button">
+          Discard and Proceed
+          <i class="exclamation mark icon"></i>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -274,6 +293,19 @@
         window.location.href = `${window.location.origin}${window.location.pathname}`;
       }
     }
+
+    function deleteConfirmation(url) {
+      console.log("DONE")
+      $("#model-conf")
+        .modal({
+          onApprove: function () {
+            location.href = url;
+          },
+          onDeny: function () {},
+        })
+        .modal("show");
+  }
+
   </script>
   {% endblock %}
 </div>
