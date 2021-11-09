@@ -140,7 +140,7 @@
           </div>
         </div>
         <div>{% block content %}{% endblock %}</div>
-        {% if user|has_group:"Tester" or user.is_superuser %}
+        {% if user.is_authenticated %}
         <div
           id="feedback-btn"
           class="ui left labeled button"
