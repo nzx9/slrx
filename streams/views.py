@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from firebase_admin import storage
 from streams.models import Stream, User_Stream
 from words.models import Word
@@ -52,11 +52,11 @@ def streams_view(request):
 
 
 @ login_required(login_url='/accounts/login/')
-def streams_rec_view(request, e_word):
+def streams_rec_view(request, pk):
     curr_stream = None
     try:
         all_words = Word.objects.all()
-        curr_word = all_words.get(in_english=e_word)
+        curr_word = all_words.get(pk=pk)
         prev_word = all_words.filter(pk__lt=curr_word.pk).last()
         next_word = all_words.filter(pk__gt=curr_word.pk).first()
         us = User_Stream.objects.filter(userId=request.user.id)
@@ -71,7 +71,7 @@ def streams_rec_view(request, e_word):
 
     except ObjectDoesNotExist:
         return render(request, "404.html")
-    return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": e_word, "done_count": done_count, "all_count": all_count, "curr_stream": curr_stream})
+    return render(request, "streams_rec.html", {"curr_word": curr_word, "prev_word": prev_word, "next_word": next_word, "e_word": curr_word.in_english, "done_count": done_count, "all_count": all_count, "curr_stream": curr_stream})
 
 
 @login_required(login_url='/accounts/login/')
@@ -113,13 +113,13 @@ def streams_table_home(request):
 
 
 @ login_required(login_url='/accounts/login/')
-def submit(request, e_word):
+def submit(request, pk):
     bucket = storage.bucket()
     if request.method == "POST":
         try:
             body_data = request.body
 
-            word = Word.objects.get(in_english=e_word)
+            word = Word.objects.get(pk=pk)
 
             serverPath = "./media/dgr"
             serverFileName = os.path.join(

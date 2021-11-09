@@ -119,25 +119,25 @@
               {% if d.comp == True and d.s_info.verified == True %}
               <a
                 class="ui tiny red disabled button"
-                href="{% url 'streams_rec_view' d.w_info.in_english %}"
+                href="{% url 'streams_rec_view' d.w_info.pk %}"
                 >Re-Record</a
               >
               {% elif d.comp == True and d.s_info.verified == None %}
               <a
                 class="ui tiny yellow button"
-                href="{% url 'streams_rec_view' d.w_info.in_english %}"
+                href="{% url 'streams_rec_view' d.w_info.pk %}"
                 >Re-Record</a
               >
               {% elif d.comp == True and d.s_info.verified == False %}
               <a
                 class="ui tiny green button"
-                href="{% url 'streams_rec_view' d.w_info.in_english %}"
+                href="{% url 'streams_rec_view' d.w_info.pk %}"
                 >Re-Record</a
               >
               {% else %}
               <a
                 class="ui tiny green button"
-                href="{% url 'streams_rec_view' d.w_info.in_english %}"
+                href="{% url 'streams_rec_view' d.w_info.pk %}"
                 >Record</a
               >
               {% endif %}

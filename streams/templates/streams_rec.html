@@ -6,7 +6,7 @@
 {%block scripts %}
 <script src="{% static 'js/main.js' %}"></script>
 {% endblock %}<!--- -->
-{% block title %} Capture {{ e_word }}{% endblock %}
+{% block title %} REC | {{curr_word.in_sinhala}}({{ e_word }}){% endblock %}
 <!--- -->
 {% block content %}
 <div class="ui inverted three column doubling stackable center divided grid">
@@ -125,7 +125,7 @@
             <button
               id="back-btn"
               class="ui inverted red button"
-              onclick="navigationAction(`{% url 'streams_rec_view' prev_word.in_english %}`)"
+              onclick="navigationAction(`{% url 'streams_rec_view' prev_word.pk %}`)"
             >
               <i class="ui left arrow icon"></i>Back
             </button>
@@ -139,7 +139,7 @@
             <button
               id="next-btn"
               class="ui inverted green button"
-              onclick="navigationAction(`{% url 'streams_rec_view' next_word.in_english %}`)"
+              onclick="navigationAction(`{% url 'streams_rec_view' next_word.pk %}`)"
             >
               Next <i class="ui right arrow icon"></i>
             </button>
@@ -158,7 +158,7 @@
     <div class="content">
       <div class="description">
         <div class="ui header">Discard recording?</div>
-        <p>
+        <p style="color: black">
           Not submited recordings are going to destroy and can't recover again .
           click <b>cancel</b> to close this and click <b>submit</b> to submit
           recording to server.
