@@ -2,7 +2,7 @@
 
 ## _Dynamic Sign Collector_
 
-[![Heroku](https://img.shields.io/static/v1?message=heroku&logo=Heroku&labelColor=FFF&color=430098&logoColor=430098&style=for-the-badge&label=%20)](https://dsc.herokuapp.com)
+[![Heroku](https://img.shields.io/static/v1?message=heroku&logo=Heroku&labelColor=FFF&color=430098&logoColor=430098&style=for-the-badge&label=%20)](https://dscapp.herokuapp.com)
 
 ## Developers
 
@@ -22,7 +22,7 @@ DSC uses a number of open source projects to work properly:
 - [Django] - Python Web Framework
 - [Sementic UI] - awesome modern CSS
 - [Firebase] - as file storage
-- [jQuery] - duh
+- [jQuery] - for frontend actions
 
 And of course DSC itself is open source with a [public repository][dsc]
 on GitHub.
@@ -69,23 +69,17 @@ Then open browser and goto
 127.0.0.1:8000
 ```
 
-## Docker
+### Docker
 
-Docker Not Configured Yet.
+Docker Available Yet.
 
-Verify the deployment by navigating to your server address in
-your preferred browser.
-
-```sh
-127.0.0.1:8000
-```
 
 ## License
 
 [BSD-3-Clause License][license]
 
-[dsc]: https://github.com/krypto-i9/dsc
-[git-repo-url]: https://github.com/krypto-i9/dsc.git
+[dsc]: https://github.com/nzx9/dsc
+[git-repo-url]: https://github.com/nzx99/dsc.git
 [python]: https://python.org/
 [django]: https://www.djangoproject.com/
 [sementic ui]: https://semantic-ui.com/
@@ -94,4 +88,4 @@ your preferred browser.
 [@nav_i9]: https://twitter.com/nav_i9
 [navindu dananga]: https://www.linkedin.com/in/navindu-dananga/
 [jennive cole]: https://www.linkedin.com/in/jennive-cole/
-[license]: https://github.com/krypto-i9/dsc/blob/main/LICENSE
+[license]: https://github.com/nzx9/dsc/blob/main/LICENSE
