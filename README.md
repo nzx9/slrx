@@ -76,7 +76,7 @@ Then open browser and goto
 
 ### Docker
 
-Docker Available Yet.
+Docker Not Available Yet.
 
 
 ## License
