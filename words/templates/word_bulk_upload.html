@@ -54,19 +54,17 @@
     let sp = id.split("_");
     let lang = sp[0];
     let num = sp[1] - 1;
-    json_p[num][lang] = elem.value;
+
+    json_p[num][lang] = elem.value === "__NULL__" ? "None" : elem.value;
 
     let elem_icon = document.getElementById(id + "_icon").className;
-    console.log(elem_icon);
+
     if (
       json_p[num][lang] !== null &&
       json_p[num][lang] !== undefined &&
       json_p[num][lang] !== "None"
     ) {
-      if (
-        json_p[num][lang].length > 0 &&
-        elem_icon != "check circle green icon"
-      ) {
+      if (json_p[num][lang].length > 0) {
         document.getElementById(id + "_icon").className =
           "check circle green icon";
       } else {
@@ -88,7 +86,9 @@
   }
 </script>
 <!-- -->
-{% endblock %} {% block content%}
+{% endblock %}
+<!-- -->
+{% block content%}
 <div class="ui container" style="padding-bottom: 20px">
   <h1 class="ui inverted header">Bulk Upload</h1>
   <p class="ui inverted sub header">{{file_name}}</p>
@@ -135,10 +135,11 @@
           <th class="collapsing">{{ titles.0 | upper }}</th>
           <th class="collapsing">{{ titles.1 | upper }}</th>
           <th class="collapsing">{{ titles.2 | upper }}</th>
+          <th class="collapsing">{{ titles.3 | upper }}</th>
         </tr>
       </thead>
       <tbody>
-        {% for x0, x1, x2 in word_list %}
+        {% for x0, x1, x2, x3 in word_list %}
         <tr>
           <td>{{forloop.counter}}</td>
           <td data-label="{{titles.0}}" id="{{titles.0}}_{{ forloop.counter }}">
@@ -147,6 +148,7 @@
                 class="green"
                 id="{{titles.0}}_{{ forloop.counter }}_i"
                 value="{{x0}}"
+                placeholder="{{titles.0}}"
                 onchange="updateWL('{{titles.0}}_{{ forloop.counter }}_i')"
               />
               <div class="ui right corner label">
@@ -158,7 +160,7 @@
                 {% else %}
                 <i
                   id="{{titles.0}}_{{ forloop.counter }}_i_icon"
-                  class="exclamation circle yellow icon"
+                  class="exclamation circle red icon"
                 ></i
                 >{% endif %}
               </div>
@@ -170,6 +172,7 @@
               <input
                 id="{{titles.1}}_{{ forloop.counter }}_i"
                 value="{{x1}}"
+                placeholder="{{titles.1}}"
                 onchange="updateWL('{{titles.1}}_{{ forloop.counter }}_i')"
               />
               <div class="ui right corner label">
@@ -181,7 +184,7 @@
                 {% else %}
                 <i
                   id="{{titles.1}}_{{ forloop.counter }}_i_icon"
-                  class="exclamation circle yellow icon"
+                  class="exclamation circle red icon"
                 ></i
                 >{% endif %}
               </div>
@@ -193,6 +196,7 @@
               <input
                 id="{{titles.2}}_{{ forloop.counter }}_i"
                 value="{{x2}}"
+                placeholder="{{titles.2}}"
                 onchange="updateWL('{{titles.2}}_{{ forloop.counter }}_i')"
               />
               <div class="ui right corner label">
@@ -204,6 +208,53 @@
                 {% else %}
                 <i
                   id="{{titles.2}}_{{ forloop.counter }}_i_icon"
+                  class="exclamation circle yellow icon"
+                ></i
+                >{% endif %}
+              </div>
+            </div>
+          </td>
+          <!---->
+          <td data-label="{{titles.3}}" id="{{titles.3}}_{{ forloop.counter }}">
+            <div class="ui two column grid">
+              <div class="fifteen wide column">
+                <select
+                  class="ui icon search fluid selection dropdown"
+                  id="{{titles.3}}_{{ forloop.counter }}_i"
+                  value="{{x3}}"
+                  onchange="updateWL('{{titles.3}}_{{ forloop.counter }}_i')"
+                >
+                  <i class="dropdown icon"></i>
+                  <option class="item" value="__NULL__">None</option>
+                  {% for category in categories %} {% if category.name == x3 %}
+                  <option class="item" value="{{category.name}}" selected>
+                    {{category.name}}
+                  </option>
+                  {% else %}
+                  <option class="item" value="{{category.name}}">
+                    {{category.name}}
+                  </option>
+                  {% endif %} {% endfor %}
+                </select>
+              </div>
+              <div
+                class="one wide column"
+                style="
+                  margin: 0px;
+                  padding: 0px;
+                  position: relative;
+                  right: 10px;
+                  top: 2px;
+                "
+              >
+                {% if x3 != None %}
+                <i
+                  id="{{titles.3}}_{{ forloop.counter }}_i_icon"
+                  class="check circle green icon"
+                ></i>
+                {% else %}
+                <i
+                  id="{{titles.3}}_{{ forloop.counter }}_i_icon"
                   class="exclamation circle yellow icon"
                 ></i
                 >{% endif %}
