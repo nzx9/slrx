@@ -1,7 +1,9 @@
-# DSC
+# DSC (_Dynamic Sign Collector_)
 
-## _Dynamic Sign Collector_
+[![DSC Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=nzx9&repo=DSC&show_owner=true)](https://github.com/nzx9/DSC)
 
+
+## Hosted On
 [![Heroku](https://img.shields.io/static/v1?message=heroku&logo=Heroku&labelColor=FFF&color=430098&logoColor=430098&style=for-the-badge&label=%20)](https://dscapp.herokuapp.com)
 
 ## Developers
