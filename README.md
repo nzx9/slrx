@@ -11,13 +11,15 @@
 - [Navindu Dananga]
 - [Jennive Cole]
 
+## Built for
+
 DSC is built for Collect Dynamic Signs Remotly for
 
 - Machine Learning Tasks
 - Validating Data
 - Many More..
 
-## Tech
+## Packages used
 
 DSC uses a number of open source projects to work properly:
 
@@ -26,8 +28,9 @@ DSC uses a number of open source projects to work properly:
 - [Firebase] - as file storage
 - [jQuery] - for frontend actions
 
-And of course DSC itself is open source with a [public repository][dsc]
-on GitHub.
+_For Python dependencies view [requirement.txt](https://github.com/nzx9/DSC/blob/main/requirements.txt)_
+ 
+DSC itself is open source with a [public repository][dsc] on GitHub.
 
 ## Installation
 
