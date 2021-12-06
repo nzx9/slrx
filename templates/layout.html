@@ -68,6 +68,10 @@
     left: 0px;
   }
 
+  .hide {
+    display: none !important;
+  }
+
   @media only screen and (max-width: 700px) {
     .ui.fixed.menu {
       display: none !important;
@@ -88,7 +92,28 @@
   $(document).ready(function () {
     // create sidebar and attach to menu open
     $(".ui.sidebar").sidebar("attach events", ".toc.item");
+
+    if (
+      window.location.protocol === "http:" &&
+      window.location.hostname !== "localhost"
+    )
+      window.location.href = window.location.href.replace("http:", "https:");
+
+    if (
+      window.location.protocol === "http:" &&
+      window.location.hostname !== "localhost"
+    ) {
+      $("#https-banner").removeClass("hide");
+    }
   });
+
+  function https() {
+    if (
+      window.location.protocol === "http:" &&
+      window.location.hostname !== "localhost"
+    )
+      window.location.href = window.location.href.replace("http:", "https:");
+  }
 </script>
 {% block scripts%} {% endblock %} {% endblock %}
 <div>
@@ -139,7 +164,19 @@
             {% endif %}
           </div>
         </div>
-        <div>{% block content %}{% endblock %}</div>
+        <div>
+          <div id="https-banner" class="ui floating yellow message hide">
+            <p>
+              You are using DSC with <b>Unencrypted Conection (http)</b>. You
+              need to use <b>Encrypted Connection (https)</b> to get access to
+              WebCam.
+            </p>
+            <button class="ui tiny green button" onclick="https()">
+              RELOAD
+            </button>
+          </div>
+          {% block content %} {% endblock %}
+        </div>
         {% if user.is_authenticated %}
         <div
           id="feedback-btn"
