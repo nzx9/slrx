@@ -1,6 +1,14 @@
 {% extends "layout.html" %} {% load static %} {% load encoders %}
 <!-- -->
 {% block title %}Words | {{word.in_sinhala}} ({{ word.in_english }})
+{%endblock%}
+<!---->
+{% block scripts %}
+<style>
+  .hide {
+    display: none !important;
+  }
+</style>
 {% endblock %}
 <!---->
 {% block content %}
@@ -91,29 +99,48 @@
           </div>
         </div>
         <div class="extra content">
-          <span class="left floated">
-            {% if stream.verified == True %}
-            <i class="check circle green icon"></i>
-            <span style="color: green">Accepted</span>
-            <!-- -->
-            {% elif stream.verified == False %}
-            <i class="times circle red icon"></i>
-            <span style="color: red">Rejected</span>
-            {% else %}
-            <i class="exclamation circle yellow icon"></i>
-            <span>Pending</span>
-            {% endif %}
-          </span>
-          <br />
-          {% if stream.verified == False %}
-          <div class="left floated" style="color: black">
-            <i class="info blue circle icon"></i>{{stream.reason}}
+          <div class="ui two column grid">
+            <div class="equal width row">
+              <div class="ten wide column">
+                <span class="left floated">
+                  {% if stream.verified == True %}
+                  <i class="check circle green icon"></i>
+                  <span style="color: green">Accepted</span>
+                  <!-- -->
+                  {% elif stream.verified == False %}
+                  <i class="times circle red icon"></i>
+                  <span style="color: red">Rejected</span>
+                  {% else %}
+                  <i class="exclamation circle yellow icon"></i>
+                  <span>Pending</span>
+                  {% endif %}
+                </span>
+                <br />
+                {% if stream.verified == False %}
+                <div class="left floated" style="color: black">
+                  <i class="info blue circle icon"></i>{{stream.reason}}
+                </div>
+                {% elif stream.verified %}
+                <div class="left floated" style="color: black">
+                  <i class="info user circle icon"></i
+                  >{{stream.verified_by.username}}
+                </div>
+                {% endif %}
+              </div>
+              <div class="six wide column">
+                {% if user|has_group:'Tester' or user.is_superuser %}
+                <div class="right floated">
+                  <button
+                    class="ui tiny blue button"
+                    onclick="showModel({pk: '{{stream.pk}}', })"
+                  >
+                    Inspect
+                  </button>
+                </div>
+                {% endif %}
+              </div>
+            </div>
           </div>
-          {% elif stream.verified %}
-          <div class="left floated" style="color: black">
-            <i class="info user circle icon"></i>{{stream.verified_by.username}}
-          </div>
-          {% endif %}
         </div>
       </div>
       {% endfor %}
@@ -301,8 +328,115 @@
     </form>
   </div>
 </div>
+<div class="ui modal">
+  <div id="dimmer" class="ui active inverted dimmer">
+    <div class="ui text loader">Loading</div>
+  </div>
+  <div id="model-title" class="header"></div>
+  <div id="model-error-body" class="hide">
+    <div class="ui negative message">
+      <div class="header">Something Went Wrong...</div>
+      <p id="err-desc"></p>
+    </div>
+  </div>
+  <div id="model-success-body" class="ui two column divided grid">
+    <div class="stretched row">
+      <div class="column">
+        <div class="ui basic segment">
+          <div class="image content">
+            <div class="ui medium image">
+              <video
+                width="400px"
+                height="300px"
+                id="model-prev"
+                controls
+              ></video>
+            </div>
+          </div>
+          <div id="msg" class="ui message transition hidden">
+            <i class="close icon" onclick="$('#msg').addClass('hidden')"></i>
+            <div id="msg-title" class="header"></div>
+            <p id="msg-desc"></p>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="ui basic segment">
+          <div class="description">
+            <p><b>StreamID: </b><span id="model-pk"></span></p>
+            <p><b>Recorded By: </b><span id="model-user"></span></p>
+            <p><b>Recorded: </b><span id="model-ts-cr"></span></p>
+            <p><b>Updated: </b><span id="model-ts-up"></span></p>
+            <div class="ui divider"></div>
+            <div class="ui form">
+              <p><b>Reviewed By: </b><span id="model-rev"></span></p>
+              <div class="inline fields">
+                <label>Verification: </label>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input
+                      id="accept-r"
+                      type="radio"
+                      name="valid"
+                      onclick="setDisable(true)"
+                      value="accepted"
+                    />
+                    <label style="width: 75px">Accept</label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input
+                      id="reject-r"
+                      type="radio"
+                      name="valid"
+                      onclick="setDisable(false)"
+                      value="rejected"
+                    />
+                    <label>Reject</label>
+                  </div>
+                </div>
+              </div>
+              <div class="inline fields">
+                <label style="width: 75px">Reason: </label>
+                <div class="field">
+                  <select id="model-select" class="ui disabled search dropdown">
+                    <option value="Not Clear">Not Clear</option>
+                    <option value="Sign Invalid">Sign Invalid</option>
+                    <option value="Other">Other Reasons</option>
+                  </select>
+                </div>
+              </div>
+              <div class="inline fields">
+                <label style="width: 75px">Comment: </label>
+                <div class="field">
+                  <div id="model-input" class="ui disabled input">
+                    <textarea
+                      id="model-input-i"
+                      type="text"
+                      placeholder="Comments"
+                      rows="2"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="actions" style="margin-bottom: 10px">
+    <div class="ui black deny button">Close</div>
+    <button id="save-btn" class="ui positive right labeled icon button">
+      Save
+      <i class="checkmark icon"></i>
+    </button>
+  </div>
+</div>
 
 <script>
+  let updated = false;
   function not_empty(value) {
     return value !== null && value !== undefined && value !== "";
   }
@@ -359,5 +493,167 @@
   $("#category-dropdown").dropdown({
     clearable: true,
   });
+
+  function showModel(content) {
+    updated = false;
+    $("#success-msg").addClass("hidden");
+    $("#error-msg").addClass("hidden");
+    const csrftoken = Cookies.get("csrftoken");
+    $(".ui.modal")
+      .modal({
+        onShow: function () {
+          fetch(`/streams/get/${content.pk}`, {
+            method: "get",
+            headers: {
+              "X-CSRFToken": csrftoken,
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) =>
+              response.json().then((res, error) => {
+                $("#dimmer").removeClass("active");
+                if (error) {
+                  $("#save-btn").addClass("hide");
+                  $("#model-title").html("Error!");
+                  $("#model-title").addClass("ui red");
+                  $("#err-desc").html(error.toString());
+                  $("#model-success-body").addClass("hide");
+                  $("#model-error-body").removeClass("hide");
+                } else {
+                  $("#model-title").removeClass("ui red");
+                  if (res.success === true) {
+                    $("#model-title").html(
+                      `${res.data.word.sin} | ${res.data.word.eng} | ${res.data.word.sie}`
+                    );
+                    $("#model-prev").attr("src", res.data.src);
+                    $("#model-pk").html(res.data.pk);
+                    $("#model-user").html(res.data.user.name);
+                    $("#model-ts-cr").html(new Date(res.data.ts.created));
+                    $("#model-ts-up").html(new Date(res.data.ts.updated));
+                    $("#model-rev").html(
+                      res.data.verification.verified_by.name === null
+                        ? "None"
+                        : res.data.verification.verified_by.name
+                    );
+                    $("#model-input-i").val(res.data.comment);
+                    $("#model-select").val(res.data.verification.reason);
+                    if (res.data.verification.verified === true)
+                      $("#accept-r").prop("checked", true);
+                    else if (res.data.verification.verified === false) {
+                      $("#reject-r").prop("checked", true);
+                    } else {
+                      $("#accept-r").prop("checked", false);
+                      $("#reject-r").prop("checked", false);
+                    }
+                  } else {
+                    $("#save-btn").addClass("hide");
+                    $("#model-title").html("Error!");
+                    $("#model-title").addClass("ui red");
+                    $("#err-desc").html(res.msg);
+                    $("#model-success-body").addClass("hide");
+                    $("#model-error-body").removeClass("hide");
+                  }
+                }
+              })
+            )
+            .catch((error) => {
+              $("#save-btn").addClass("hide");
+              $("#model-title").html("Error!");
+              $("#model-title").addClass("ui red");
+              $("#err-desc").html(error.toString());
+              $("#model-success-body").addClass("hide");
+              $("#model-error-body").removeClass("hide");
+            });
+        },
+        onApprove: function () {
+          $("#dimmer").addClass("active");
+          let verify =
+            $('input[name="valid"]:checked').val() === undefined
+              ? null
+              : $('input[name="valid"]:checked').val();
+          let reason = $("#model-select").val();
+          let comment = $("#model-input-i").val();
+
+          fetch(`/streams/verify/${content.pk}`, {
+            method: "post",
+            body: JSON.stringify({
+              verify: verify,
+              reason: reason,
+              comment: comment,
+            }),
+            headers: {
+              "X-CSRFToken": csrftoken,
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) =>
+              response.json().then((res, error) => {
+                if (error) {
+                  $("#msg").addClass("red");
+                  $("#msg").removeClass("green");
+                  $("#msg-title").html(`ERROR`);
+                  $("#msg-desc").html(
+                    `<code><b>${error.toString()}</b></code> (SID : ${
+                      content.pk
+                    })`
+                  );
+                  $("#msg").removeClass("hidden");
+                } else {
+                  if (res.success) {
+                    $("#msg").addClass("green");
+                    $("#msg").removeClass("red");
+                    $("#msg-title").html(`SUCCESS`);
+                    $("#msg-desc").html(
+                      `<code><b>${res.msg}</b></code> (SID : ${content.pk})`
+                    );
+                    $("#msg").removeClass("hidden");
+                    if (verify == "accepted") {
+                      $(`#tb-stu-${content.pk}`).html(
+                        '<i class="check circle green icon"></i>Accepted'
+                      );
+                    } else if (verify == "rejected") {
+                      $(`#tb-stu-${content.pk}`).html(
+                        '<i class="times circle red icon"></i>Rejected'
+                      );
+                    }
+                    updated = true;
+                  } else {
+                    $("#msg").addClass("red");
+                    $("#msg").removeClass("green");
+                    $("#msg-title").html(`ERROR `);
+                    $("#msg-desc").html(
+                      `<code><b>${res.msg}</b></code> (SID : ${content.pk})`
+                    );
+                    $("#msg").removeClass("hidden");
+                  }
+                }
+                $("#dimmer").removeClass("active");
+              })
+            )
+            .catch((error) => {
+              $("#msg").addClass("red");
+              $("#msg-title").html(`ERROR`);
+              $("#msg-desc").html(
+                `<code><b>${error.toString()}</b></code> (SID : ${content.pk})`
+              );
+              $("#msg").removeClass("hidden");
+              $("#dimmer").removeClass("active");
+            });
+          return false;
+        },
+        onDeny: function () {
+          $("#dimmer").addClass("active");
+          if (updated) window.location.reload();
+          return true;
+        },
+        closable: false,
+      })
+      .modal("show");
+  }
+
+  function setDisable(value) {
+    if (value) $("#model-select, #model-input").addClass("disabled");
+    else $("#model-select, #model-input").removeClass("disabled");
+  }
 </script>
 {% endblock %}
