@@ -171,3 +171,6 @@ LOGIN_REDIRECT_URL = reverse_lazy('home_view')
 LOGOUT_REDIRECT_URL = "/"
 
 ASGI_APPLICATION = "dsc.asgi.application"
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
