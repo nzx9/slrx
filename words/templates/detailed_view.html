@@ -15,6 +15,25 @@
 
 <div class="ui centered stackable two column internally celled grid">
   <div class="twelve wide column">
+    <div
+      class="ui search selection dropdown"
+      id="filter-dropdown"
+      style="position: absolute; right: 10px"
+    >
+      <input
+        type="hidden"
+        name="search-filter-dropdown"
+        id="search-filter-dropdown"
+      />
+      <div class="default text">Select Filter</div>
+      <i class="dropdown icon"></i>
+      <div class="menu">
+        <div class="item selected" data-value="all">ALL</div>
+        <div class="item" data-value="approved">Approved</div>
+        <div class="item" data-value="rejected">Rejected</div>
+        <div class="item" data-value="pending">Pending</div>
+      </div>
+    </div>
     {% if empty %}
     <div class="ui centered middle aligned grid">
       <div style="margin-top: 25px">
@@ -35,8 +54,8 @@
         >{{word.in_sinhala}} ({{word.in_english}})</span
       >
       <!---->
-      {% if word.category.name == None%} is
-      <span style="color: greenyellow"> Not Categorized</span> {% else %} in
+      {% if word.category.name == None%} are
+      <span style="color: lightcoral"> Not Categorized</span> {% else %} in
       <span style="color: greenyellow">{{word.category.name}}</span> Category
       <!---->
       {% endif %}
@@ -134,7 +153,7 @@
                     class="ui tiny blue button"
                     onclick="showModel({pk: '{{stream.pk}}', })"
                   >
-                    Inspect
+                    INSPECT
                   </button>
                 </div>
                 {% endif %}
@@ -437,6 +456,13 @@
 
 <script>
   let updated = false;
+
+  const params = new URLSearchParams(window.location.search);
+
+  const filter = params.get("filter");
+
+  if (filter !== null) $("#search-filter-dropdown").val(filter);
+
   function not_empty(value) {
     return value !== null && value !== undefined && value !== "";
   }
@@ -491,6 +517,10 @@
   }
 
   $("#category-dropdown").dropdown({
+    clearable: true,
+  });
+
+  $("#filter-dropdown").dropdown({
     clearable: true,
   });
 
@@ -654,6 +684,15 @@
   function setDisable(value) {
     if (value) $("#model-select, #model-input").addClass("disabled");
     else $("#model-select, #model-input").removeClass("disabled");
+  }
+
+  $("#search-filter-dropdown").change(() => {
+    const filter_dropdown = $("#search-filter-dropdown").val();
+    do_filter(filter_dropdown);
+  });
+
+  function do_filter(type) {
+    window.location.href = `${window.location.origin}${window.location.pathname}?filter=${type}`;
   }
 </script>
 {% endblock %}

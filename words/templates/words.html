@@ -73,7 +73,23 @@
         {% for word in words %}
         <div class="ui raised card">
           <div class="content">
-            <div class="header">{{word.in_sinhala}} ({{word.in_english}})</div>
+            <div class="header">
+              {{word.in_sinhala}} ({{word.in_english}})
+              <span style="position: absolute; right: 5px">
+                {% if word.pending_count == 0 %}
+                <a class="ui green label" href="/words/view/{{word.pk}}">
+                  <i class="bell slash icon"></i> {{word.pending_count}}
+                </a>
+                {% else %}
+                <a
+                  class="ui red label"
+                  href="/words/view/{{word.pk}}?filter=pending"
+                >
+                  <i class="bell icon"></i> {{word.pending_count}}
+                </a>
+                {% endif %}
+              </span>
+            </div>
             <div class="meta">
               {% if word.category != None%}
               <a
@@ -314,6 +330,10 @@
           onDeny: function () {},
         })
         .modal("show");
+    }
+
+    function _filter(type) {
+      window.location.href = `${window.location.origin}${window.location.pathname}?filter=${type}`;
     }
   </script>
   {% endblock %}

@@ -49,6 +49,13 @@ def words_view(request):
         empty = True
     else:
         empty = False
+
+    for word in words:
+        pending_streams = Stream.objects.filter(
+            wordId=word).filter(verified=None)
+        pending_streams_count = pending_streams.count()
+        word.pending_count = pending_streams_count
+
     return render(request, "words.html", {"words": words, "empty": empty, "categories": categories})
 
 
@@ -113,7 +120,7 @@ def bulk_upload(request):
         for word in words_splited:
             x = word.split(",")
             if len(x) == 4 and len(x[0].strip()) > 0 and len(x[1].strip()) > 0 and len(x[2].strip()) > 0 and len(x[3].strip()) > 0:
-                 word_list.append(
+                word_list.append(
                     (x[0].strip().lower(), x[1].strip().lower(), x[2].strip().lower(), x[3].strip().lower()))
             elif len(x) == 3 and len(x[0].strip()) > 0 and len(x[1].strip()) > 0 and len(x[2].strip()) > 0:
                 word_list.append(
@@ -182,13 +189,17 @@ def add_bulk_words_to_db(request):
             for e in body_data:
                 if body_data[e]["sinhala"] != None and body_data[e]["sinhala"].strip() != "" and body_data[e]["english"] != None and body_data[e]["english"].strip() != "":
                     newWord = Word()
-                    newWord.in_sinhala = body_data[e]["sinhala"].strip().lower()
-                    newWord.in_english = body_data[e]["english"].strip().lower()
-                    newWord.in_singlish = body_data[e]["singlish"].strip().lower()
+                    newWord.in_sinhala = body_data[e]["sinhala"].strip(
+                    ).lower()
+                    newWord.in_english = body_data[e]["english"].strip(
+                    ).lower()
+                    newWord.in_singlish = body_data[e]["singlish"].strip(
+                    ).lower()
                     newWord.created_by = request.user
                     try:
-                        if body_data[e]["category"] != None: 
-                            category = Category.objects.get(name=body_data[e]["category"])
+                        if body_data[e]["category"] != None:
+                            category = Category.objects.get(
+                                name=body_data[e]["category"])
                             newWord.category = category
                         newWord.save()
                         title = "All done..."
@@ -216,9 +227,21 @@ def detailed_word_view(request, word_pk):
     if not word_exists:
         return render(request, "404.html")
 
+    query_filter = request.GET.get('filter')
     word = Word.objects.get(pk=word_pk)
     categories = Category.objects.all().order_by('pk')
-    streams = Stream.objects.filter(wordId=word).order_by('pk')
+
+    if(query_filter == "pending"):
+        streams = Stream.objects.filter(wordId=word).filter(
+            verified=None).order_by('pk')
+    elif(query_filter == "rejected"):
+        streams = Stream.objects.filter(wordId=word).filter(
+            verified=False).order_by('pk')
+    elif(query_filter == "approved"):
+        streams = Stream.objects.filter(wordId=word).filter(
+            verified=True).order_by('pk')
+    else:
+        streams = Stream.objects.filter(wordId=word).order_by('pk')
     empty = True if len(streams) == 0 else False
     return render(request, "detailed_view.html", {"word": word, "categories": categories, "streams": streams, "empty": empty})
 
