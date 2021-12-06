@@ -98,11 +98,20 @@
           </div>
           <div class="extra content">
             <div class="right floated author">
+              {% if user.is_authenticated %}
+              <a
+                class="ui tiny grey button"
+                href="{% url 'streams_rec_view' word.pk %}"
+                style="position: absolute; left: 15px"
+                >RECORD</a
+              >
+              {% endif %}
               <button
                 class="ui tiny red button"
                 onclick="deleteConfirmation(`{% url 'delete_word' word.pk %}`)"
-                >DELETE</button
               >
+                DELETE
+              </button>
               <a
                 class="ui tiny green button"
                 href="{% url 'detailed_word_view' word.pk %}"
@@ -236,7 +245,8 @@
         <div class="description">
           <div class="ui header">Delete Word?</div>
           <p style="color: black">
-            This action can't undone. All the recordings under this word will be also deleted.
+            This action can't undone. All the recordings under this word will be
+            also deleted.
           </p>
         </div>
       </div>
@@ -295,7 +305,7 @@
     }
 
     function deleteConfirmation(url) {
-      console.log("DONE")
+      console.log("DONE");
       $("#model-conf")
         .modal({
           onApprove: function () {
@@ -304,8 +314,7 @@
           onDeny: function () {},
         })
         .modal("show");
-  }
-
+    }
   </script>
   {% endblock %}
 </div>
