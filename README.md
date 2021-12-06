@@ -2,14 +2,9 @@
 
 [![DSC Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=nzx9&repo=DSC&show_owner=true)](https://github.com/nzx9/DSC)
 
-
 ## Hosted On
+
 [![Heroku](https://img.shields.io/static/v1?message=heroku&logo=Heroku&labelColor=FFF&color=430098&logoColor=430098&style=for-the-badge&label=%20)](https://dscapp.herokuapp.com)
-
-## Developers
-
-- [Navindu Dananga]
-- [Jennive Cole]
 
 ## Built for
 
@@ -29,7 +24,7 @@ DSC uses a number of open source projects to work properly:
 - [jQuery] - for frontend actions
 
 _For Python dependencies view [requirement.txt](https://github.com/nzx9/DSC/blob/main/requirements.txt)_
- 
+
 DSC itself is open source with a [public repository][dsc] on GitHub.
 
 ## Installation
@@ -77,7 +72,6 @@ Then open browser and goto
 ### Docker
 
 Docker Not Available Yet.
-
 
 ## License
 
