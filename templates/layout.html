@@ -1,242 +1,249 @@
 {% extends 'base.html' %} {% load encoders %} {% block body%} {% block head%}
 <style>
-  .hidden.menu {
-    display: none;
-  }
-
-  .masthead.segment {
-    min-height: 656px;
-    padding: 0em 0;
-  }
-  .masthead .logo.item img {
-    margin-right: 1em;
-  }
-  .masthead .ui.menu .ui.button {
-    margin-left: 0.5em;
-  }
-
-  .ui.vertical.stripe {
-    padding: 8em 0;
-  }
-  .ui.vertical.stripe .floated.image {
-    clear: both;
-  }
-  .ui.vertical.stripe p {
-    font-size: 1.33em;
-  }
-  .ui.vertical.stripe .horizontal.divider {
-    margin: 3em 0;
-  }
-
-  .quote.stripe.segment {
-    padding: 0;
-  }
-  .quote.stripe.segment .grid .column {
-    padding-top: 5em;
-    padding-bottom: 5em;
-  }
-
-  .footer.segment {
-    padding: 5em 0;
-  }
-
-  .secondary.pointing.menu .toc.item {
-    display: none;
-  }
-
-  #feedback-btn {
-    position: absolute;
-    top: 60px;
-    left: -100px;
-  }
-
-  #feedback-btn:hover {
-    position: absolute;
-    top: 60px;
-    left: 0px;
-  }
-
-  #validate-btn {
-    position: absolute;
-    top: 110px;
-    left: -105px;
-  }
-
-  #validate-btn:hover {
-    position: absolute;
-    top: 110px;
-    left: 0px;
-  }
-
-  .hide {
-    display: none !important;
-  }
-
-  @media only screen and (max-width: 700px) {
-    .ui.fixed.menu {
-      display: none !important;
+    .hidden.menu {
+        display: none;
     }
-    .secondary.pointing.menu .item,
-    .secondary.pointing.menu .menu {
-      display: none;
-    }
-    .secondary.pointing.menu .toc.item {
-      display: block;
-    }
+
     .masthead.segment {
-      min-height: 350px;
+        min-height: 656px;
+        padding: 0em 0;
     }
-  }
+
+    .masthead .logo.item img {
+        margin-right: 1em;
+    }
+
+    .masthead .ui.menu .ui.button {
+        margin-left: 0.5em;
+    }
+
+    .ui.vertical.stripe {
+        padding: 8em 0;
+    }
+
+        .ui.vertical.stripe .floated.image {
+            clear: both;
+        }
+
+        .ui.vertical.stripe p {
+            font-size: 1.33em;
+        }
+
+        .ui.vertical.stripe .horizontal.divider {
+            margin: 3em 0;
+        }
+
+    .quote.stripe.segment {
+        padding: 0;
+    }
+
+        .quote.stripe.segment .grid .column {
+            padding-top: 5em;
+            padding-bottom: 5em;
+        }
+
+    .footer.segment {
+        padding: 5em 0;
+    }
+
+    .secondary.pointing.menu .toc.item {
+        display: none;
+    }
+
+    #feedback-btn {
+        position: absolute;
+        top: 60px;
+        left: -100px;
+    }
+
+        #feedback-btn:hover {
+            position: absolute;
+            top: 60px;
+            left: 0px;
+        }
+
+    #validate-btn {
+        position: absolute;
+        top: 110px;
+        left: -105px;
+    }
+
+        #validate-btn:hover {
+            position: absolute;
+            top: 110px;
+            left: 0px;
+        }
+
+    .hide {
+        display: none !important;
+    }
+
+    @media only screen and (max-width: 700px) {
+        .ui.fixed.menu {
+            display: none !important;
+        }
+
+        .secondary.pointing.menu .item,
+        .secondary.pointing.menu .menu {
+            display: none;
+        }
+
+        .secondary.pointing.menu .toc.item {
+            display: block;
+        }
+
+        .masthead.segment {
+            min-height: 350px;
+        }
+    }
 </style>
 <script>
-  $(document).ready(function () {
-    // create sidebar and attach to menu open
-    $(".ui.sidebar").sidebar("attach events", ".toc.item");
+    $(document).ready(function () {
+        // create sidebar and attach to menu open
+        $(".ui.sidebar").sidebar("attach events", ".toc.item");
 
-    if (
-      window.location.protocol === "http:" &&
-      window.location.hostname !== "localhost"
-    )
-      window.location.href = window.location.href.replace("http:", "https:");
+        if (
+            window.location.protocol === "http:" &&
+            window.location.hostname !== "localhost"
+        )
+            window.location.href = window.location.href.replace("http:", "https:");
 
-    if (
-      window.location.protocol === "http:" &&
-      window.location.hostname !== "localhost"
-    ) {
-      $("#https-banner").removeClass("hide");
+        if (
+            window.location.protocol === "http:" &&
+            window.location.hostname !== "localhost"
+        ) {
+            $("#https-banner").removeClass("hide");
+        }
+    });
+
+    function https() {
+        if (
+            window.location.protocol === "http:" &&
+            window.location.hostname !== "localhost"
+        )
+            window.location.href = window.location.href.replace("http:", "https:");
     }
-  });
-
-  function https() {
-    if (
-      window.location.protocol === "http:" &&
-      window.location.hostname !== "localhost"
-    )
-      window.location.href = window.location.href.replace("http:", "https:");
-  }
 </script>
 {% block scripts%} {% endblock %} {% endblock %}
 <div>
-  <div class="pusher">
-    <div class="ui inverted vertical masthead center aligned segment fluid">
-      <div class="ui fluid container">
-        <div class="ui inverted large secondary pointing menu">
-          <a class="toc item">
-            <i class="sidebar icon"></i>
-            <span
-              >DSC <i class="american sign language interpreting icon"></i
-            ></span>
-          </a>
-          {% if request.path == "/" %}
-          <a class="active item" href="{% url 'home_view'%}"
-            ><i class="american sign language interpreting icon"></i>Home</a
-          >
-          {% else %}
-          <a class="item" href="{% url 'home_view'%}"
-            ><i class="american sign language interpreting icon"></i>Home</a
-          >
-          {% endif%} {% if "/streams/" in request.path %}
-          <a class="active item" href="{% url 'streams_view'%}">Streams</a>
-          {% else %}
-          <a class="item" href="{% url 'streams_view'%}">Streams</a>
-          {% endif%} {% if "/clusters/" in request.path %}
-          <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
-          {% else %}
-          <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
-          {% endif%} {% if "/words/" in request.path %}
-          <a class="active item" href="{% url 'words_view'%}">Words</a>
-          {% else %}
-          <a class="item" href="{% url 'words_view'%}">Words</a>
-          {% endif%} {% if "/categories/" in request.path %}
-          <a class="active item" href="{% url 'category_view'%}">Categories</a>
-          {% else %}
-          <a class="item" href="{% url 'category_view'%}">Categories</a>
-          {% endif%}
-          <div class="right menu">
-            {% if user.is_authenticated %}
-            <a class="ui item" href="{% url 'logout' %}"
-              ><i class="logout icon"></i> Logout
+    <div class="pusher">
+        <div class="ui inverted vertical masthead center aligned segment fluid">
+            <div class="ui fluid container">
+                <div class="ui inverted large secondary pointing menu">
+                    <a class="toc item">
+                        <i class="sidebar icon"></i>
+                        <span>
+                            DSC <i class="american sign language interpreting icon"></i>
+                        </span>
+                    </a>
+                    {% if request.path == "/" %}
+                    <a class="active item" href="{% url 'home_view'%}"><i class="american sign language interpreting icon"></i>Home</a>
+                    {% else %}
+                    <a class="item" href="{% url 'home_view'%}"><i class="american sign language interpreting icon"></i>Home</a>
+                    {% endif%} {% if "/streams/" in request.path %}
+                    <a class="active item" href="{% url 'streams_view'%}">Streams</a>
+                    {% else %}
+                    <a class="item" href="{% url 'streams_view'%}">Streams</a>
+                    {% endif%} {% if "/clusters/" in request.path %}
+                    <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
+                    {% else %}
+                    <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
+                    {% endif%} {% if "/words/" in request.path %}
+                    <a class="active item" href="{% url 'words_view'%}">Words</a>
+                    {% else %}
+                    <a class="item" href="{% url 'words_view'%}">Words</a>
+                    {% endif%} {% if "/categories/" in request.path %}
+                    <a class="active item" href="{% url 'category_view'%}">Categories</a>
+                    {% else %}
+                    <a class="item" href="{% url 'category_view'%}">Categories</a>
+                    {% endif%}
+                    <div class="right menu">
+                        {% if user.is_authenticated %}
+                        <a class="ui item" href="{% url 'profile' %}">
+                            <i class="user icon"></i> Profile
+                        </a>
+                        <a class="ui item" href="{% url 'logout' %}">
+                            <i class="logout icon"></i> Logout
+                        </a>
+                        {% else %}
+                        <a class="ui item" href="{% url 'login' %}">
+                            <i class="user icon"></i> Login
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div id="https-banner" class="ui floating yellow message hide">
+                        <p>
+                            You are using DSC with <b>Unencrypted Conection (http)</b>. You
+                            need to use <b>Encrypted Connection (https)</b> to get access to
+                            WebCam.
+                        </p>
+                        <button class="ui tiny green button" onclick="https()">
+                            RELOAD
+                        </button>
+                    </div>
+                    {% block content %} {% endblock %}
+                </div>
+                {% if user.is_authenticated %}
+                <div id="feedback-btn"
+                     class="ui left labeled button"
+                     tabindex="0"
+                     onclick="window.open('https://forms.gle/yzjp6wyZTTXud3Uu7', '_blank')">
+                    <a class="ui basic label"> FEEDBACK </a>
+                    <div class="ui yellow icon button">
+                        <i class="external icon"></i>
+                    </div>
+                </div>
+                {% endif %}
+                <!---->
+                {% if user|has_group:"Validator" or user.is_superuser %}
+                <div id="validate-btn"
+                     class="ui left labeled button"
+                     tabindex="0"
+                     onclick="window.location.href = `{% url 'stream_verification' %}`">
+                    <a class="ui basic label"> VALIDATOR </a>
+                    <div class="ui green icon button">
+                        <i class="check circle icon"></i>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Sidebar Menu -->
+        <div class="ui vertical inverted sidebar menu">
+            {% if request.path == "/" %}
+            <a class="active item" href="{% url 'home_view'%}">Home</a>
+            {% else %}
+            <a class="item" href="{% url 'home_view'%}">Home</a>
+            {% endif%} {% if "/streams/" in request.path %}
+            <a class="active item" href="{% url 'streams_view'%}">Streams</a>
+            {% else %}
+            <a class="item" href="{% url 'streams_view'%}">Streams</a>
+            {% endif%} {% if "/clusters/" in request.path %}
+            <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
+            {% else %}
+            <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
+            {% endif%} {% if "/words/" in request.path %}
+            <a class="active item" href="{% url 'words_view'%}">Words</a>
+            {% else %}
+            <a class="item" href="{% url 'words_view'%}">Words</a>
+            {% endif%} {% if "/categories/" in request.path %}
+            <a class="active item" href="{% url 'category_view'%}">Categories</a>
+            {% else %}
+            <a class="item" href="{% url 'category_view'%}">Categories</a>
+            {% endif%} {% if user.is_authenticated %}
+            <a class="ui item" href="{% url 'profile' %}">
+                <i class="user icon"></i> Profile
+            </a>
+            <a class="ui item" href="{% url 'logout' %}">
+                <i class="logout icon"></i> Logout
             </a>
             {% else %}
-            <a class="ui item" href="{% url 'login' %}"
-              ><i class="user icon"></i> Login
-            </a>
+            <a class="item" href="{% url 'login' %}">Login</a>
+            <a class="item" href="{% url 'register'%}">Register</a>
             {% endif %}
-          </div>
         </div>
-        <div>
-          <div id="https-banner" class="ui floating yellow message hide">
-            <p>
-              You are using DSC with <b>Unencrypted Conection (http)</b>. You
-              need to use <b>Encrypted Connection (https)</b> to get access to
-              WebCam.
-            </p>
-            <button class="ui tiny green button" onclick="https()">
-              RELOAD
-            </button>
-          </div>
-          {% block content %} {% endblock %}
-        </div>
-        {% if user.is_authenticated %}
-        <div
-          id="feedback-btn"
-          class="ui left labeled button"
-          tabindex="0"
-          onclick="window.open('https://forms.gle/yzjp6wyZTTXud3Uu7', '_blank')"
-        >
-          <a class="ui basic label"> FEEDBACK </a>
-          <div class="ui yellow icon button">
-            <i class="external icon"></i>
-          </div>
-        </div>
-        {% endif %}
-        <!---->
-        {% if user|has_group:"Validator" or user.is_superuser %}
-        <div
-          id="validate-btn"
-          class="ui left labeled button"
-          tabindex="0"
-          onclick="window.location.href = `{% url 'stream_verification' %}`"
-        >
-          <a class="ui basic label"> VALIDATOR </a>
-          <div class="ui green icon button">
-            <i class="check circle icon"></i>
-          </div>
-        </div>
-        {% endif %}
-      </div>
+        {% endblock %}
     </div>
-    <!-- Sidebar Menu -->
-    <div class="ui vertical inverted sidebar menu">
-      {% if request.path == "/" %}
-      <a class="active item" href="{% url 'home_view'%}">Home</a>
-      {% else %}
-      <a class="item" href="{% url 'home_view'%}">Home</a>
-      {% endif%} {% if "/streams/" in request.path %}
-      <a class="active item" href="{% url 'streams_view'%}">Streams</a>
-      {% else %}
-      <a class="item" href="{% url 'streams_view'%}">Streams</a>
-      {% endif%} {% if "/clusters/" in request.path %}
-      <a class="active item" href="{% url 'clusters_view'%}">Clusters</a>
-      {% else %}
-      <a class="item" href="{% url 'clusters_view'%}">Clusters</a>
-      {% endif%} {% if "/words/" in request.path %}
-      <a class="active item" href="{% url 'words_view'%}">Words</a>
-      {% else %}
-      <a class="item" href="{% url 'words_view'%}">Words</a>
-      {% endif%} {% if "/categories/" in request.path %}
-      <a class="active item" href="{% url 'category_view'%}">Categories</a>
-      {% else %}
-      <a class="item" href="{% url 'category_view'%}">Categories</a>
-      {% endif%} {% if user.is_authenticated %}
-      <a class="ui item" href="{% url 'logout' %}"
-        ><i class="logout icon"></i> Logout
-      </a>
-      {% else %}
-      <a class="item" href="{% url 'login' %}">Login</a>
-      <a class="item" href="{% url 'register'%}">Register</a>
-      {% endif %}
-    </div>
-    {% endblock %}
-  </div>
 </div>
