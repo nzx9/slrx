@@ -38,9 +38,9 @@ Install the requiements and start the server.
 ```sh
 git clone https://github.com/krypto-i9/dsc.git
 cd dsc
-python3 -m env ./env
-pip install requirements.txt
+python3 -m venv ./env
 source ./env/bin/activate
+pip install -r requirements.txt
 ./manage.py runserver
 ```
 
@@ -57,9 +57,9 @@ Then run this in CMD
 
 ```cmd
 cd dsc
-python -m env ./env
-pip install requirements.txt
+python -m venv ./env
 env\Scripts\activate.bat
+pip install -r requirements.txt
 python manage.py runserver
 ```
 
