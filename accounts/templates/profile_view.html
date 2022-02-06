@@ -54,10 +54,10 @@
 {% endblock %}<!--- -->
 {% block content %}
 
-<div class="ui large form" style="padding-bottom: 9px">
+<div class="ui large form" style="padding-bottom: 7px">
   <div class="ui internally celled grid">
     <div class="five wide column">
-      <form>
+      <form style="margin-top: -25px">
         {% csrf_token %}
         <h2 class="ui header head">User Info</h2>
         <div class="row">
@@ -340,7 +340,7 @@
       </div>
     </div>
     <div class="five wide column">
-      <form>
+      <form style="margin-top: -25px">
         {% csrf_token %}
         <h2 class="ui header head">Account Info</h2>
         <div class="row">
