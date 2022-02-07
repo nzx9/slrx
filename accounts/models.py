@@ -1,7 +1,10 @@
+from statistics import mode
 from django.db import models
-from django.db.models.deletion import  SET_NULL
+from django.db.models.deletion import SET_NULL
 from django.contrib.auth.models import User
+
 # Create your models here.
+
 
 class UserData(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=SET_NULL, related_name="user")
@@ -13,7 +16,7 @@ class UserData(models.Model):
     is_payment_done = models.BooleanField(default=False)
     payment_method = models.CharField(max_length=50, null=True)
     account_number = models.CharField(max_length=25, null=True)
-    account_holder= models.CharField(max_length=50, null=True)
+    account_holder = models.CharField(max_length=50, null=True)
     account_bank = models.CharField(max_length=50, null=True)
     account_bank_branch = models.CharField(max_length=50, null=True)
     payment_requested = models.BooleanField(default=False)
@@ -21,5 +24,13 @@ class UserData(models.Model):
     user_remarks = models.CharField(max_length=1500, null=True)
     admin_remarks = models.CharField(max_length=1500, null=True)
     nic = models.CharField(max_length=20, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Pins(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=SET_NULL, related_name="u")
+    email_pin = models.CharField(max_length=6, null=True, default=None)
+    mobile_pin = models.CharField(max_length=6, null=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
