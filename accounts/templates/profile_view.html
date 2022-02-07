@@ -57,7 +57,12 @@
 <div class="ui large form" style="padding-bottom: 7px">
   <div class="ui internally celled grid">
     <div class="five wide column">
-      <form style="margin-top: -25px">
+      <form
+        style="margin-top: -25px"
+        method="POST"
+        enctype="multipart/form-data"
+        action="{% url 'user_info_update' %}"
+      >
         {% csrf_token %}
         <h2 class="ui header head">User Info</h2>
         <div class="row">
@@ -114,7 +119,7 @@
                 <div class="ui fluid action input">
                   <input
                     id="email"
-                    type="text"
+                    type="email"
                     name="email"
                     placeholder="Email"
                     required
@@ -136,10 +141,11 @@
                   <input
                     id="mobile-number"
                     type="text"
-                    name="mobile-number"
+                    name="mobile_number"
                     placeholder="Mobile Number"
                     required
                     value="{{ data.mobile_number }}"
+                    pattern="[0-9]{10}"
                   />
                 </div>
               </div>
@@ -161,6 +167,7 @@
                     placeholder="National Identity Card Number"
                     required
                     value="{{ data.nic }}"
+                    pattern="[0-9]{9}[v,x]{1}|[0-9]{12}"
                   />
                 </div>
               </div>
@@ -168,7 +175,11 @@
           </div>
         </div>
         <div class="save-btn-div">
-          <div class="ui green save button">Save User Info</div>
+          <input
+            type="submit"
+            class="ui green save button"
+            value="Save User Info"
+          />
         </div>
       </form>
       <div style="height: 15px; width: 100%"></div>
@@ -177,7 +188,7 @@
           <div class="eight wide column">
             <div class="row">
               <div class="field">
-                <div class="ui red segment">
+                <div class="ui {{ data.email_verified|yesno:"green,red"}} segment">
                   <div class="ui read-only checkbox">
                     {% if data.email_verified %}
                     <input
@@ -201,7 +212,7 @@
           <div class="eight wide column">
             <div class="row">
               <div class="field">
-                <div class="ui red segment">
+                <div class="ui {{ data.email_verified|yesno:"green,red"}} segment">
                   <div class="ui read-only checkbox">
                     {% if data.mobile_number_verified %}
                     <input
@@ -326,7 +337,9 @@
                       />
                     </div>
                   </div>
-                  {% if data.payment_request_status != None %}
+                  <!-- prettier-ignore -->
+                  {% if not data.payment_requested and not data.is_payment_done and data.is_eligible_to_get_payed %}
+                  <!-- -->
                   <div class="send-btn-div">
                     <div class="ui button save blue">Request Payment</div>
                   </div>
@@ -340,7 +353,12 @@
       </div>
     </div>
     <div class="five wide column">
-      <form style="margin-top: -25px">
+      <form
+        style="margin-top: -25px"
+        method="POST"
+        enctype="multipart/form-data"
+        action="{% url 'acc_info_update' %}"
+      >
         {% csrf_token %}
         <h2 class="ui header head">Account Info</h2>
         <div class="row">
@@ -351,14 +369,26 @@
             <div class="eleven wide column">
               <div class="field">
                 <div class="ui fluid action input">
+                  {% if data.payment_requested %}
                   <input
                     id="account-holder"
                     type="text"
-                    name="account-holder"
+                    name="account_holder"
+                    placeholder="Account Holder's Name"
+                    required
+                    value="{{ data.account_holder }}"
+                    disabled
+                  />
+                  {% else %}
+                  <input
+                    id="account-holder"
+                    type="text"
+                    name="account_holder"
                     placeholder="Account Holder's Name"
                     required
                     value="{{ data.account_holder }}"
                   />
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -372,14 +402,26 @@
             <div class="eleven wide column">
               <div class="field">
                 <div class="ui fluid action input">
+                  {% if data.payment_requested %}
                   <input
                     id="account-number"
                     type="text"
-                    name="account-number"
+                    name="account_number"
+                    placeholder="Account Number"
+                    required
+                    value="{{ data.account_number }}"
+                    disabled
+                  />
+                  {% else %}
+                  <input
+                    id="account-number"
+                    type="text"
+                    name="account_number"
                     placeholder="Account Number"
                     required
                     value="{{ data.account_number }}"
                   />
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -393,14 +435,26 @@
             <div class="eleven wide column">
               <div class="field">
                 <div class="ui fluid action input">
+                  {% if data.payment_requested %}
                   <input
-                    id="bank"
+                    id="account-bank"
                     type="text"
-                    name="bank"
+                    name="account_bank"
+                    placeholder="Name of the Bank"
+                    required
+                    value="{{ data.account_bank }}"
+                    disabled
+                  />
+                  {% else %}
+                  <input
+                    id="account-bank"
+                    type="text"
+                    name="account_bank"
                     placeholder="Name of the Bank"
                     required
                     value="{{ data.account_bank }}"
                   />
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -414,25 +468,53 @@
             <div class="eleven wide column">
               <div class="field">
                 <div class="ui fluid action input">
+                  {% if data.payment_requested %}
                   <input
                     id="branch"
                     type="text"
-                    name="branch"
+                    name="account_bank_branch"
                     placeholder="Branch of the Bank"
                     required
-                    value="{{ data.account_branch }}"
+                    value="{{ data.account_bank_branch }}"
+                    disabled
                   />
+                  {% else %}
+                  <input
+                    id="branch"
+                    type="text"
+                    name="account_bank_branch"
+                    placeholder="Branch of the Bank"
+                    required
+                    value="{{ data.account_bank_branch }}"
+                  />
+                  {% endif %}
                 </div>
               </div>
             </div>
           </div>
         </div>
+        {% if data.payment_requested %}
         <div class="save-btn-div">
-          <div class="ui green save button">Save Account Info</div>
+          <div class="ui black save disabled button">
+            Payment Requested. Can't Change the Account Info
+          </div>
         </div>
+        {% else %}
+        <div class="save-btn-div">
+          <input
+            type="submit"
+            class="ui green save button"
+            value="Save Account Info"
+          />
+        </div>
+        {% endif %}
       </form>
       <div class="ui divider"></div>
-      <form>
+      <form
+        method="POST"
+        enctype="multipart/form-data"
+        action="{% url 'user_notes_update' %}"
+      >
         {% csrf_token %}
         <h2 class="ui header head">User Notes</h2>
         <div class="row">
@@ -444,7 +526,7 @@
                   <textarea
                     id="user-notes"
                     type="text"
-                    name="user-notes"
+                    name="user_remarks"
                     rows="10"
                     placeholder="Type your note here..."
                     required
@@ -453,10 +535,9 @@
                   <textarea
                     id="user-notes"
                     type="text"
-                    name="user-notes"
+                    name="user_remarks"
                     rows="10"
                     placeholder="Type your note here"
-                    required
                   >
                     {{ data.user_remarks }}</textarea
                   >
@@ -467,7 +548,11 @@
           </div>
         </div>
         <div class="save-btn-div">
-          <div class="ui green save button">Save Notes</div>
+          <input
+            type="submit"
+            class="ui green save button"
+            value="Save Notes"
+          />
         </div>
       </form>
     </div>
