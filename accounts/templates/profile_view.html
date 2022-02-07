@@ -50,6 +50,10 @@
     text-transform: uppercase !important;
     font-family: Times New Roman !important;
   }
+
+  .to-center {
+    text-align: center !important;
+  }
 </style>
 {% endblock %}<!--- -->
 {% block content %}
@@ -188,430 +192,53 @@
           <div class="eight wide column">
             <div class="row">
               <div class="field">
-                <div class="ui {{ data.email_verified|yesno:"green,red"}} segment">
-                  <div class="ui read-only checkbox">
-                    {% if data.email_verified %}
-                    <input
-                      type="checkbox"
-                      name="email-verified"
-                      checked
-                      disabled
-                    />
-                    {% else %}
-                    <input type="checkbox" name="email-verified" disabled />
-                    {% endif %}
-                    <label>Email Verified</label>
-                    <div class="send-btn-div">
-                      <div class="ui button save blue">Send Link</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="eight wide column">
-            <div class="row">
-              <div class="field">
-                <div class="ui {{ data.email_verified|yesno:"green,red"}} segment">
-                  <div class="ui read-only checkbox">
-                    {% if data.mobile_number_verified %}
-                    <input
-                      type="checkbox"
-                      name="mobile-number-verified"
-                      checked
-                      disabled
-                    />
-                    {% else %}
-                    <input
-                      type="checkbox"
-                      name="mobile-number-verified"
-                      disabled
-                    />
-                    {% endif %}
-                    <label>Mobile Number Verified</label>
-                    <div class="send-btn-div">
-                      <div class="ui button save blue">Send SMS</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="ui divider"></div>
-      <h2 class="ui header head">Payment</h2>
-      <div class="row">
-        <div class="ui two column grid">
-          <div class="eight wide column">
-            <div class="row">
-              <div class="ui stackable two column grid">
-                <div class="ten wide column intro-l">
-                  Eligable To Get Paid <i class="caret right icon"></i>
-                </div>
-                <div class="six wide column">
-                  <div class="field">
-                    <div class="ui fluid action input">
-                      <input
-                        style="color: red; font-weight: bold"
-                        readonly
-                        id="is-eligible-to-get-payed"
-                        type="text"
-                        name="is-eligible-to-get-payed"
-                        placeholder="is-eligible-to-get-payed"
-                        required
-                        value="{{ data.is_eligible_to_get_payed }}"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="ui stackable two column grid">
-                <div class="ten wide column intro-l">
-                  Pay. Requested <i class="caret right icon"></i>
-                </div>
-                <div class="six wide column">
-                  <div class="field">
-                    <div class="ui fluid action input">
-                      <input
-                        style="color: red; font-weight: bold"
-                        readonly
-                        id="payment-requested"
-                        type="text"
-                        name="payment-requested"
-                        placeholder="payment-requested"
-                        required
-                        value="{{ data.payment_requested }}"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="ui stackable two column grid">
-                <div class="ten wide column intro-l">
-                  Payment Done <i class="caret right icon"></i>
-                </div>
-                <div class="six wide column">
-                  <div class="field">
-                    <div class="ui fluid action input">
-                      <input
-                        style="color: red; font-weight: bold"
-                        readonly
-                        id="is-payment-done"
-                        type="text"
-                        name="is-payment-done"
-                        placeholder="is-payment-done"
-                        required
-                        value="{{ data.is_payment_done }}"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="eight wide column">
-            <div class="row">
-              <div class="field">
-                <div class="ui red segment">
-                  <div class="field">
-                    <div class="ui header">
-                      <span class="sub header" style="font-weight: bold"
-                        >Payment Request Status</span
-                      >
-                    </div>
-                    <div class="ui fluid action input">
-                      <input
-                        style="font-weight: bold; text-align: center"
-                        readonly
-                        id="payment-request-status"
-                        type="text"
-                        name="payment-request-status"
-                        placeholder="payment-request-status"
-                        required
-                        value="{{ data.payment_request_status }}"
-                      />
-                    </div>
-                  </div>
-                  <!-- prettier-ignore -->
-                  {% if not data.payment_requested and not data.is_payment_done and data.is_eligible_to_get_payed %}
-                  <!-- -->
+                <div class="ui {{ data.email_verified|yesno:"green,red"}}
+                segment">
+                <div class="ui read-only checkbox">
+                  {% if data.email_verified %}
+                  <input
+                    type="checkbox"
+                    name="email-verified"
+                    checked
+                    disabled
+                  />
+                  {% else %}
+                  <input type="checkbox" name="email-verified" disabled />
+                  {% endif %}
+                  <label>Email Verified</label>
                   <div class="send-btn-div">
-                    <div class="ui button save blue">Request Payment</div>
+                    <div class="ui button save blue" id="email-verify-btn">
+                      Verify
+                    </div>
                   </div>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-            <div class="row"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="five wide column">
-      <form
-        style="margin-top: -25px"
-        method="POST"
-        enctype="multipart/form-data"
-        action="{% url 'acc_info_update' %}"
-      >
-        {% csrf_token %}
-        <h2 class="ui header head">Account Info</h2>
-        <div class="row">
-          <div class="ui stackable two column grid">
-            <div class="five wide column intro">
-              Acc. Holder <i class="caret right icon"></i>
-            </div>
-            <div class="eleven wide column">
-              <div class="field">
-                <div class="ui fluid action input">
-                  {% if data.payment_requested %}
-                  <input
-                    id="account-holder"
-                    type="text"
-                    name="account_holder"
-                    placeholder="Account Holder's Name"
-                    required
-                    value="{{ data.account_holder }}"
-                    disabled
-                  />
-                  {% else %}
-                  <input
-                    id="account-holder"
-                    type="text"
-                    name="account_holder"
-                    placeholder="Account Holder's Name"
-                    required
-                    value="{{ data.account_holder }}"
-                  />
-                  {% endif %}
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="ui stackable two column grid">
-            <div class="five wide column intro">
-              Acc. Number <i class="caret right icon"></i>
-            </div>
-            <div class="eleven wide column">
-              <div class="field">
-                <div class="ui fluid action input">
-                  {% if data.payment_requested %}
-                  <input
-                    id="account-number"
-                    type="text"
-                    name="account_number"
-                    placeholder="Account Number"
-                    required
-                    value="{{ data.account_number }}"
-                    disabled
-                  />
-                  {% else %}
-                  <input
-                    id="account-number"
-                    type="text"
-                    name="account_number"
-                    placeholder="Account Number"
-                    required
-                    value="{{ data.account_number }}"
-                  />
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="ui stackable two column grid">
-            <div class="five wide column intro">
-              Bank <i class="caret right icon"></i>
-            </div>
-            <div class="eleven wide column">
-              <div class="field">
-                <div class="ui fluid action input">
-                  {% if data.payment_requested %}
-                  <input
-                    id="account-bank"
-                    type="text"
-                    name="account_bank"
-                    placeholder="Name of the Bank"
-                    required
-                    value="{{ data.account_bank }}"
-                    disabled
-                  />
-                  {% else %}
-                  <input
-                    id="account-bank"
-                    type="text"
-                    name="account_bank"
-                    placeholder="Name of the Bank"
-                    required
-                    value="{{ data.account_bank }}"
-                  />
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="ui stackable two column grid">
-            <div class="five wide column intro">
-              Branch <i class="caret right icon"></i>
-            </div>
-            <div class="eleven wide column">
-              <div class="field">
-                <div class="ui fluid action input">
-                  {% if data.payment_requested %}
-                  <input
-                    id="branch"
-                    type="text"
-                    name="account_bank_branch"
-                    placeholder="Branch of the Bank"
-                    required
-                    value="{{ data.account_bank_branch }}"
-                    disabled
-                  />
-                  {% else %}
-                  <input
-                    id="branch"
-                    type="text"
-                    name="account_bank_branch"
-                    placeholder="Branch of the Bank"
-                    required
-                    value="{{ data.account_bank_branch }}"
-                  />
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% if data.payment_requested %}
-        <div class="save-btn-div">
-          <div class="ui black save disabled button">
-            Payment Requested. Can't Change the Account Info
-          </div>
-        </div>
-        {% else %}
-        <div class="save-btn-div">
-          <input
-            type="submit"
-            class="ui green save button"
-            value="Save Account Info"
-          />
-        </div>
-        {% endif %}
-      </form>
-      <div class="ui divider"></div>
-      <form
-        method="POST"
-        enctype="multipart/form-data"
-        action="{% url 'user_notes_update' %}"
-      >
-        {% csrf_token %}
-        <h2 class="ui header head">User Notes</h2>
-        <div class="row">
-          <div class="ui stackable one column grid">
-            <div class="column">
-              <div class="field">
-                <div class="ui fluid action input">
-                  {% if data.user_remarks == None %}
-                  <textarea
-                    id="user-notes"
-                    type="text"
-                    name="user_remarks"
-                    rows="10"
-                    placeholder="Type your note here..."
-                    required
-                  ></textarea>
-                  {% else %}
-                  <textarea
-                    id="user-notes"
-                    type="text"
-                    name="user_remarks"
-                    rows="10"
-                    placeholder="Type your note here"
-                  >
-                    {{ data.user_remarks }}</textarea
-                  >
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="save-btn-div">
-          <input
-            type="submit"
-            class="ui green save button"
-            value="Save Notes"
-          />
-        </div>
-      </form>
-    </div>
-    <div class="six wide column">
-      <h2 class="ui header head">Payment Proof</h2>
-      <div class="row">
-        <div class="ui segment">
-          {% if data.payed_proof_img_link == None %}
-          <div style="width: 100%; height: 350px">
-            <i
-              class="eye slash large icon"
-              style="position: relative; top: 120px"
-            ></i>
-            <h2 class="ui header head-2" style="position: relative; top: 110px">
-              Nothing to Show
-              <span class="sub header">
-                Payment proof will appear once payment was done
-              </span>
-            </h2>
-          </div>
-          {% else %}
-          <img
-            src="{{data.payed_proof_img_link}}"
-            alt="Payment Proof"
-            style="width: 100%; height: 350px"
-          />
-          {% endif %}
-        </div>
-      </div>
-      <div class="ui divider"></div>
-      <h2 class="ui header head">Admin Notes</h2>
-      <div class="row">
-        <div class="ui stackable one column grid">
-          <div class="sixteen wide column">
+        <div class="eight wide column">
+          <div class="row">
             <div class="field">
-              <div class="ui action input">
-                {% if data.admin_remarks == None %}<textarea
-                  readonly
-                  id="admin-notes"
-                  type="text"
-                  name="admin-notes"
-                  rows="9"
-                  placeholder="Admin Notes Shows Here"
-                  required
-                >
-No Admin Notes</textarea
-                >
+              <div class="ui {{ data.email_verified|yesno:"green,red"}}
+              segment">
+              <div class="ui read-only checkbox">
+                {% if data.mobile_number_verified %}
+                <input
+                  type="checkbox"
+                  name="mobile-number-verified"
+                  checked
+                  disabled
+                />
                 {% else %}
-                <textarea
-                  readonly
-                  id="admin-notes"
-                  type="text"
-                  name="admin-notes"
-                  rows="9"
-                  placeholder="Admin Notes Shows Here"
-                  required
-                >
-{{data.admin_remarks}}</textarea
-                >
+                <input type="checkbox" name="mobile-number-verified" disabled />
+                {% endif %}
+                <label>Mobile Number Verified</label>
+                {% if data.mobile_number != None and data.mobile_number != "" %}
+                <div class="send-btn-div">
+                  <div class="ui button save blue" id="mobile-verify-btn">
+                    Verify
+                  </div>
+                </div>
                 {% endif %}
               </div>
             </div>
@@ -620,5 +247,461 @@ No Admin Notes</textarea
       </div>
     </div>
   </div>
+  <div class="ui divider"></div>
+  <h2 class="ui header head">Payment</h2>
+  <div class="row">
+    <div class="ui two column grid">
+      <div class="eight wide column">
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="ten wide column intro-l">
+              Eligable To Get Paid <i class="caret right icon"></i>
+            </div>
+            <div class="six wide column">
+              <div class="field">
+                <div class="ui fluid action input">
+                  <input
+                    style="color: red; font-weight: bold"
+                    readonly
+                    id="is-eligible-to-get-payed"
+                    type="text"
+                    name="is-eligible-to-get-payed"
+                    placeholder="is-eligible-to-get-payed"
+                    required
+                    value="{{ data.is_eligible_to_get_payed }}"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="ten wide column intro-l">
+              Pay. Requested <i class="caret right icon"></i>
+            </div>
+            <div class="six wide column">
+              <div class="field">
+                <div class="ui fluid action input">
+                  <input
+                    style="color: red; font-weight: bold"
+                    readonly
+                    id="payment-requested"
+                    type="text"
+                    name="payment-requested"
+                    placeholder="payment-requested"
+                    required
+                    value="{{ data.payment_requested }}"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="ten wide column intro-l">
+              Payment Done <i class="caret right icon"></i>
+            </div>
+            <div class="six wide column">
+              <div class="field">
+                <div class="ui fluid action input">
+                  <input
+                    style="color: red; font-weight: bold"
+                    readonly
+                    id="is-payment-done"
+                    type="text"
+                    name="is-payment-done"
+                    placeholder="is-payment-done"
+                    required
+                    value="{{ data.is_payment_done }}"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="eight wide column">
+        <div class="row">
+          <div class="field">
+            <div class="ui red segment">
+              <div class="field">
+                <div class="ui header">
+                  <span class="sub header" style="font-weight: bold"
+                    >Payment Request Status</span
+                  >
+                </div>
+                <div class="ui fluid action input">
+                  <input
+                    style="font-weight: bold; text-align: center"
+                    readonly
+                    id="payment-request-status"
+                    type="text"
+                    name="payment-request-status"
+                    placeholder="payment-request-status"
+                    required
+                    value="{{ data.payment_request_status }}"
+                  />
+                </div>
+              </div>
+              <!-- prettier-ignore -->
+              {% if not data.payment_requested and not data.is_payment_done and data.is_eligible_to_get_payed %}
+              <!-- -->
+              <div class="send-btn-div">
+                <div class="ui button save blue">Request Payment</div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="row"></div>
+      </div>
+    </div>
+  </div>
 </div>
+<div class="five wide column">
+  <form
+    style="margin-top: -25px"
+    method="POST"
+    enctype="multipart/form-data"
+    action="{% url 'acc_info_update' %}"
+  >
+    {% csrf_token %}
+    <h2 class="ui header head">Account Info</h2>
+    <div class="row">
+      <div class="ui stackable two column grid">
+        <div class="five wide column intro">
+          Acc. Holder <i class="caret right icon"></i>
+        </div>
+        <div class="eleven wide column">
+          <div class="field">
+            <div class="ui fluid action input">
+              {% if data.payment_requested %}
+              <input
+                id="account-holder"
+                type="text"
+                name="account_holder"
+                placeholder="Account Holder's Name"
+                required
+                value="{{ data.account_holder }}"
+                disabled
+              />
+              {% else %}
+              <input
+                id="account-holder"
+                type="text"
+                name="account_holder"
+                placeholder="Account Holder's Name"
+                required
+                value="{{ data.account_holder }}"
+              />
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="ui stackable two column grid">
+        <div class="five wide column intro">
+          Acc. Number <i class="caret right icon"></i>
+        </div>
+        <div class="eleven wide column">
+          <div class="field">
+            <div class="ui fluid action input">
+              {% if data.payment_requested %}
+              <input
+                id="account-number"
+                type="text"
+                name="account_number"
+                placeholder="Account Number"
+                required
+                value="{{ data.account_number }}"
+                disabled
+              />
+              {% else %}
+              <input
+                id="account-number"
+                type="text"
+                name="account_number"
+                placeholder="Account Number"
+                required
+                value="{{ data.account_number }}"
+              />
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="ui stackable two column grid">
+        <div class="five wide column intro">
+          Bank <i class="caret right icon"></i>
+        </div>
+        <div class="eleven wide column">
+          <div class="field">
+            <div class="ui fluid action input">
+              {% if data.payment_requested %}
+              <input
+                id="account-bank"
+                type="text"
+                name="account_bank"
+                placeholder="Name of the Bank"
+                required
+                value="{{ data.account_bank }}"
+                disabled
+              />
+              {% else %}
+              <input
+                id="account-bank"
+                type="text"
+                name="account_bank"
+                placeholder="Name of the Bank"
+                required
+                value="{{ data.account_bank }}"
+              />
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="ui stackable two column grid">
+        <div class="five wide column intro">
+          Branch <i class="caret right icon"></i>
+        </div>
+        <div class="eleven wide column">
+          <div class="field">
+            <div class="ui fluid action input">
+              {% if data.payment_requested %}
+              <input
+                id="branch"
+                type="text"
+                name="account_bank_branch"
+                placeholder="Branch of the Bank"
+                required
+                value="{{ data.account_bank_branch }}"
+                disabled
+              />
+              {% else %}
+              <input
+                id="branch"
+                type="text"
+                name="account_bank_branch"
+                placeholder="Branch of the Bank"
+                required
+                value="{{ data.account_bank_branch }}"
+              />
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if data.payment_requested %}
+    <div class="save-btn-div">
+      <div class="ui black save disabled button">
+        Payment Requested. Can't Change the Account Info
+      </div>
+    </div>
+    {% else %}
+    <div class="save-btn-div">
+      <input
+        type="submit"
+        class="ui green save button"
+        value="Save Account Info"
+      />
+    </div>
+    {% endif %}
+  </form>
+  <div class="ui divider"></div>
+  <form
+    method="POST"
+    enctype="multipart/form-data"
+    action="{% url 'user_notes_update' %}"
+  >
+    {% csrf_token %}
+    <h2 class="ui header head">User Notes</h2>
+    <div class="row">
+      <div class="ui stackable one column grid">
+        <div class="column">
+          <div class="field">
+            <div class="ui fluid action input">
+              {% if data.user_remarks == None %}
+              <textarea
+                id="user-notes"
+                type="text"
+                name="user_remarks"
+                rows="10"
+                placeholder="Type your note here..."
+                required
+              ></textarea>
+              {% else %}
+              <textarea
+                id="user-notes"
+                type="text"
+                name="user_remarks"
+                rows="10"
+                placeholder="Type your note here"
+              >
+{{ data.user_remarks }}</textarea
+              >
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="save-btn-div">
+      <input type="submit" class="ui green save button" value="Save Notes" />
+    </div>
+  </form>
+</div>
+<div class="six wide column">
+  <h2 class="ui header head">Payment Proof</h2>
+  <div class="row">
+    <div class="ui segment">
+      {% if data.payed_proof_img_link == None %}
+      <div style="width: 100%; height: 350px">
+        <i
+          class="eye slash large icon"
+          style="position: relative; top: 120px"
+        ></i>
+        <h2 class="ui header head-2" style="position: relative; top: 110px">
+          Nothing to Show
+          <span class="sub header">
+            Payment proof will appear once payment was done
+          </span>
+        </h2>
+      </div>
+      {% else %}
+      <img
+        src="{{data.payed_proof_img_link}}"
+        alt="Payment Proof"
+        style="width: 100%; height: 350px"
+      />
+      {% endif %}
+    </div>
+  </div>
+  <div class="ui divider"></div>
+  <h2 class="ui header head">Admin Notes</h2>
+  <div class="row">
+    <div class="ui stackable one column grid">
+      <div class="sixteen wide column">
+        <div class="field">
+          <div class="ui action input">
+            {% if data.admin_remarks == None %}<textarea
+              readonly
+              id="admin-notes"
+              type="text"
+              name="admin-notes"
+              rows="9"
+              placeholder="Admin Notes Shows Here"
+              required
+            >
+No Admin Notes</textarea
+            >
+            {% else %}
+            <textarea
+              readonly
+              id="admin-notes"
+              type="text"
+              name="admin-notes"
+              rows="9"
+              placeholder="Admin Notes Shows Here"
+              required
+            >
+{{data.admin_remarks}}</textarea
+            >
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ui tiny modal" id="email-verifier-model">
+  <div class="header head-2">Email Verification</div>
+  <div class="ui one column centered grid">
+    <div class="sixteen wide column centered row">
+      <div class="description" style="padding: 25px">
+        <div class="ui header">
+          <span class="sub header head-2" style="font-weight: bolder"
+            >Your Email : {{data.user.email}}</span
+          >
+        </div>
+        <div class="ui inverted blue save button">Send PIN to Email</div>
+        <div class="ui divider"></div>
+        <div class="ui input focus">
+          <input
+            type="text"
+            placeholder="6 Digit PIN"
+            pattern="[0-9]{6}"
+            name="email-pin"
+            id="email-pin"
+          />
+        </div>
+        <br />
+        <div class="ui red save button" style="margin-top: 15px">Validate</div>
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui positive right labeled icon button">
+      Done
+      <i class="checkmark icon"></i>
+    </div>
+  </div>
+</div>
+
+<div class="ui tiny modal" id="mobile-verifier-model">
+  <div class="header head-2">Mobile Number Verification</div>
+  <div class="ui one column centered grid">
+    <div class="sixteen wide column centered row">
+      <div class="description" style="padding: 25px">
+        <div class="ui header">
+          <span class="sub header head-2" style="font-weight: bolder"
+            >Your Mobile Number : {{data.mobile_number}}</span
+          >
+        </div>
+        <div class="ui inverted blue save button center floated">
+          Send PIN to Mobile
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui input focus">
+          <input
+            type="text"
+            placeholder="6 Digit PIN"
+            pattern="[0-9]{6}"
+            name="mobile-pin"
+            id="mobile-pin"
+          />
+        </div>
+        <br />
+        <div class="ui red save button" style="margin-top: 15px">Validate</div>
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui positive right labeled icon button">
+      Done
+      <i class="checkmark icon"></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $("#email-verify-btn").click(() => {
+      $("#email-verifier-model").modal("show");
+    });
+    $("#mobile-verify-btn").click(() => {
+      $("#mobile-verifier-model").modal("show");
+    });
+  });
+</script>
 {%endblock%}
