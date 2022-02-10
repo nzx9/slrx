@@ -295,7 +295,11 @@ def verify_email(request):
                 re.match("[0-9]{6}", body_data["email-pin"])
                 and body_data["email-pin"] == pins.email_pin
             ):
-                ud = UserData.objects.get(user=request.user)
+                if UserData.objects.filter(user=request.user).exists():
+                    ud = UserData.objects.get(user=request.user)
+                else:
+                    ud = UserData()
+                    ud.user = request.user
                 pins.email_pin = None
                 pins.save()
                 ud.email_verified = True
@@ -390,7 +394,11 @@ def verify_sms(request):
             body_data = json.loads(request.body)
             pins = Pins.objects.get(user=request.user)
             if body_data["mobile-pin"] == pins.mobile_pin:
-                ud = UserData.objects.get(user=request.user)
+                if UserData.objects.filter(user=request.user).exists():
+                    ud = UserData.objects.get(user=request.user)
+                else:
+                    ud = UserData()
+                    ud.user = request.user
                 pins.mobile_pin = None
                 pins.save()
                 ud.mobile_verified = True
