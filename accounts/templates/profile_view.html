@@ -54,6 +54,9 @@
   .to-center {
     text-align: center !important;
   }
+  .hide {
+    display: none !important;
+  }
 </style>
 {% endblock %}<!--- -->
 {% block content %}
@@ -178,15 +181,292 @@
             </div>
           </div>
         </div>
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="five wide column intro">
+              Home Address <i class="caret right icon"></i>
+            </div>
+            <div class="eleven wide column">
+              <div class="field">
+                <div class="ui fluid action input">
+                  <input
+                    id="address"
+                    type="text"
+                    name="address"
+                    placeholder="Address"
+                    required
+                    value="{{ data.address }}"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="save-btn-div">
           <input
+            id="user-info-save-btn"
             type="submit"
             class="ui green save button"
             value="Save User Info"
+            onclick="showLoading(this.id)"
           />
         </div>
       </form>
-      <div style="height: 15px; width: 100%"></div>
+      <div class="row">
+        <div class="ui divider"></div>
+        <form
+          method="POST"
+          enctype="multipart/form-data"
+          action="{% url 'user_notes_update' %}"
+        >
+          {% csrf_token %}
+          <h2 class="ui header head">User Notes</h2>
+          <div class="row">
+            <div class="ui stackable one column grid">
+              <div class="column">
+                <div class="field">
+                  <div class="ui fluid action input">
+                    {% if data.user_remarks == None %}
+                    <textarea
+                      id="user-notes"
+                      type="text"
+                      name="user_remarks"
+                      rows="6"
+                      placeholder="Type your note here..."
+                      required
+                    ></textarea>
+                    {% else %}
+                    <textarea
+                      id="user-notes"
+                      type="text"
+                      name="user_remarks"
+                      rows="6"
+                      placeholder="Type your note here"
+                    >
+{{ data.user_remarks }}</textarea
+                    >
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="save-btn-div">
+            <input
+              id="user-note-save-btn"
+              type="submit"
+              class="ui green save button"
+              value="Save Notes"
+              onclick="showLoading(this.id)"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="five wide column">
+      <form
+        style="margin-top: -25px"
+        method="POST"
+        enctype="multipart/form-data"
+        action="{% url 'acc_info_update' %}"
+      >
+        {% csrf_token %}
+        <h2 class="ui header head">Account Info</h2>
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="five wide column intro">
+              Pay. Method <i class="caret right icon"></i>
+            </div>
+            <div class="eleven wide column">
+              <div class="field">
+                <select
+                  class="ui fluid dropdown"
+                  id="payment-method"
+                  name="payment_method"
+                >
+                  <!-- prettier-ignore -->
+                  {% if data.payment_method == "Cash" %}
+                  <option value="">Select Payment Method</option>
+                  <option value="Cash" selected>Cash</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  {% elif data.payment_method == "Cheque" %}
+                  <option value="">Select Payment Method</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Cheque" selected>Cheque</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  {% elif data.payment_method == "Bank Transfer" %}
+                  <option value="">Select Payment Method</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="Bank Transfer" selected>Bank Transfer</option>
+                  {% else %}
+                  <option value="" selected>Select Payment Method</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  {% endif %}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="five wide column intro">
+              Acc. Holder <i class="caret right icon"></i>
+            </div>
+            <div class="eleven wide column">
+              <div class="field">
+                <div class="ui fluid action input">
+                  <!-- prettier-ignore -->
+                  {% if data.payment_requested or data.payment_method != "Cheque" and data.payment_method != "Bank Transfer" %}
+                  <input
+                    id="account-holder"
+                    type="text"
+                    name="account_holder"
+                    placeholder="Account Holder's Name"
+                    required
+                    value="{{ data.account_holder }}"
+                    disabled
+                  />
+                  {% else %}
+                  <input
+                    id="account-holder"
+                    type="text"
+                    name="account_holder"
+                    placeholder="Account Holder's Name"
+                    required
+                    value="{{ data.account_holder }}"
+                  />
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="five wide column intro">
+              Acc. Number <i class="caret right icon"></i>
+            </div>
+            <div class="eleven wide column">
+              <div class="field">
+                <div class="ui fluid action input">
+                  <!-- prettier-ignore -->
+                  {% if data.payment_requested or data.payment_method != "Bank Transfer" %}
+                  <input
+                    id="account-number"
+                    type="text"
+                    name="account_number"
+                    placeholder="Account Number"
+                    required
+                    value="{{ data.account_number }}"
+                    disabled
+                  />
+                  {% else %}
+                  <input
+                    id="account-number"
+                    type="text"
+                    name="account_number"
+                    placeholder="Account Number"
+                    required
+                    value="{{ data.account_number }}"
+                  />
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="five wide column intro">
+              Bank <i class="caret right icon"></i>
+            </div>
+            <div class="eleven wide column">
+              <div class="field">
+                <div class="ui fluid action input">
+                  <!-- prettier-ignore -->
+                  {% if data.payment_requested or data.payment_method != "Bank Transfer" %}
+                  <input
+                    id="account-bank"
+                    type="text"
+                    name="account_bank"
+                    placeholder="Name of the Bank"
+                    required
+                    value="{{ data.account_bank }}"
+                    disabled
+                  />
+                  {% else %}
+                  <input
+                    id="account-bank"
+                    type="text"
+                    name="account_bank"
+                    placeholder="Name of the Bank"
+                    required
+                    value="{{ data.account_bank }}"
+                  />
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="ui stackable two column grid">
+            <div class="five wide column intro">
+              Branch <i class="caret right icon"></i>
+            </div>
+            <div class="eleven wide column">
+              <div class="field">
+                <div class="ui fluid action input">
+                  <!-- prettier-ignore -->
+                  {% if data.payment_requested or data.payment_method != "Bank Transfer" %}
+                  <input
+                    id="branch"
+                    type="text"
+                    name="account_bank_branch"
+                    placeholder="Branch of the Bank"
+                    required
+                    value="{{ data.account_bank_branch }}"
+                    disabled
+                  />
+                  {% else %}
+                  <input
+                    id="branch"
+                    type="text"
+                    name="account_bank_branch"
+                    placeholder="Branch of the Bank"
+                    required
+                    value="{{ data.account_bank_branch }}"
+                  />
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% if data.payment_requested %}
+        <div class="save-btn-div">
+          <div class="ui black save disabled button">
+            Payment Requested. Can't Change the Account Info
+          </div>
+        </div>
+        {% else %}
+        <div class="save-btn-div">
+          <input
+            type="submit"
+            id="account-info-submit-btn"
+            class="ui green save button"
+            value="Save Account Info"
+            onClick="showLoading(this.id)"
+          />
+        </div>
+        {% endif %}
+      </form>
+      <!-- <div style="height: 15px; width: 100%"></div> -->
+      <div class="ui divider"></div>
       <div class="row">
         <div class="ui two column grid">
           <div class="eight wide column">
@@ -206,11 +486,13 @@
                   <input type="checkbox" name="email-verified" disabled />
                   {% endif %}
                   <label>Email Verified</label>
+                  {% if not data.email_verified %}
                   <div class="send-btn-div">
                     <div class="ui button save blue" id="email-verify-btn">
                       Verify
                     </div>
                   </div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -219,7 +501,7 @@
         <div class="eight wide column">
           <div class="row">
             <div class="field">
-              <div class="ui {{ data.email_verified|yesno:"green,red"}}
+              <div class="ui {{ data.mobile_number_verified|yesno:"green,red"}}
               segment">
               <div class="ui read-only checkbox">
                 {% if data.mobile_number_verified %}
@@ -233,9 +515,13 @@
                 <input type="checkbox" name="mobile-number-verified" disabled />
                 {% endif %}
                 <label>Mobile Number Verified</label>
-                {% if data.mobile_number != None and data.mobile_number != "" %}
+                <!-- prettier-ignore -->
+                {% if data.mobile_number != None and data.mobile_number != "" and not data.mobile_number_verified %}
                 <div class="send-btn-div">
-                  <div class="ui button save blue" id="mobile-verify-btn">
+                  <div
+                    class="ui button save disabled blue"
+                    id="mobile-verify-btn"
+                  >
                     Verify
                   </div>
                 </div>
@@ -348,9 +634,18 @@
               <!-- prettier-ignore -->
               {% if not data.payment_requested and not data.is_payment_done and data.is_eligible_to_get_payed %}
               <!-- -->
-              <div class="send-btn-div">
-                <div class="ui button save blue">Request Payment</div>
-              </div>
+              <form
+                method="POST"
+                enctype="multipart/form-data"
+                action="{% url 'request_payment' %}"
+              >
+                {% csrf_token %}
+                <div class="send-btn-div">
+                  <button class="ui button save blue" type="submit">
+                    Request Payment
+                  </button>
+                </div>
+              </form>
               {% endif %}
             </div>
           </div>
@@ -359,206 +654,6 @@
       </div>
     </div>
   </div>
-</div>
-<div class="five wide column">
-  <form
-    style="margin-top: -25px"
-    method="POST"
-    enctype="multipart/form-data"
-    action="{% url 'acc_info_update' %}"
-  >
-    {% csrf_token %}
-    <h2 class="ui header head">Account Info</h2>
-    <div class="row">
-      <div class="ui stackable two column grid">
-        <div class="five wide column intro">
-          Acc. Holder <i class="caret right icon"></i>
-        </div>
-        <div class="eleven wide column">
-          <div class="field">
-            <div class="ui fluid action input">
-              {% if data.payment_requested %}
-              <input
-                id="account-holder"
-                type="text"
-                name="account_holder"
-                placeholder="Account Holder's Name"
-                required
-                value="{{ data.account_holder }}"
-                disabled
-              />
-              {% else %}
-              <input
-                id="account-holder"
-                type="text"
-                name="account_holder"
-                placeholder="Account Holder's Name"
-                required
-                value="{{ data.account_holder }}"
-              />
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="ui stackable two column grid">
-        <div class="five wide column intro">
-          Acc. Number <i class="caret right icon"></i>
-        </div>
-        <div class="eleven wide column">
-          <div class="field">
-            <div class="ui fluid action input">
-              {% if data.payment_requested %}
-              <input
-                id="account-number"
-                type="text"
-                name="account_number"
-                placeholder="Account Number"
-                required
-                value="{{ data.account_number }}"
-                disabled
-              />
-              {% else %}
-              <input
-                id="account-number"
-                type="text"
-                name="account_number"
-                placeholder="Account Number"
-                required
-                value="{{ data.account_number }}"
-              />
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="ui stackable two column grid">
-        <div class="five wide column intro">
-          Bank <i class="caret right icon"></i>
-        </div>
-        <div class="eleven wide column">
-          <div class="field">
-            <div class="ui fluid action input">
-              {% if data.payment_requested %}
-              <input
-                id="account-bank"
-                type="text"
-                name="account_bank"
-                placeholder="Name of the Bank"
-                required
-                value="{{ data.account_bank }}"
-                disabled
-              />
-              {% else %}
-              <input
-                id="account-bank"
-                type="text"
-                name="account_bank"
-                placeholder="Name of the Bank"
-                required
-                value="{{ data.account_bank }}"
-              />
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="ui stackable two column grid">
-        <div class="five wide column intro">
-          Branch <i class="caret right icon"></i>
-        </div>
-        <div class="eleven wide column">
-          <div class="field">
-            <div class="ui fluid action input">
-              {% if data.payment_requested %}
-              <input
-                id="branch"
-                type="text"
-                name="account_bank_branch"
-                placeholder="Branch of the Bank"
-                required
-                value="{{ data.account_bank_branch }}"
-                disabled
-              />
-              {% else %}
-              <input
-                id="branch"
-                type="text"
-                name="account_bank_branch"
-                placeholder="Branch of the Bank"
-                required
-                value="{{ data.account_bank_branch }}"
-              />
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% if data.payment_requested %}
-    <div class="save-btn-div">
-      <div class="ui black save disabled button">
-        Payment Requested. Can't Change the Account Info
-      </div>
-    </div>
-    {% else %}
-    <div class="save-btn-div">
-      <input
-        type="submit"
-        class="ui green save button"
-        value="Save Account Info"
-      />
-    </div>
-    {% endif %}
-  </form>
-  <div class="ui divider"></div>
-  <form
-    method="POST"
-    enctype="multipart/form-data"
-    action="{% url 'user_notes_update' %}"
-  >
-    {% csrf_token %}
-    <h2 class="ui header head">User Notes</h2>
-    <div class="row">
-      <div class="ui stackable one column grid">
-        <div class="column">
-          <div class="field">
-            <div class="ui fluid action input">
-              {% if data.user_remarks == None %}
-              <textarea
-                id="user-notes"
-                type="text"
-                name="user_remarks"
-                rows="10"
-                placeholder="Type your note here..."
-                required
-              ></textarea>
-              {% else %}
-              <textarea
-                id="user-notes"
-                type="text"
-                name="user_remarks"
-                rows="10"
-                placeholder="Type your note here"
-              >
-{{ data.user_remarks }}</textarea
-              >
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="save-btn-div">
-      <input type="submit" class="ui green save button" value="Save Notes" />
-    </div>
-  </form>
 </div>
 <div class="six wide column">
   <h2 class="ui header head">Payment Proof</h2>
@@ -634,8 +729,15 @@ No Admin Notes</textarea
             >Your Email : {{data.user.email}}</span
           >
         </div>
-        <div class="ui inverted blue save button">Send PIN to Email</div>
+        <div
+          class="ui inverted blue save button"
+          id="pin-email-btn"
+          onclick="sendPIN(this.id)"
+        >
+          Send PIN to Email
+        </div>
         <div class="ui divider"></div>
+
         <div class="ui input focus">
           <input
             type="text"
@@ -646,7 +748,18 @@ No Admin Notes</textarea
           />
         </div>
         <br />
-        <div class="ui red save button" style="margin-top: 15px">Validate</div>
+        <button
+          id="validate-email"
+          class="ui red save button"
+          style="margin-top: 15px"
+          onclick="validatePIN(this.id)"
+        >
+          Validate
+        </button>
+        <div class="ui hide message" id="email-verify-msg">
+          <div class="header" id="email-verify-msg-head"></div>
+          <p id="email-verify-msg-body"></p>
+        </div>
       </div>
     </div>
   </div>
@@ -668,21 +781,37 @@ No Admin Notes</textarea
             >Your Mobile Number : {{data.mobile_number}}</span
           >
         </div>
-        <div class="ui inverted blue save button center floated">
+        <div
+          id="pin-mobile-btn"
+          class="ui inverted blue save button center floated"
+          onclick="sendPIN(this.id)"
+        >
           Send PIN to Mobile
         </div>
         <div class="ui divider"></div>
-        <div class="ui input focus">
-          <input
-            type="text"
-            placeholder="6 Digit PIN"
-            pattern="[0-9]{6}"
-            name="mobile-pin"
-            id="mobile-pin"
-          />
+        <form id="validate-mobile" onsubmit="validatePIN(this.id)">
+          <div class="ui input focus">
+            <input
+              type="text"
+              placeholder="6 Digit PIN"
+              pattern="[0-9]{6}"
+              name="mobile-pin"
+              id="mobile-pin"
+            />
+          </div>
+          <br />
+          <div
+            class="ui red save button"
+            style="margin-top: 15px"
+            type="submit"
+          >
+            Validate
+          </div>
+        </form>
+        <div class="ui hide message" id="sms-verify-msg">
+          <div class="header" id="sms-verify-msg-head"></div>
+          <p id="sms-verify-msg-body"></p>
         </div>
-        <br />
-        <div class="ui red save button" style="margin-top: 15px">Validate</div>
       </div>
     </div>
   </div>
@@ -702,6 +831,99 @@ No Admin Notes</textarea
     $("#mobile-verify-btn").click(() => {
       $("#mobile-verifier-model").modal("show");
     });
+
+    $("#payment-method").on("change", function () {
+      if (this.value === "Cash") {
+        $("#account-number").prop("disabled", true);
+        $("#account-holder").prop("disabled", true);
+        $("#account-bank").prop("disabled", true);
+        $("#branch").prop("disabled", true);
+      } else if (this.value === "Bank Transfer") {
+        $("#account-number").prop("disabled", false);
+        $("#account-holder").prop("disabled", false);
+        $("#account-bank").prop("disabled", false);
+        $("#branch").prop("disabled", false);
+      } else if (this.value === "Cheque") {
+        $("#account-number").prop("disabled", true);
+        $("#account-holder").prop("disabled", false);
+        $("#account-bank").prop("disabled", true);
+        $("#branch").prop("disabled", true);
+      } else {
+        $("#account-number").prop("disabled", true);
+        $("#account-holder").prop("disabled", true);
+        $("#account-bank").prop("disabled", true);
+        $("#branch").prop("disabled", true);
+      }
+    });
   });
+
+  function showLoading(id) {
+    $(`#${id}`).val("Saving...");
+    $(`#${id}`).removeClass("green");
+    $(`#${id}`).addClass("yellow");
+  }
+
+  function postRequest(url, id = null, data = {}) {
+    const csrftoken = Cookies.get("csrftoken");
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        response.json().then((res, error) => {
+          if (error) {
+            $(`#${id}`).removeClass("hide");
+            $(`#${id}`).addClass("negative");
+            $(`#${id}-head`).val("Something Went Wrong!");
+            $(`#${id}-body`).val(error);
+          } else {
+            $(`#${id}`).removeClass("hide");
+            $(`#${id}`).removeClass("positive");
+            $(`#${id}`).removeClass("negative");
+            $(`#${id}`).addClass(
+              res.type === "success" ? "positive" : "negative"
+            );
+            $(`#${id}-head`).html(res.type.toUpperCase());
+            $(`#${id}-body`).html(res.msg);
+            if (res.type === "success" && res.in === "validate") {
+              window.location.reload();
+            }
+          }
+        });
+      })
+      .catch((error) => {
+        $(`#${id}`).removeClass("hide");
+        $(`#${id}`).addClass("negative");
+        $(`#${id}-head`).val("Something Went Wrong!");
+        $(`#${id}-body`).val(error);
+      });
+  }
+  function sendPIN(id) {
+    if (id === "pin-email-btn") {
+      postRequest("{% url 'send_verification_email' %}", "email-verify-msg");
+    } else if (id === "pin-mobile-btn") {
+      postRequest("{% url 'send_verification_sms' %}", "sms-verify-msg");
+    } else {
+      alert("Something Went Wrong!");
+    }
+  }
+
+  function validatePIN(id) {
+    if (id === "validate-email") {
+      postRequest("{% url 'verify_email' %}", "email-verify-msg", {
+        "email-pin": $("#email-pin").val(),
+      });
+    } else if (id === "validate-mobile") {
+      postRequest("{% url 'verify_sms' %}", "sms-verify-msg", {
+        "mobile-pin": $("#mobile-pin").val(),
+      });
+    } else {
+      alert("Something Went Wrong!");
+    }
+  }
 </script>
 {%endblock%}
