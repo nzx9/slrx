@@ -446,9 +446,9 @@ def request_payment(request):
                 user_data.payment_requested = True
                 user_data.save()
                 print("Approved")
+                return redirect("profile")
             else:
                 return HttpResponse(
                     "You are not eligible to request payment. Verify your email, Complete all the recordings if you haven't completed, Also check the `Eligable To Get Paid > True`. If you think this is a mistake then sent a email to dscapp@mail.com"
                 )
-
     return redirect(request, "403.html")
