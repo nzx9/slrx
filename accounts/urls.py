@@ -8,5 +8,29 @@ urlpatterns = [
     path(
         "profile/updates/user-notes", views.user_notes_update, name="user_notes_update"
     ),
-    # path('delete/<int:pk>', views.delete_category, name="delete_category")
+    path(
+        "profile/verify/send-email",
+        views.send_verification_email,
+        name="send_verification_email",
+    ),
+    path(
+        "profile/verify/email",
+        views.verify_email,
+        name="verify_email",
+    ),
+    path(
+        "profile/verify/send-sms",
+        views.send_verification_sms,
+        name="send_verification_sms",
+    ),
+    path(
+        "profile/verify/sms",
+        views.verify_sms,
+        name="verify_sms",
+    ),
+    path(
+        "profile/request/payment",
+        views.request_payment,
+        name="request_payment",
+    ),
 ]
