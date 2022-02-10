@@ -57,6 +57,16 @@
   .hide {
     display: none !important;
   }
+
+  .red-bold {
+    color: #db2828 !important;
+    font-weight: bold;
+  }
+
+  .green-bold {
+    color: #21ba45 !important;
+    font-weight: bold;
+  }
 </style>
 {% endblock %}<!--- -->
 {% block content %}
@@ -547,7 +557,7 @@
               <div class="field">
                 <div class="ui fluid action input">
                   <input
-                    style="color: red; font-weight: bold"
+                    class="{{ data.is_eligible_to_get_payed|yesno:'green-bold,red-bold'}}"
                     readonly
                     id="is-eligible-to-get-payed"
                     type="text"
@@ -570,7 +580,7 @@
               <div class="field">
                 <div class="ui fluid action input">
                   <input
-                    style="color: red; font-weight: bold"
+                    class="{{ data.payment_requested|yesno:'green-bold,red-bold'}}"
                     readonly
                     id="payment-requested"
                     type="text"
@@ -593,7 +603,7 @@
               <div class="field">
                 <div class="ui fluid action input">
                   <input
-                    style="color: red; font-weight: bold"
+                    class="{{ data.is_payment_done|yesno:'green-bold,red-bold'}}"
                     readonly
                     id="is-payment-done"
                     type="text"
