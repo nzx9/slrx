@@ -903,6 +903,7 @@ No Admin Notes</textarea
       });
   }
   function sendPIN(id) {
+    $(`#${id}`).addClass("disabled");
     if (id === "pin-email-btn") {
       postRequest("{% url 'send_verification_email' %}", "email-verify-msg");
     } else if (id === "pin-mobile-btn") {
