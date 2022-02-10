@@ -24,6 +24,7 @@ class UserData(models.Model):
     user_remarks = models.CharField(max_length=1500, null=True)
     admin_remarks = models.CharField(max_length=1500, null=True)
     nic = models.CharField(max_length=20, null=True)
+    address = models.CharField(max_length=1000, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
