@@ -49,7 +49,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False if os.environ.get("DEBUG") == "False" else True
 
-ALLOWED_HOSTS = ["localhost", "slrx.herokuapp.com"]
+ALLOWED_HOSTS = ["localhost", "slrx-pro.herokuapp.com"]
 
 
 # Application definition
