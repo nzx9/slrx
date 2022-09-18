@@ -12,19 +12,11 @@
 {% endblock %}
 <!---->
 {% block content %}
-
+{% if user|has_group:'Tester' or user.is_superuser %}
 <div class="ui centered stackable two column internally celled grid">
   <div class="twelve wide column">
-    <div
-      class="ui search selection dropdown"
-      id="filter-dropdown"
-      style="position: absolute; right: 10px"
-    >
-      <input
-        type="hidden"
-        name="search-filter-dropdown"
-        id="search-filter-dropdown"
-      />
+    <div class="ui search selection dropdown" id="filter-dropdown" style="position: absolute; right: 10px">
+      <input type="hidden" name="search-filter-dropdown" id="search-filter-dropdown" />
       <div class="default text">Select Filter</div>
       <i class="dropdown icon"></i>
       <div class="menu">
@@ -40,9 +32,7 @@
         <img style="height: 350px" src="{% static 'nodata.png' %}" />
         <h3 class="ui inverted header">
           No Recorded Streams for
-          <span style="color: greenyellow"
-            >{{word.in_sinhala}} ({{word.in_english}})</span
-          >
+          <span style="color: greenyellow">{{word.in_sinhala}} ({{word.in_english}})</span>
           Word
         </h3>
       </div>
@@ -50,9 +40,7 @@
     {% else %}
     <h2 class="ui header inverted left aligned" style="padding-left: 40px">
       Streams for
-      <span style="color: greenyellow"
-        >{{word.in_sinhala}} ({{word.in_english}})</span
-      >
+      <span style="color: greenyellow">{{word.in_sinhala}} ({{word.in_english}})</span>
       <!---->
       {% if word.category.name == None%} are
       <span style="color: lightcoral"> Not Categorized</span> {% else %} in
@@ -65,25 +53,17 @@
       <div class="card">
         <div class="image center aligned">
           {% if stream.pos_firebase != None %}
-          <video
-            width="280px"
-            height="150px"
+          <video width="280px" height="150px"
             src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ stream.pos_firebase | uriencode }}?alt=media&"
-            controls
-          ></video>
+            controls></video>
           {%else%}
-          <div
-            style="
+          <div style="
               width: 100%;
               height: 150px;
               background-color: black;
               border-radius: 2px;
-            "
-          >
-            <img
-              style="height: 100px; margin-top: 10px"
-              src="{% static 'nodata.png' %}"
-            />
+            ">
+            <img style="height: 100px; margin-top: 10px" src="{% static 'nodata.png' %}" />
             <h3 class="ui inverted header" style="margin-top: 5px">
               <div class="ui sub header">No Preview</div>
             </h3>
@@ -93,10 +73,7 @@
         <div class="content">
           <div class="header">
             SID: {{stream.pk}}
-            <span
-              class="meta right floated ui sub header"
-              style="font-size: 12px"
-            >
+            <span class="meta right floated ui sub header" style="font-size: 12px">
               By: <span>{{stream.userId.username}}</span>
             </span>
           </div>
@@ -141,18 +118,14 @@
                 </div>
                 {% elif stream.verified %}
                 <div class="left floated" style="color: black">
-                  <i class="info user circle icon"></i
-                  >{{stream.verified_by.username}}
+                  <i class="info user circle icon"></i>{{stream.verified_by.username}}
                 </div>
                 {% endif %}
               </div>
               <div class="six wide column">
                 {% if user|has_group:'Tester' or user.is_superuser %}
                 <div class="right floated">
-                  <button
-                    class="ui tiny blue button"
-                    onclick="showModel({pk: '{{stream.pk}}', })"
-                  >
+                  <button class="ui tiny blue button" onclick="showModel({pk: '{{stream.pk}}', })">
                     INSPECT
                   </button>
                 </div>
@@ -167,118 +140,69 @@
     {% endif %}
   </div>
   <div class="four wide column">
-    <form
-      class="ui large form"
-      method="POST"
-      id="{{word.pk}}"
-      onsubmit="update_word(this.id)"
-    >
+    <form class="ui large form" method="POST" id="{{word.pk}}" onsubmit="update_word(this.id)">
       {% csrf_token %}
       <div class="ui inverted raised segment">
         <div class="field">
-          <h5><div class="ui inverted sub header">Word ID</div></h5>
+          <h5>
+            <div class="ui inverted sub header">Word ID</div>
+          </h5>
           <div class="ui action input">
-            <input
-              readonly
-              id="word-id"
-              type="text"
-              name="Word ID"
-              placeholder="Word ID"
-              required
-              value="{{ word.pk }}"
-            />
+            <input readonly id="word-id" type="text" name="Word ID" placeholder="Word ID" required
+              value="{{ word.pk }}" />
           </div>
         </div>
         <div class="field">
-          <h5><div class="ui inverted sub header">Word In Sinhala</div></h5>
+          <h5>
+            <div class="ui inverted sub header">Word In Sinhala</div>
+          </h5>
           <div class="ui action input">
             {% if user|has_group:'Tester' or user.is_superuser %}
-            <input
-              id="w_si"
-              type="text"
-              name="w_si"
-              placeholder="Word In Sinhala"
-              required
-              value="{{ word.in_sinhala }}"
-            />
+            <input id="w_si" type="text" name="w_si" placeholder="Word In Sinhala" required
+              value="{{ word.in_sinhala }}" />
             {% else %}
-            <input
-              readonly
-              id="w_si"
-              type="text"
-              name="w_si"
-              placeholder="Word In Sinhala"
-              required
-              value="{{ word.in_sinhala }}"
-            />
+            <input readonly id="w_si" type="text" name="w_si" placeholder="Word In Sinhala" required
+              value="{{ word.in_sinhala }}" />
             {% endif %}
           </div>
         </div>
         <div class="field">
-          <h5><div class="ui inverted sub header">Word In English</div></h5>
+          <h5>
+            <div class="ui inverted sub header">Word In English</div>
+          </h5>
           <div class="ui action input">
             {% if user|has_group:'Tester' or user.is_superuser %}
-            <input
-              id="w_en"
-              type="text"
-              name="w_en"
-              placeholder="Word In English"
-              required
-              value="{{ word.in_english }}"
-            />
+            <input id="w_en" type="text" name="w_en" placeholder="Word In English" required
+              value="{{ word.in_english }}" />
             {% else %}
-            <input
-              readonly
-              id="w_en"
-              type="text"
-              name="w_en"
-              placeholder="Word In English"
-              required
-              value="{{ word.in_english }}"
-            />
+            <input readonly id="w_en" type="text" name="w_en" placeholder="Word In English" required
+              value="{{ word.in_english }}" />
             {% endif %}
           </div>
         </div>
         <div class="field">
-          <h5><div class="ui inverted sub header">Word In Singlish</div></h5>
+          <h5>
+            <div class="ui inverted sub header">Word In Singlish</div>
+          </h5>
           <div class="ui action input">
             {% if user|has_group:'Tester' or user.is_superuser %}
-            <input
-              id="w_se"
-              type="text"
-              name="w_se"
-              placeholder="Word In Singlish"
-              required
-              value="{{ word.in_singlish }}"
-            />
+            <input id="w_se" type="text" name="w_se" placeholder="Word In Singlish" required
+              value="{{ word.in_singlish }}" />
             {% else %}
-            <input
-              readonly
-              id="w_se"
-              type="text"
-              name="w_se"
-              placeholder="Word In Singlish"
-              required
-              value="{{ word.in_singlish }}"
-            />
+            <input readonly id="w_se" type="text" name="w_se" placeholder="Word In Singlish" required
+              value="{{ word.in_singlish }}" />
             {% endif %}
           </div>
         </div>
         <div class="field">
-          <h5><div class="ui inverted sub header">Category</div></h5>
+          <h5>
+            <div class="ui inverted sub header">Category</div>
+          </h5>
           <div class="ui action input">
             {% if user|has_group:'Tester' or user.is_superuser %}
-            <div
-              class="ui search fluid selection dropdown"
-              id="category-dropdown"
-            >
+            <div class="ui search fluid selection dropdown" id="category-dropdown">
               {% if word.category != None%}
-              <input
-                type="hidden"
-                name="category"
-                id="category"
-                value="{{word.category.pk}}"
-              />
+              <input type="hidden" name="category" id="category" value="{{word.category.pk}}" />
               {% else %}
               <input type="hidden" name="category" id="category" value="None" />
               {% endif %}
@@ -294,43 +218,27 @@
               </div>
             </div>
             {% else %}
-            <input
-              readonly
-              id="category"
-              type="text"
-              name="category"
-              placeholder="Category"
-              value="{{ word.category }}"
-            />
+            <input readonly id="category" type="text" name="category" placeholder="Category"
+              value="{{ word.category }}" />
             {% endif %}
           </div>
         </div>
         <div class="field">
-          <h5><div class="ui inverted sub header">Created By</div></h5>
+          <h5>
+            <div class="ui inverted sub header">Created By</div>
+          </h5>
           <div class="ui action input">
-            <input
-              readonly
-              id="created-by"
-              type="text"
-              name="Created By"
-              placeholder="Created By"
-              required
-              value="{{ word.created_by }}"
-            />
+            <input readonly id="created-by" type="text" name="Created By" placeholder="Created By" required
+              value="{{ word.created_by }}" />
           </div>
         </div>
         <div class="field">
-          <h5><div class="ui inverted sub header">Last Edit By</div></h5>
+          <h5>
+            <div class="ui inverted sub header">Last Edit By</div>
+          </h5>
           <div class="ui action input">
-            <input
-              readonly
-              id="last-edit-by"
-              type="text"
-              name="Last Edit By"
-              placeholder="Last Edit By"
-              required
-              value="{{ word.last_edit_by }}"
-            />
+            <input readonly id="last-edit-by" type="text" name="Last Edit By" placeholder="Last Edit By" required
+              value="{{ word.last_edit_by }}" />
           </div>
         </div>
         <div class="field">
@@ -364,12 +272,7 @@
         <div class="ui basic segment">
           <div class="image content">
             <div class="ui medium image">
-              <video
-                width="400px"
-                height="300px"
-                id="model-prev"
-                controls
-              ></video>
+              <video width="400px" height="300px" id="model-prev" controls></video>
             </div>
           </div>
           <div id="msg" class="ui message transition hidden">
@@ -393,25 +296,13 @@
                 <label>Verification: </label>
                 <div class="field">
                   <div class="ui radio checkbox">
-                    <input
-                      id="accept-r"
-                      type="radio"
-                      name="valid"
-                      onclick="setDisable(true)"
-                      value="accepted"
-                    />
+                    <input id="accept-r" type="radio" name="valid" onclick="setDisable(true)" value="accepted" />
                     <label style="width: 75px">Accept</label>
                   </div>
                 </div>
                 <div class="field">
                   <div class="ui radio checkbox">
-                    <input
-                      id="reject-r"
-                      type="radio"
-                      name="valid"
-                      onclick="setDisable(false)"
-                      value="rejected"
-                    />
+                    <input id="reject-r" type="radio" name="valid" onclick="setDisable(false)" value="rejected" />
                     <label>Reject</label>
                   </div>
                 </div>
@@ -430,12 +321,7 @@
                 <label style="width: 75px">Comment: </label>
                 <div class="field">
                   <div id="model-input" class="ui disabled input">
-                    <textarea
-                      id="model-input-i"
-                      type="text"
-                      placeholder="Comments"
-                      rows="2"
-                    ></textarea>
+                    <textarea id="model-input-i" type="text" placeholder="Comments" rows="2"></textarea>
                   </div>
                 </div>
               </div>
@@ -453,6 +339,14 @@
     </button>
   </div>
 </div>
+{% else %}
+<div style="width: 100%;height: 100%;">
+  <img style="height: 25rem; margin-top: 10px" src="{% static 'nodata.png' %}" />
+  <h3 class="ui inverted header" style="margin-top: 5px">
+    <div class="ui sub header">Sorry Nothing to see here!</div>
+  </h3>
+</div>
+{% endif %}
 
 <script>
   let updated = false;
@@ -466,6 +360,7 @@
   function not_empty(value) {
     return value !== null && value !== undefined && value !== "";
   }
+
   function empty(value) {
     return value === null || value === undefined || value === "";
   }
@@ -480,13 +375,13 @@
     if (not_empty(data.si) && not_empty(data.en) && not_empty(data.se)) {
       const csrftoken = Cookies.get("csrftoken");
       fetch(`../update/${pk}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: {
-          "X-CSRFToken": csrftoken,
-          "Content-Type": "application/json",
-        },
-      })
+          method: "PUT",
+          body: JSON.stringify(data),
+          headers: {
+            "X-CSRFToken": csrftoken,
+            "Content-Type": "application/json",
+          },
+        })
         .then((response) =>
           response.json().then((res, error1) => {
             if (error1) {
@@ -504,6 +399,7 @@
       log("Name or Description can't be empty", "error");
     }
   }
+
   function log(msg, type = null) {
     $("#log").html(`<p>${msg}</p>`);
     $("#log").css("display", "block");
@@ -533,12 +429,12 @@
       .modal({
         onShow: function () {
           fetch(`/streams/get/${content.pk}`, {
-            method: "get",
-            headers: {
-              "X-CSRFToken": csrftoken,
-              "Content-Type": "application/json",
-            },
-          })
+              method: "get",
+              headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json",
+              },
+            })
             .then((response) =>
               response.json().then((res, error) => {
                 $("#dimmer").removeClass("active");
@@ -561,9 +457,9 @@
                     $("#model-ts-cr").html(new Date(res.data.ts.created));
                     $("#model-ts-up").html(new Date(res.data.ts.updated));
                     $("#model-rev").html(
-                      res.data.verification.verified_by.name === null
-                        ? "None"
-                        : res.data.verification.verified_by.name
+                      res.data.verification.verified_by.name === null ?
+                      "None" :
+                      res.data.verification.verified_by.name
                     );
                     $("#model-input-i").val(res.data.comment);
                     $("#model-select").val(res.data.verification.reason);
@@ -598,24 +494,24 @@
         onApprove: function () {
           $("#dimmer").addClass("active");
           let verify =
-            $('input[name="valid"]:checked').val() === undefined
-              ? null
-              : $('input[name="valid"]:checked').val();
+            $('input[name="valid"]:checked').val() === undefined ?
+            null :
+            $('input[name="valid"]:checked').val();
           let reason = $("#model-select").val();
           let comment = $("#model-input-i").val();
 
           fetch(`/streams/verify/${content.pk}`, {
-            method: "post",
-            body: JSON.stringify({
-              verify: verify,
-              reason: reason,
-              comment: comment,
-            }),
-            headers: {
-              "X-CSRFToken": csrftoken,
-              "Content-Type": "application/json",
-            },
-          })
+              method: "post",
+              body: JSON.stringify({
+                verify: verify,
+                reason: reason,
+                comment: comment,
+              }),
+              headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json",
+              },
+            })
             .then((response) =>
               response.json().then((res, error) => {
                 if (error) {

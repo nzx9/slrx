@@ -12,10 +12,7 @@
     <i class="table icon"></i>
     TABLE VIEW
   </a>
-  <a
-    class="ui right labeled icon green button"
-    href="{% url 'stream_verification' %}"
-  >
+  <a class="ui right labeled icon green button" href="{% url 'stream_verification' %}">
     VALIDATOR
     <i class="check circle icon"></i>
   </a>
@@ -39,25 +36,17 @@
         <div class="card">
           <div class="image center aligned">
             {% if d.s_info.pos_firebase != None %}
-            <video
-              width="280px"
-              height="150px"
-              src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ d.s_info.pos_firebase | uriencode }}?alt=media&"
-              controls
-            ></video>
+            <video width="280px" height="150px"
+              src="https://firebasestorage.googleapis.com/v0/b/slrx-pro.appspot.com/o/{{ d.s_info.pos_firebase | uriencode }}?alt=media&"
+              controls></video>
             {%else%}
-            <div
-              style="
+            <div style="
                 width: 100%;
                 height: 150px;
                 background-color: black;
                 border-radius: 2px;
-              "
-            >
-              <img
-                style="height: 100px; margin-top: 10px"
-                src="{% static 'nodata.png' %}"
-              />
+              ">
+              <img style="height: 100px; margin-top: 10px" src="{% static 'nodata.png' %}" />
               <h3 class="ui inverted header" style="margin-top: 5px">
                 <div class="ui sub header">No Preview</div>
               </h3>
@@ -67,14 +56,9 @@
           <div class="content">
             <div class="header">
               {{d.w_info.in_sinhala}} ({{d.w_info.in_english}})
-              <span
-                class="meta right floated ui sub header"
-                style="font-size: 12px"
-              >
+              <span class="meta right floated ui sub header" style="font-size: 12px">
                 {% if d.w_info.category != None %}
-                <a href="{% url 'category_each' d.w_info.category.name %}"
-                  >{{d.w_info.category.name}}</a
-                >
+                <a href="{% url 'category_each' d.w_info.category.name %}">{{d.w_info.category.name}}</a>
                 {% endif %}
               </span>
             </div>
@@ -117,29 +101,13 @@
 
             <span class="right floated">
               {% if d.comp == True and d.s_info.verified == True %}
-              <a
-                class="ui tiny red disabled button"
-                href="{% url 'streams_rec_view' d.w_info.pk %}"
-                >Re-Record</a
-              >
+              <a class="ui tiny red disabled button" href="{% url 'streams_rec_view' d.w_info.pk %}">Re-Record</a>
               {% elif d.comp == True and d.s_info.verified == None %}
-              <a
-                class="ui tiny yellow button"
-                href="{% url 'streams_rec_view' d.w_info.pk %}"
-                >Re-Record</a
-              >
+              <a class="ui tiny yellow button" href="{% url 'streams_rec_view' d.w_info.pk %}">Re-Record</a>
               {% elif d.comp == True and d.s_info.verified == False %}
-              <a
-                class="ui tiny green button"
-                href="{% url 'streams_rec_view' d.w_info.pk %}"
-                >Re-Record</a
-              >
+              <a class="ui tiny green button" href="{% url 'streams_rec_view' d.w_info.pk %}">Re-Record</a>
               {% else %}
-              <a
-                class="ui tiny green button"
-                href="{% url 'streams_rec_view' d.w_info.pk %}"
-                >Record</a
-              >
+              <a class="ui tiny green button" href="{% url 'streams_rec_view' d.w_info.pk %}">Record</a>
               {% endif %}
             </span>
             <br />

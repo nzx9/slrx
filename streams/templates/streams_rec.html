@@ -1,11 +1,14 @@
-{% extends "layout.html" %}<!--- -->
-{% load static %}<!--- -->
+{% extends "layout.html" %}
+<!--- -->
+{% load static %}
+<!--- -->
 <!--- -->
 {% load encoders %}
 <!--- -->
 {%block scripts %}
 <script src="{% static 'js/main.js' %}"></script>
-{% endblock %}<!--- -->
+{% endblock %}
+<!--- -->
 {% block title %} REC | {{curr_word.in_sinhala}}({{ e_word }}){% endblock %}
 <!--- -->
 {% block content %}
@@ -18,59 +21,70 @@
             {{ curr_word.in_sinhala }}
             <div class="ui inverted divider"></div>
             <span id="word-in-english" class="ui sub header">
-              {{ curr_word.in_english }} </span
-            ><span class="ui sub header">{{ curr_word.in_singlish }}</span>
+              {{ curr_word.in_english }} </span><span class="ui sub header">{{ curr_word.in_singlish }}</span>
           </div>
+        </div>
+        <div>
+          <video id="preview-word" width="100%" height="140px" controls
+            src="{% static 'previews/'|add:curr_word.in_english|add:'.mp4' %}" style="background-color: black"></video>
         </div>
         <div class="ui inverted horizontal divider">Word to Show</div>
         <button id="toggle-rec-btn" class="ui inverted red button fluid">
           <i class="ui record icon"></i>Record
         </button>
         <div class="ui inverted divider"></div>
-        <div
-          class="ui segment left aligned"
-          style="height: 250px; max-height: 250px; overflow-y: auto"
-        >
+        <div class="ui segment left aligned" style="height: 120px; max-height: 250px; overflow-y: auto">
           <div class="ui header center aligned fixed">Log</div>
           <div class="ui relaxed divided list" id="log"></div>
         </div>
         <div class="ui inverted segment">
-          <div
-            class="ui right labeled input"
-            style="position: absolute; left: 0px"
-          >
-            <input
-              type="number"
-              placeholder="End time..."
-              style="width: 75%"
-              id="end-time"
-              min="0"
-              max="120"
-            />
+          <div class="ui right labeled input" style="position: absolute; left: 0px">
+            <input type="number" placeholder="End time..." style="width: 75%" id="end-time" min="0" max="120" />
             <div class="ui basic label">seconds</div>
           </div>
         </div>
       </div>
     </div>
     <div class="ten wide column">
-      <video
-        id="preview"
-        width="100%"
-        height="auto"
-        autoplay
-        muted
-        style="background-color: black"
-      ></video>
+      <video id="preview" width="100%" height="auto" autoplay muted style="background-color: black"></video>
     </div>
     <div class="three wide column">
       <div class="ui inverted segment">
+        <div>
+          <div class="ui buttons fluid" style="margin-bottom: 5px">
+            {% if prev_word == None %}
+            <a id="back-btn" class="ui inverted button disabled" href="#">
+              <i class="ui left arrow icon"></i>Back
+            </a>
+            {% else %}
+            <button id="back-btn" class="ui inverted red button"
+              onclick="navigationAction(`{% url 'streams_rec_view' prev_word.pk %}`)">
+              <i class="ui left arrow icon"></i>Back
+            </button>
+            {% endif %}
+            <div class="or"></div>
+            {% if next_word == None %}
+            <button id="next-btn" class="ui inverted disabled button">
+              Next <i class="ui right arrow icon"></i>
+            </button>
+            {% else %}
+            <button id="next-btn" class="ui inverted green button"
+              onclick="navigationAction(`{% url 'streams_rec_view' next_word.pk %}`)">
+              Next <i class="ui right arrow icon"></i>
+            </button>
+            {% endif %}
+          </div>
+          <div id="submit-btn" class="ui yellow inverted button fluid">
+            <i class="save icon"> </i>
+            Save Recording
+          </div>
+          <p id="next-word-hidden" style="display: none !important">
+            {{ next_word.in_english }}
+          </p>
+        </div>
         <div class="ui segment">
-          <div
-            id="task-progress"
-            class="ui indicating progress"
-            data-value="{{ done_count }}"
-            data-total="{{ total_count }}"
-          >
+          <div id="task-progress" class="ui indicating progress" data-value="{{ done_count }}"
+            data-total="{{ total_count }}">
             <div class="bar">
               <div class="progress"></div>
             </div>
@@ -79,22 +93,11 @@
         </div>
         <div class="ui inverted horizontal divider">Progress</div>
         {% if curr_stream == None %}
-        <video
-          id="last-recorded"
-          width="100%"
-          height="140px"
-          controls
-          style="background-color: black"
-        ></video>
+        <video id="last-recorded" width="100%" height="140px" controls style="background-color: black"></video>
         {% else %}
-        <video
-          id="last-recorded"
-          width="100%"
-          height="140px"
-          controls
-          src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ curr_stream.pos_firebase| uriencode }}?alt=media&"
-          style="background-color: black"
-        ></video>
+        <video id="last-recorded" width="100%" height="140px" controls
+          src="https://firebasestorage.googleapis.com/v0/b/slrx-pro.appspot.com/o/{{ curr_stream.pos_firebase| uriencode }}?alt=media&"
+          style="background-color: black"></video>
         {% endif %}
         <div class="ui inverted horizontal divider">Last Recording</div>
         <div class="ui center aligned segment">
@@ -107,48 +110,7 @@
           </div>
         </div>
         <div class="ui inverted horizontal divider">Countdown</div>
-        <div>
-          <div
-            id="submit-btn"
-            class="ui yellow inverted button fluid"
-            style="margin-bottom: 5px"
-          >
-            <i class="save icon"> </i>
-            Save Recording
-          </div>
-          <div class="ui buttons fluid">
-            {% if prev_word == None %}
-            <a id="back-btn" class="ui inverted button disabled" href="#">
-              <i class="ui left arrow icon"></i>Back
-            </a>
-            {% else %}
-            <button
-              id="back-btn"
-              class="ui inverted red button"
-              onclick="navigationAction(`{% url 'streams_rec_view' prev_word.pk %}`)"
-            >
-              <i class="ui left arrow icon"></i>Back
-            </button>
-            {% endif %}
-            <div class="or"></div>
-            {% if next_word == None %}
-            <button id="next-btn" class="ui inverted disabled button">
-              Next <i class="ui right arrow icon"></i>
-            </button>
-            {% else %}
-            <button
-              id="next-btn"
-              class="ui inverted green button"
-              onclick="navigationAction(`{% url 'streams_rec_view' next_word.pk %}`)"
-            >
-              Next <i class="ui right arrow icon"></i>
-            </button>
-            {% endif %}
-          </div>
-          <p id="next-word-hidden" style="display: none !important">
-            {{ next_word.in_english }}
-          </p>
-        </div>
+
       </div>
     </div>
   </div>
@@ -183,15 +145,15 @@
 
   let submitButton = document.getElementById("submit-btn");
 
-  let recordingTimeMS = Number(localStorage.getItem("recordingTimeMS"))
-    ? Number(localStorage.getItem("recordingTimeMS"))
-    : 5000;
+  let recordingTimeMS = Number(localStorage.getItem("recordingTimeMS")) ?
+    Number(localStorage.getItem("recordingTimeMS")) :
+    5000;
   recordingTimeMS =
-    recordingTimeMS < 0
-      ? 0
-      : recordingTimeMS > 7200 * 1000
-      ? 7200 * 1000
-      : recordingTimeMS;
+    recordingTimeMS < 0 ?
+    0 :
+    recordingTimeMS > 7200 * 1000 ?
+    7200 * 1000 :
+    recordingTimeMS;
 
   let recordedBlob = null;
 
@@ -309,14 +271,16 @@
           })
           .then(() => startRecording(preview.captureStream(), recordingTimeMS))
           .then((recordedChunks) => {
-            recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+            recordedBlob = new Blob(recordedChunks, {
+              type: "video/webm"
+            });
             lastRecorded.src = URL.createObjectURL(recordedBlob);
             log(
               "successfully recorded " +
-                recordedBlob.size +
-                " bytes of " +
-                recordedBlob.type +
-                " media.",
+              recordedBlob.size +
+              " bytes of " +
+              recordedBlob.type +
+              " media.",
               "success"
             );
           })
@@ -347,13 +311,13 @@
   function sendData(data) {
     const csrftoken = Cookies.get("csrftoken");
     fetch(`/streams/submit/${window.location.pathname.split("/")[3]}/`, {
-      method: "post",
-      body: data,
-      headers: {
-        "X-CSRFToken": csrftoken,
-        "Content-Type": "application/json",
-      },
-    })
+        method: "post",
+        body: data,
+        headers: {
+          "X-CSRFToken": csrftoken,
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) =>
         response.json().then((res, error1) => {
           if (error1) {

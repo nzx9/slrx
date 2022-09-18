@@ -18,10 +18,7 @@
             <i class="sticky note icon"></i>
             CARD VIEW
           </a>
-          <a
-            class="ui right labeled icon green button"
-            href="{% url 'stream_verification' %}"
-          >
+          <a class="ui right labeled icon green button" href="{% url 'stream_verification' %}">
             VALIDATOR
             <i class="check circle icon"></i>
           </a>
@@ -78,12 +75,9 @@
               </td>
               <td style="padding: 0">
                 {% if d.comp == True %}
-                <video
-                  width="180px"
-                  height="100px"
-                  src="https://firebasestorage.googleapis.com/v0/b/drg-dc.appspot.com/o/{{ d.s_info.pos_firebase| uriencode }}?alt=media&"
-                  controls
-                ></video>
+                <video width="180px" height="100px"
+                  src="https://firebasestorage.googleapis.com/v0/b/slrx-pro.appspot.com/o/{{ d.s_info.pos_firebase| uriencode }}?alt=media&"
+                  controls></video>
                 {% else %} No Previews {% endif %}
               </td>
               <td class="collapsing">
@@ -123,17 +117,11 @@
               </td>
               <td>
                 {% if d.comp == True and d.s_info.verified != True %}
-                <a
-                  class="ui inverted tiny button"
-                  href="{% url 'streams_rec_view' d.w_info.pk %}"
-                  ><i class="redo icon"></i
-                ></a>
+                <a class="ui inverted tiny button" href="{% url 'streams_rec_view' d.w_info.pk %}"><i
+                    class="redo icon"></i></a>
                 {% elif d.comp == False %}
-                <a
-                  class="ui inverted tiny button"
-                  href="{% url 'streams_rec_view' d.w_info.pk %}"
-                  ><i class="record icon"></i
-                ></a>
+                <a class="ui inverted tiny button" href="{% url 'streams_rec_view' d.w_info.pk %}"><i
+                    class="record icon"></i></a>
                 {% endif %}
               </td>
             </tr>
@@ -143,12 +131,8 @@
           <tfoot class="full-width">
             <tr style="padding-top: 10px">
               <th colspan="12">
-                <div
-                  id="task-progress"
-                  class="ui indicating progress"
-                  data-value="{{ done_count }}"
-                  data-total="{{ total_count }}"
-                >
+                <div id="task-progress" class="ui indicating progress" data-value="{{ done_count }}"
+                  data-total="{{ total_count }}">
                   <div class="bar">
                     <div class="progress"></div>
                   </div>

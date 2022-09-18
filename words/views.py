@@ -7,43 +7,49 @@ import json
 from categories.models import Category
 from streams.models import Stream
 from django.db.models import Q
+
 # Create your views here.
 
 
 def words_view(request):
-    query_category = request.GET.get('category')
-    query_search = request.GET.get('search')
+    query_category = request.GET.get("category")
+    query_search = request.GET.get("search")
     words = []
-    categories = Category.objects.all().order_by('pk')
+    categories = Category.objects.all().order_by("pk")
 
     category_exist = Category.objects.filter(name=query_category).exists()
 
-    if(query_category != None and query_search == None):
+    if query_category != None and query_search == None:
         if category_exist:
             category = Category.objects.get(name=query_category)
-            words = Word.objects.filter(category=category).order_by('pk')
+            words = Word.objects.filter(category=category).order_by("pk")
         else:
             words = []
 
-    elif(query_search != None and query_category == None):
+    elif query_search != None and query_category == None:
         words = Word.objects.filter(
-            Q(in_sinhala__icontains=query_search) |
-            Q(in_english__icontains=query_search) |
-            Q(in_singlish__icontains=query_search) |
-            Q(category__name__icontains=query_search)
-        ).order_by('pk')
+            Q(in_sinhala__icontains=query_search)
+            | Q(in_english__icontains=query_search)
+            | Q(in_singlish__icontains=query_search)
+            | Q(category__name__icontains=query_search)
+        ).order_by("pk")
 
-    elif (query_search != None and query_category != None):
+    elif query_search != None and query_category != None:
         if category_exist:
             category = Category.objects.get(name=query_category)
-            words = Word.objects.filter(category=category).filter(
-                Q(in_sinhala__contains=query_search) |
-                Q(in_english__contains=query_search) |
-                Q(in_singlish__contains=query_search)).order_by('pk')
+            words = (
+                Word.objects.filter(category=category)
+                .filter(
+                    Q(in_sinhala__contains=query_search)
+                    | Q(in_english__contains=query_search)
+                    | Q(in_singlish__contains=query_search)
+                )
+                .order_by("pk")
+            )
         else:
             words = []
     else:
-        words = Word.objects.all().order_by('pk')
+        words = Word.objects.all().order_by("pk")
 
     if len(words) == 0:
         empty = True
@@ -51,22 +57,25 @@ def words_view(request):
         empty = False
 
     for word in words:
-        pending_streams = Stream.objects.filter(
-            wordId=word).filter(verified=None)
+        pending_streams = Stream.objects.filter(wordId=word).filter(verified=None)
         pending_streams_count = pending_streams.count()
         word.pending_count = pending_streams_count
 
-    return render(request, "words.html", {"words": words, "empty": empty, "categories": categories})
+    return render(
+        request,
+        "words.html",
+        {"words": words, "empty": empty, "categories": categories},
+    )
 
 
-@ login_required(login_url='/accounts/login/')
+@login_required(login_url="/accounts/login/")
 def add_new_words(request):
-    if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
+    if request.user.is_superuser or request.user.groups.filter(name="Tester").exists():
         if request.method == "POST":
-            si = request.POST['sinhala-word']
-            en = request.POST['english-word']
-            se = request.POST['singlish-word']
-            cat_pk = request.POST['category']
+            si = request.POST["sinhala-word"]
+            en = request.POST["english-word"]
+            se = request.POST["singlish-word"]
+            cat_pk = request.POST["category"]
             cat = None
             try:
                 cat_pk = int(cat_pk)
@@ -75,7 +84,7 @@ def add_new_words(request):
 
             if type(cat_pk) == int:
                 cat = Category.objects.get(pk=cat_pk)
-            if(cat == None):
+            if cat == None:
                 messages.warning(request, "Category set to NULL")
 
             if si != None and en != None and se != None:
@@ -84,12 +93,14 @@ def add_new_words(request):
                 newWord.in_english = en
                 newWord.in_singlish = se
                 newWord.category = cat
-                cat.word_count += 1
+                if cat is not None:
+                    cat.word_count += 1
                 newWord.created_by = request.user
                 try:
                     newWord.save()
                     messages.success(request, "New Word Created")
-                    cat.save()
+                    if cat is not None:
+                        cat.save()
                 except Exception as e:
                     messages.error(request, f"Something went wrong: {str(e)}")
             else:
@@ -99,8 +110,8 @@ def add_new_words(request):
         return render(request, "403.html")
 
 
-@ login_required(login_url='/accounts/login/')
-@ permission_required('word.can_change', raise_exception=True)
+@login_required(login_url="/accounts/login/")
+@permission_required("word.can_change", raise_exception=True)
 def bulk_upload(request):
     file_name = None
     titles = None
@@ -110,24 +121,48 @@ def bulk_upload(request):
     word_json = None
 
     if request.method == "POST":
-        file_name = request.FILES.get('bulk-file').name
-        byte_file = b''
-        for chunk in request.FILES.get('bulk-file').chunks():
+        file_name = request.FILES.get("bulk-file").name
+        byte_file = b""
+        for chunk in request.FILES.get("bulk-file").chunks():
             byte_file += chunk
-        word_file = byte_file.decode('utf-8')
-        words_splited = word_file.split('\n')
+        word_file = byte_file.decode("utf-8")
+        words_splited = word_file.split("\n")
 
         for word in words_splited:
             x = word.split(",")
-            if len(x) == 4 and len(x[0].strip()) > 0 and len(x[1].strip()) > 0 and len(x[2].strip()) > 0 and len(x[3].strip()) > 0:
+            if (
+                len(x) == 4
+                and len(x[0].strip()) > 0
+                and len(x[1].strip()) > 0
+                and len(x[2].strip()) > 0
+                and len(x[3].strip()) > 0
+            ):
                 word_list.append(
-                    (x[0].strip().lower(), x[1].strip().lower(), x[2].strip().lower(), x[3].strip().lower()))
-            elif len(x) == 3 and len(x[0].strip()) > 0 and len(x[1].strip()) > 0 and len(x[2].strip()) > 0:
+                    (
+                        x[0].strip().lower(),
+                        x[1].strip().lower(),
+                        x[2].strip().lower(),
+                        x[3].strip().lower(),
+                    )
+                )
+            elif (
+                len(x) == 3
+                and len(x[0].strip()) > 0
+                and len(x[1].strip()) > 0
+                and len(x[2].strip()) > 0
+            ):
                 word_list.append(
-                    (x[0].strip().lower(), x[1].strip().lower(), x[2].strip().lower(), None))
+                    (
+                        x[0].strip().lower(),
+                        x[1].strip().lower(),
+                        x[2].strip().lower(),
+                        None,
+                    )
+                )
             elif len(x) == 2 and len(x[0].strip()) > 0 and len(x[1].strip()) > 0:
                 word_list.append(
-                    (x[0].strip().lower(), x[1].strip().lower(), None, None))
+                    (x[0].strip().lower(), x[1].strip().lower(), None, None)
+                )
             elif len(x) == 1 and len(x[0].strip()) > 0:
                 word_list.append((x[0].strip().lower(), None, None, None))
             else:
@@ -137,8 +172,12 @@ def bulk_upload(request):
         word_dict = {}
         count = 0
         for word in word_list[1:]:
-            word_dict[count] = {titles[0]: word[0],
-                                titles[1]: word[1], titles[2]: word[2], titles[3]: word[3]}
+            word_dict[count] = {
+                titles[0]: word[0],
+                titles[1]: word[1],
+                titles[2]: word[2],
+                titles[3]: word[3],
+            }
             count += 1
 
         word_json = json.dumps(word_dict)
@@ -160,66 +199,89 @@ def bulk_upload(request):
                 else:
                     error = True
                     error_msg = "'{0}' can't recognized in {1}. First line of the {1} can only have comma seperated 'sinhala', 'english' or singlish only (CASE DOESN'T MATTER)".format(
-                        titles[i], file_name)
+                        titles[i], file_name
+                    )
             else:
                 error = True
                 error_msg = "First line of the {0} can only have comma seperated 'sinhala', 'english' or singlish only (CASE DOESN'T MATTER). 'NULL' Provided".format(
-                    file_name)
+                    file_name
+                )
         if lang_checked[0] != 1 or lang_checked[1] != 1 or lang_checked[2] != 1:
             error = True
             error_msg = "First line of the {0} can only have comma seperated 'sinhala', 'english' or singlish only (CASE DOESN'T MATTER). ONE OR MORE LANGUAGES ARE MISSING and ONE USED MORE THAN ONCE".format(
-                file_name)
+                file_name
+            )
         if not category_checked:
             error = True
             error_msg = "Category field not found in {}".format(file_name)
-    categories = Category.objects.all().order_by('pk')
+    categories = Category.objects.all().order_by("pk")
 
-    return render(request, "word_bulk_upload.html", {'file_name': file_name, 'titles': titles, 'word_list': word_list[1:], 'error': error, 'error_msg': error_msg, "word_json": word_json, 'categories': categories})
+    return render(
+        request,
+        "word_bulk_upload.html",
+        {
+            "file_name": file_name,
+            "titles": titles,
+            "word_list": word_list[1:],
+            "error": error,
+            "error_msg": error_msg,
+            "word_json": word_json,
+            "categories": categories,
+        },
+    )
 
 
-@ login_required(login_url='/accounts/login/')
-@ permission_required('word.can_change', raise_exception=True)
+@login_required(login_url="/accounts/login/")
+@permission_required("word.can_change", raise_exception=True)
 def add_bulk_words_to_db(request):
     title = "METHOD not recognized..."
     msg = ""
-    if(request.method == "POST"):
+    if request.method == "POST":
         try:
-            body_unicode = request.body.decode('utf-8')
+            body_unicode = request.body.decode("utf-8")
             body_data = json.loads(body_unicode)
             for e in body_data:
-                if body_data[e]["sinhala"] != None and body_data[e]["sinhala"].strip() != "" and body_data[e]["english"] != None and body_data[e]["english"].strip() != "":
+                if (
+                    body_data[e]["sinhala"] != None
+                    and body_data[e]["sinhala"].strip() != ""
+                    and body_data[e]["english"] != None
+                    and body_data[e]["english"].strip() != ""
+                ):
                     newWord = Word()
-                    newWord.in_sinhala = body_data[e]["sinhala"].strip(
-                    ).lower()
-                    newWord.in_english = body_data[e]["english"].strip(
-                    ).lower()
-                    newWord.in_singlish = body_data[e]["singlish"].strip(
-                    ).lower()
+                    newWord.in_sinhala = body_data[e]["sinhala"].strip().lower()
+                    newWord.in_english = body_data[e]["english"].strip().lower()
+                    newWord.in_singlish = body_data[e]["singlish"].strip().lower()
                     newWord.created_by = request.user
                     try:
                         if body_data[e]["category"] != None:
                             category = Category.objects.get(
-                                name=body_data[e]["category"])
+                                name=body_data[e]["category"]
+                            )
                             newWord.category = category
                         newWord.save()
                         title = "All done..."
-                        msg += "<p><i class='check circle green icon'></i>'({0},{1})' added to the database </p>".format(body_data[e]["sinhala"].strip(
-                        ).lower(), body_data[e]["english"].strip(
-                        ).lower())
+                        msg += "<p><i class='check circle green icon'></i>'({0},{1})' added to the database </p>".format(
+                            body_data[e]["sinhala"].strip().lower(),
+                            body_data[e]["english"].strip().lower(),
+                        )
                     except Exception as e:
                         title = "Completed with errors..."
                         msg += "<p><i class='times circle red icon'></i> {}</p>".format(
-                            str(e))
+                            str(e)
+                        )
                 else:
                     title = "Completed with errors..."
                     msg += "<p><i class='times circle red icon'></i> '({},{})' sinhala or english field recived the 'None', sinhala and english fields can't be NULL</p>".format(
-                        body_data[e]["sinhala"], body_data[e]["english"])
+                        body_data[e]["sinhala"], body_data[e]["english"]
+                    )
         except Exception as e:
             title = "Errors Occured..."
             msg += "<p><i class='times circle red icon'></i> {}</p>".format(e)
     else:
         msg += "<p><i class='times circle red icon'></i> Only POST requests are accepted</p>"
-    return HttpResponse(json.dumps({"title": title, "msg": msg}), content_type='application/json')
+    return HttpResponse(
+        json.dumps({"title": title, "msg": msg}), content_type="application/json"
+    )
 
 
 def detailed_word_view(request, word_pk):
@@ -227,82 +289,111 @@ def detailed_word_view(request, word_pk):
     if not word_exists:
         return render(request, "404.html")
 
-    query_filter = request.GET.get('filter')
+    query_filter = request.GET.get("filter")
     word = Word.objects.get(pk=word_pk)
-    categories = Category.objects.all().order_by('pk')
+    categories = Category.objects.all().order_by("pk")
 
-    if(query_filter == "pending"):
-        streams = Stream.objects.filter(wordId=word).filter(
-            verified=None).order_by('pk')
-    elif(query_filter == "rejected"):
-        streams = Stream.objects.filter(wordId=word).filter(
-            verified=False).order_by('pk')
-    elif(query_filter == "approved"):
-        streams = Stream.objects.filter(wordId=word).filter(
-            verified=True).order_by('pk')
+    if query_filter == "pending":
+        streams = (
+            Stream.objects.filter(wordId=word).filter(verified=None).order_by("pk")
+        )
+    elif query_filter == "rejected":
+        streams = (
+            Stream.objects.filter(wordId=word).filter(verified=False).order_by("pk")
+        )
+    elif query_filter == "approved":
+        streams = (
+            Stream.objects.filter(wordId=word).filter(verified=True).order_by("pk")
+        )
     else:
-        streams = Stream.objects.filter(wordId=word).order_by('pk')
+        streams = Stream.objects.filter(wordId=word).order_by("pk")
     empty = True if len(streams) == 0 else False
-    return render(request, "detailed_view.html", {"word": word, "categories": categories, "streams": streams, "empty": empty})
+    return render(
+        request,
+        "detailed_view.html",
+        {"word": word, "categories": categories, "streams": streams, "empty": empty},
+    )
 
 
-@login_required(login_url='/accounts/login/')
+@login_required(login_url="/accounts/login/")
 def update_word(request, pk):
     edited = False
     cat_ok = False
-    if(request.user.is_superuser or request.user.groups.filter(name='Tester').exists()):
+    if request.user.is_superuser or request.user.groups.filter(name="Tester").exists():
         if request.method == "PUT":
-            body_unicode = request.body.decode('utf-8')
+            body_unicode = request.body.decode("utf-8")
             body = json.loads(body_unicode)
-            si = body['si']
-            en = body['en']
-            se = body['se']
-            category = body['category']
+            si = body["si"]
+            en = body["en"]
+            se = body["se"]
+            category = body["category"]
             try:
                 word = Word.objects.get(pk=pk)
-                if(category != None and Category.objects.filter(pk=category).exists()):
+                if category != None and Category.objects.filter(pk=category).exists():
                     category = Category.objects.get(pk=category)
                     cat_ok = True
-                if(word.in_sinhala != si):
+                if word.in_sinhala != si:
                     word.in_sinhala = si
                     edited = True
-                if(word.in_english != en):
+                if word.in_english != en:
                     word.in_english = en
                     edited = True
-                if(word.in_singlish != se):
+                if word.in_singlish != se:
                     word.in_singlish = se
                     edited = True
-                if(cat_ok and word.category != category):
-                    if(word.category != None and word.category.word_count > 0):
+                if cat_ok and word.category != category:
+                    if word.category != None and word.category.word_count > 0:
                         word.category.word_count -= 1
                         word.category.save()
                     word.category = category
                     category.word_count += 1
                     category.save()
                     edited = True
-                elif(category == None and word.category != None):
+                elif category == None and word.category != None:
                     word.category = None
                     edited = True
-                if(edited):
+                if edited:
                     word.last_edit_by = request.user
                     word.save()
-                    return HttpResponse(json.dumps({"msg": "Word '{} ({})' Updated".format(si, en), "type": "success"}))
+                    return HttpResponse(
+                        json.dumps(
+                            {
+                                "msg": "Word '{} ({})' Updated".format(si, en),
+                                "type": "success",
+                            }
+                        )
+                    )
                 else:
-                    return HttpResponse(json.dumps({"msg": "Nothing to Update in {} ({}) word".format(si, en), "type": "warning"}))
+                    return HttpResponse(
+                        json.dumps(
+                            {
+                                "msg": "Nothing to Update in {} ({}) word".format(
+                                    si, en
+                                ),
+                                "type": "warning",
+                            }
+                        )
+                    )
             except:
-                return HttpResponse(json.dumps({"msg": "Something went wrong", "type": "error"}))
+                return HttpResponse(
+                    json.dumps({"msg": "Something went wrong", "type": "error"})
+                )
         else:
-            return HttpResponse(json.dumps({"msg": "Not a PUT request", "type": "error"}))
+            return HttpResponse(
+                json.dumps({"msg": "Not a PUT request", "type": "error"})
+            )
     else:
-        return HttpResponse(json.dumps({"msg": "No permission to perfrom action", "type": "error"}))
+        return HttpResponse(
+            json.dumps({"msg": "No permission to perfrom action", "type": "error"})
+        )
 
 
-@login_required(login_url='/accounts/login/')
+@login_required(login_url="/accounts/login/")
 def delete_word(request, pk):
     if request.user.is_superuser:
-        if(Word.objects.filter(pk=pk).exists()):
+        if Word.objects.filter(pk=pk).exists():
             word = Word.objects.get(pk=pk)
             word.delete()
-        return redirect('words_view')
+        return redirect("words_view")
     else:
         return render(request, "403.html")

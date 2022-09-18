@@ -1,0 +1,3 @@
+https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku-community/apt.tgz
+heroku/python
+https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git
