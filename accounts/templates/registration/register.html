@@ -8,12 +8,14 @@
     }
   }
 
-  body > .grid {
+  body>.grid {
     height: 100%;
   }
+
   .image {
     margin-top: -100px;
   }
+
   .column {
     max-width: 450px;
   }
@@ -33,8 +35,7 @@
       fields: {
         username: {
           identifier: "username",
-          rules: [
-            {
+          rules: [{
               type: "empty",
               prompt: "Please enter a valid username",
             },
@@ -46,8 +47,7 @@
         },
         email: {
           identifier: "email",
-          rules: [
-            {
+          rules: [{
               type: "empty",
               prompt: "Email can't be empty",
             },
@@ -59,8 +59,7 @@
         },
         password1: {
           identifier: "password1",
-          rules: [
-            {
+          rules: [{
               type: "empty",
               prompt: "Please enter your password",
             },
@@ -72,8 +71,7 @@
         },
         password2: {
           identifier: "password2",
-          rules: [
-            {
+          rules: [{
               type: "empty",
               prompt: "Please enter your confirm password",
             },
@@ -117,79 +115,40 @@
           <div class="field">
             <div class="ui left icon input">
               <i class="user icon"></i>
-              <input
-                id="id_username"
-                type="text"
-                name="username"
-                autofocus=""
-                autocapitalize="none"
-                placeholder="username"
-                autocomplete="username"
-                maxlength="150"
-              />
+              <input id="id_username" type="text" name="username" autofocus="" autocapitalize="none"
+                placeholder="username" autocomplete="username" maxlength="150" />
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
               <i class="mail icon"></i>
-              <input
-                id="id_email"
-                type="email"
-                name="email"
-                autofocus=""
-                autocapitalize="none"
-                placeholder="email"
-                autocomplete="email"
-                maxlength="254"
-              />
+              <input id="id_email" type="email" name="email" autofocus="" autocapitalize="none" placeholder="email"
+                autocomplete="email" maxlength="254" />
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
               <i class="lock icon"></i>
-              <input
-                color="green"
-                id="id_password1"
-                type="password"
-                name="password1"
-                autocomplete="new-password"
-                placeholder="password1 (password)"
-              />
+              <input color="green" id="id_password1" type="password" name="password1" autocomplete="new-password"
+                placeholder="password1 (password)" />
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
               <i class="lock icon"></i>
-              <input
-                color="green"
-                id="id_password2"
-                type="password"
-                name="password2"
-                autocomplete="new-password"
-                placeholder="password2 (retype-password)"
-              />
+              <input color="green" id="id_password2" type="password" name="password2" autocomplete="new-password"
+                placeholder="password2 (retype-password)" />
             </div>
           </div>
           <div class="field">
             <div class="ui checkbox">
-              <input
-                id="agreement-checkbox"
-                type="checkbox"
-                onclick="termspopup()"
-                required
-              />
-              <label
-                >I acknowledge that my videos will be used for academic research
+              <input id="agreement-checkbox" type="checkbox" onclick="termspopup()" required />
+              <label>I acknowledge that my videos will be used for academic research
                 purposes and I agree with all the
-                <a href="{% url 'terms' %}">terms and conditions</a></label
-              >
+                <a href="{% url 'terms' %}">terms and conditions</a></label>
             </div>
           </div>
-          <input
-            class="ui fluid large submit black button"
-            type="submit"
-            value="Register"
-          />
+          <input class="ui fluid large submit black button" type="submit" value="Register" />
         </div>
 
         <div class="ui error message"></div>
@@ -222,6 +181,9 @@
 <div id="terms-modal" class="ui mini modal">
   <div class="header">Terms and Conditions</div>
   <div class="ui scrolling content" style="color: black">
+    <div style="color: red; font-weight: bold;">YOUR DATA IS NOT GOING TO PUBLISH PUBLICALLY. ONLY USE TO TRAIN THE
+      NEURAL NETWORK. :D
+    </div>
     <p>
       Welcome to DSC, a platform created to collect dynamic signs of Sri Lankan
       sign language for a research project. Our research focuses on a system
@@ -332,11 +294,7 @@
   <div class="actions">
     <div class="actions" style="margin-bottom: 10px">
       <div class="ui deny red button">Reject</div>
-      <button
-        id="save-btn"
-        class="ui approve submit green right labeled icon button"
-        type="submit"
-      >
+      <button id="save-btn" class="ui approve submit green right labeled icon button" type="submit">
         Approve and Continue
         <i class="checkmark icon"></i>
       </button>
