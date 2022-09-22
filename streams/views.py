@@ -10,6 +10,7 @@ import os
 from django.core.paginator import Paginator
 from .templatetags import encoders
 import time
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -361,3 +362,33 @@ def verify_stream(request, pk):
             }
         )
     return HttpResponse(resp, content_type="application/json")
+
+
+def streams_from_users(request, pk):
+    if (
+        request.user.is_superuser
+        or request.user.groups.filter(name="Validator").exists()
+    ):
+        user_id = request.GET.get("user_id")
+        if user_id == None:
+            return HttpResponse(
+                json.dumps({"success": False, "msg": "User ID is required"}),
+                content_type="application/json",
+            )
+
+        user = User.objects.get(pk=user_id)
+        user_stream_data = Stream.objects.filter(userId=user).order_by("-pk")
+
+        p = Paginator(user_stream_data, 10)
+
+        page_number = request.GET.get("page")
+        if page_number == None:
+            page_number = 1
+        page_obj = p.get_page(page_number)
+        return render(
+            request,
+            "streams_from_users.html",
+            {"page_obj": page_obj, "filter": filter, "count": user_stream_data.count()},
+        )
+    else:
+        return render(request, "403.html")

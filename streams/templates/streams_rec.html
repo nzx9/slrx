@@ -26,7 +26,8 @@
         </div>
         <div>
           <video id="preview-word" width="100%" height="140px" controls
-            src="{% static 'previews/'|add:curr_word.in_english|add:'.mp4' %}" style="background-color: black"></video>
+            src="https://firebasestorage.googleapis.com/v0/b/slrx-pro.appspot.com/o/samples%2F{{ curr_word.in_english| uriencode }}.mp4?alt=media&"" style="
+            background-color: black"></video>
         </div>
         <div class="ui inverted horizontal divider">Word to Show</div>
         <button id="toggle-rec-btn" class="ui inverted red button fluid" autofocus>
