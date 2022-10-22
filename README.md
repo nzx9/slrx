@@ -1,31 +1,34 @@
-# DSC (_Dynamic Sign Collector_)
+# SLRX (_Sign Language Recorder X_)
 
-[![DSC Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=nzx9&repo=DSC&show_owner=true)](https://github.com/nzx9/DSC)
+* Originally developed as [DSC](<https://github.com/nzx9/DSC>)
+* Improved DSC by adding video of sign need to record and released [SLRX][slrx].
+
+[![SLRX Repo Card](https://github-readme-stats.vercel.app/api/pin/?username=nzx9&repo=slrx&show_owner=true)](https://github.com/nzx9/slrx)
 
 ## Hosted On
 
-[![Heroku](https://img.shields.io/static/v1?message=heroku&logo=Heroku&labelColor=FFF&color=430098&logoColor=430098&style=for-the-badge&label=%20)](https://dscapp.herokuapp.com)
+[![Heroku](https://img.shields.io/static/v1?message=heroku&logo=Heroku&labelColor=FFF&color=430098&logoColor=430098&style=for-the-badge&label=%20)](https://slrx-pro.herokuapp.com)
 
 ## Built for
 
-DSC is built for Collect Dynamic Signs Remotly for
+SLRX is built for Collect Dynamic Signs Remotly for
 
-- Machine Learning Tasks
-- Validating Data
-- Many More..
+* Machine Learning Tasks
+* Validating Data
+* Many More..
 
 ## Packages used
 
-DSC uses a number of open source projects to work properly:
+SLRX uses a number of open source projects to work properly:
 
-- [Django] - Python Web Framework
-- [Sementic UI] - awesome modern CSS
-- [Firebase] - as file storage
-- [jQuery] - for frontend actions
+* [Django] - Python Web Framework
+* [Sementic UI] - awesome modern CSS
+* [Firebase] - as file storage
+* [jQuery] - for frontend actions
 
-_For Python dependencies view [requirement.txt](https://github.com/nzx9/DSC/blob/main/requirements.txt)_
+_For Python dependencies view [requirement.txt](https://github.com/nzx9/slrx/blob/main/requirements.txt)_
 
-DSC itself is open source with a [public repository][dsc] on GitHub.
+SLRX itself is open source with a [public repository][slrx] on GitHub.
 
 ## Installation
 
@@ -36,10 +39,10 @@ Install the requiements and start the server.
 ### **For Linux/ MacOS (BASH/ ZSH)**
 
 ```sh
-git clone https://github.com/krypto-i9/dsc.git
-cd dsc
-python3 -m venv ./env
-source ./env/bin/activate
+git clone https://github.com/krypto-i9/slrx.git
+cd slrx
+python3 -m venv venv
+source ./venv/bin/activate
 pip install -r requirements.txt
 ./manage.py runserver
 ```
@@ -52,13 +55,13 @@ Then open browser and goto
 
 ### **For Windows (CMD)**
 
-Download and Extract the [DSC][dsc].
+Download and Extract the [SLRX][slrx].
 Then run this in CMD
 
 ```cmd
-cd dsc
-python -m venv ./env
-env\Scripts\activate.bat
+cd slrx
+python -m venv venv
+venv\Scripts\activate.bat
 pip install -r requirements.txt
 python manage.py runserver
 ```
@@ -77,14 +80,9 @@ Docker Not Available Yet.
 
 [BSD-3-Clause License][license]
 
-[dsc]: https://github.com/nzx9/dsc
-[git-repo-url]: https://github.com/nzx99/dsc.git
-[python]: https://python.org/
 [django]: https://www.djangoproject.com/
 [sementic ui]: https://semantic-ui.com/
 [firebase]: https://firebase.com/
 [jquery]: https://jquery.com
-[@nav_i9]: https://twitter.com/nav_i9
-[navindu dananga]: https://www.linkedin.com/in/navindu-dananga/
-[jennive cole]: https://www.linkedin.com/in/jennive-cole/
 [license]: https://github.com/nzx9/dsc/blob/main/LICENSE
+[slrx]: https://github.com/nzx9/slrx
